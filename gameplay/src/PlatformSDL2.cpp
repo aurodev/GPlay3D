@@ -476,6 +476,18 @@ int Platform::enterMessagePump()
                     Keyboard::Key key = translateKey(keyEvent.keysym.scancode);
                     gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_PRESS, key);
 
+                    switch (key)
+                    {
+                    case Keyboard::KEY_F1:
+                        Renderer::getInstance().toggleDebugStats();
+                        break;
+                    case Keyboard::KEY_F3:
+                        Renderer::getInstance().toggleWireFrame();
+                        break;
+                    case Keyboard::KEY_F7:
+                        Renderer::getInstance().toggleVSync();
+                        break;
+                    }
                 }
                 break;
 
@@ -499,7 +511,7 @@ int Platform::enterMessagePump()
 
 void Platform::swapBuffers()
 {
-    GP_ERROR("Fix me !");
+    Renderer::getInstance().endFrame();
 }
 
 void Platform::signalShutdown()
@@ -549,7 +561,7 @@ void Platform::setVsync(bool enable)
 
 void Platform::sleep(long ms)
 {
-    GP_ERROR("Fix me !");
+    SDL_Delay(ms);
 }
 
 void Platform::setMultiSampling(bool enabled)
