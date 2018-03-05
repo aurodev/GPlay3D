@@ -521,6 +521,12 @@ void Platform::signalShutdown()
 
 bool Platform::canExit()
 {
+#if defined (GP_PLATFORM_IOS)
+    return false;
+#else
+    return true;
+#endif
+
     GP_ERROR("Fix me !");
     return false;
 }

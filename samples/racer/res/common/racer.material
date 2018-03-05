@@ -28,7 +28,7 @@ material textured
             // shaders
             vertexShader = res/shaders/textured.vert
             fragmentShader = res/shaders/textured.frag
-            defines = DIRECTIONAL_LIGHT_COUNT 1
+            defines = DIRECTIONAL_LIGHT_COUNT=1
         }
     }
 }
@@ -97,7 +97,7 @@ material colored
             // shaders
             vertexShader = res/shaders/colored.vert
             fragmentShader = res/shaders/colored.frag
-            defines = DIRECTIONAL_LIGHT_COUNT 1
+            defines = DIRECTIONAL_LIGHT_COUNT=1
         }
     }
 }
