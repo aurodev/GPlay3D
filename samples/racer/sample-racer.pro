@@ -3,9 +3,9 @@
 #--------------------------------------------------------------------
 
 CONFIG(debug,debug|release){
-    DESTDIR = $$PWD/../../BUILD
+    DESTDIR = $$PWD/../../BUILD/sample-racer
 } else {
-    DESTDIR = $$PWD/../../BUILD
+    DESTDIR = $$PWD/../../BUILD/sample-racer
 }
 
 QMAKE_CLEAN += $$DESTDIR/$$TARGET
@@ -45,14 +45,10 @@ linux: INCLUDEPATH += /usr/lib/x86_64-linux-gnu/glib-2.0/include
 linux: INCLUDEPATH += /usr/include/pixman-1
 linux: INCLUDEPATH += /usr/include/libpng12
 linux: INCLUDEPATH += /usr/include/harfbuzz
-linux: PRE_TARGETDEPS += $$DESTDIR/libgameplay.a
-linux: LIBS += -L$$DESTDIR -lgameplay
+linux: PRE_TARGETDEPS += $$DESTDIR/../libgameplay.a
+linux: LIBS += -L$$DESTDIR/../ -lgameplay
 linux: LIBS += -L$$PWD/../../external-deps/lib/linux/x86_64/ -lgameplay-deps
 linux: LIBS += -lm -lGL -lrt -ldl -lX11 -lpthread -lgtk-x11-2.0 -lglib-2.0 -lgobject-2.0 -lsndio
-#linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../../gameplay/res/shaders ../res$$escape_expand(\n\t))
-#linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../../gameplay/res/ui ../res$$escape_expand(\n\t))
-#linux: QMAKE_POST_LINK += $$quote(cp -rf $$PWD/../../gameplay/res/logo_powered_white.png ../res$$escape_expand(\n\t))
-#linux: QMAKE_POST_LINK += $$quote(cp -rf $$PWD/game.dxt.config game.config$$escape_expand(\n\t))
 linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/res $$DESTDIR$$escape_expand(\n\t))
 linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/game.dxt.config $$DESTDIR/game.config$$escape_expand(\n\t))
 linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../../gameplay/res/shaders $$DESTDIR/res$$escape_expand(\n\t))
