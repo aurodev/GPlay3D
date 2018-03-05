@@ -88,12 +88,20 @@ varying vec2 v_texCoord1;
 varying vec3 v_normalVector;
 #endif
 
-#if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
+//#if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
+//varying mat3 v_tangentSpaceTransformMatrix;
+//#endif
+
+
+//---- NEW
+varying vec4 v_positionWorldViewSpace;
 varying mat3 v_tangentSpaceTransformMatrix;
-#endif
+//---
+
+
 
 #if (POINT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
+//@@varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
 #endif
 
 #if (SPOT_LIGHT_COUNT > 0)

@@ -59,9 +59,17 @@ vec3 getLitPixel()
     #if (POINT_LIGHT_COUNT > 0)
     for (int i = 0; i < POINT_LIGHT_COUNT; ++i)
     {
-        vec3 ldir = v_vertexToPointLightDirection[i] * u_pointLightRangeInverse[i].x;
+        vec3 vertexToPointLightDirection;
+        #if defined(BUMPED)
+        	vertexToPointLightDirection = v_tangentSpaceTransformMatrix * (u_pointLightPosition[i].xyz - v_positionWorldViewSpace.xyz);
+        #else
+        	vertexToPointLightDirection = u_pointLightPosition[i].xyz - v_positionWorldViewSpace.xyz;
+        #endif
+
+        vec3 ldir = vertexToPointLightDirection * u_pointLightRangeInverse[i].x;
         float attenuation = clamp(1.0 - dot(ldir, ldir), 0.0, 1.0);
-        combinedColor += computeLighting(normalVector, normalize(v_vertexToPointLightDirection[i]), u_pointLightColor[i].rgb, attenuation);
+        combinedColor += computeLighting(normalVector, normalize(vertexToPointLightDirection), u_pointLightColor[i].rgb, attenuation);
+
     }
     #endif
 

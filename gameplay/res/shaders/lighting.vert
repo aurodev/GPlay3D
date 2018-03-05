@@ -1,4 +1,4 @@
-
+//@@
 #if defined(BUMPED)
 void applyLight(vec4 position, mat3 tangentSpaceTransformMatrix)
 {
@@ -6,13 +6,13 @@ void applyLight(vec4 position, mat3 tangentSpaceTransformMatrix)
     vec4 positionWorldViewSpace = u_worldViewMatrix * position;
     #endif
     
-    #if (POINT_LIGHT_COUNT > 0)
-    for (int i = 0; i < POINT_LIGHT_COUNT; ++i)
-    {
-        // Compute the vertex to light direction, in tangent space
-        v_vertexToPointLightDirection[i] = tangentSpaceTransformMatrix * (u_pointLightPosition[i].xyz - positionWorldViewSpace.xyz);
-    }
-    #endif
+    //@@#if (POINT_LIGHT_COUNT > 0)
+    //@@for (int i = 0; i < POINT_LIGHT_COUNT; ++i)
+    //@@{
+    //@@    // Compute the vertex to light direction, in tangent space
+    //@@    //@@[i] = tangentSpaceTransformMatrix * (u_pointLightPosition[i].xyz - positionWorldViewSpace.xyz);
+    //@@}
+    //@@#endif
     
     #if (SPOT_LIGHT_COUNT > 0)
     for (int i = 0; i < SPOT_LIGHT_COUNT; ++i)
@@ -35,13 +35,13 @@ void applyLight(vec4 position)
 	vec4 positionWorldViewSpace = u_worldViewMatrix * position;
     #endif
 
-    #if (POINT_LIGHT_COUNT > 0)
-    for (int i = 0; i < POINT_LIGHT_COUNT; ++i)
-    {
-        // Compute the light direction with light position and the vertex position.
-        v_vertexToPointLightDirection[i] = u_pointLightPosition[i].xyz - positionWorldViewSpace.xyz;
-    }
-    #endif
+    //@@#if (POINT_LIGHT_COUNT > 0)
+    //@@for (int i = 0; i < POINT_LIGHT_COUNT; ++i)
+    //@@{
+    //@@    // Compute the light direction with light position and the vertex position.
+    //@@    v_vertexToPointLightDirection[i] = u_pointLightPosition[i].xyz - positionWorldViewSpace.xyz;
+    //@@}
+    //@@#endif
 
     #if (SPOT_LIGHT_COUNT > 0)
     for (int i = 0; i < SPOT_LIGHT_COUNT; ++i)

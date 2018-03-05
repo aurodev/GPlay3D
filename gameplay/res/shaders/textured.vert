@@ -105,12 +105,19 @@ varying vec2 v_texCoord1;
 varying vec3 v_normalVector;
 #endif
 
-#if defined(BUMPED)
+//#if defined(BUMPED)
+//varying mat3 v_tangentSpaceTransformMatrix;
+//#endif
+
+
+//---- NEW
 varying mat3 v_tangentSpaceTransformMatrix;
-#endif
+varying vec4 v_positionWorldViewSpace;
+//---
+
 
 #if (POINT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
+//@@varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
 #endif
 
 #if (SPOT_LIGHT_COUNT > 0)
@@ -160,6 +167,13 @@ void main()
     mat3 inverseTransposeWorldViewMatrix = mat3(u_inverseTransposeWorldViewMatrix[0].xyz, u_inverseTransposeWorldViewMatrix[1].xyz, u_inverseTransposeWorldViewMatrix[2].xyz);
     vec3 normalVector = normalize(inverseTransposeWorldViewMatrix * normal);
     
+
+#if defined(SPECULAR) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
+	v_positionWorldViewSpace = u_worldViewMatrix * position;
+#endif
+    
+
+
     #if defined(BUMPED)
     
     vec3 tangent = getTangent();
