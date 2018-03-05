@@ -93,16 +93,21 @@ varying vec3 v_color;
 varying vec3 v_normalVector;
 
 #if (DIRECTIONAL_LIGHT_COUNT > 0) 
-varying vec3 v_lightDirection[DIRECTIONAL_LIGHT_COUNT];
+//@@varying vec3 v_lightDirection[DIRECTIONAL_LIGHT_COUNT];
 #endif
 
 #if (POINT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
+//@@vvarying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
 #endif
 
 #if (SPOT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
+//@@vvarying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
 #endif
+
+
+varying mat3 v_tangentSpaceTransformMatrix;
+varying vec4 v_positionWorldViewSpace;
+
 
 #if defined(SPECULAR)
 varying vec3 v_cameraDirection;
@@ -146,8 +151,23 @@ void main()
     mat3 inverseTransposeWorldViewMatrix = mat3(u_inverseTransposeWorldViewMatrix[0].xyz, u_inverseTransposeWorldViewMatrix[1].xyz, u_inverseTransposeWorldViewMatrix[2].xyz);
     v_normalVector = inverseTransposeWorldViewMatrix * normal;
 
+
+	#if defined(SPECULAR) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
+    	v_positionWorldViewSpace = u_worldViewMatrix * position;
+	#endif
+
     // Apply light.
-    applyLight(position);
+    //applyLight(position);
+
+    #if defined(SPECULAR)
+		#if defined(BUMPED)
+			v_cameraDirection = tangentSpaceTransformMatrix * (u_cameraPosition.xyz - v_positionWorldViewSpace.xyz);
+		#else
+			v_cameraDirection = u_cameraPosition.xyz - v_positionWorldViewSpace.xyz;
+		#endif
+	#endif
+
+
 
     #endif
 

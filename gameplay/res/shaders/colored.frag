@@ -42,12 +42,18 @@ uniform vec4 u_pointLightRangeInverse[POINT_LIGHT_COUNT];
 #endif
 
 #if (SPOT_LIGHT_COUNT > 0)
+uniform vec4 u_spotLightPosition[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightColor[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightDirection[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightRangeInverse[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightInnerAngleCos[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightOuterAngleCos[SPOT_LIGHT_COUNT];
 #endif
+
+
+varying mat3 v_tangentSpaceTransformMatrix;
+varying vec4 v_positionWorldViewSpace;
+
 
 #if defined(SPECULAR)
 uniform vec4 u_specularExponent;
@@ -81,13 +87,6 @@ varying vec2 v_texCoord1;
 
 varying vec3 v_normalVector;
 
-#if (POINT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
-#endif
-
-#if (SPOT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-#endif
 
 #if defined(SPECULAR)
 varying vec3 v_cameraDirection; 
