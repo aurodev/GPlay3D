@@ -47,13 +47,14 @@ uniform vec4 u_pointLightRangeInverse[POINT_LIGHT_COUNT];
 #endif
 
 #if (SPOT_LIGHT_COUNT > 0)
+uniform vec4 u_spotLightPosition[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightColor[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightRangeInverse[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightInnerAngleCos[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightOuterAngleCos[SPOT_LIGHT_COUNT];
-#if !defined(BUMPED)
+//@@#if !defined(BUMPED)
 uniform vec4 u_spotLightDirection[SPOT_LIGHT_COUNT];
-#endif
+//@@#endif
 #endif
 
 #if defined(SPECULAR)
@@ -104,12 +105,12 @@ varying mat3 v_tangentSpaceTransformMatrix;
 //@@varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
 #endif
 
-#if (SPOT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-#if defined(BUMPED)
-varying vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
-#endif
-#endif
+//@@#if (SPOT_LIGHT_COUNT > 0)
+//@@varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
+//@@#if defined(BUMPED)
+//@@varying vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
+//@@#endif
+//@@#endif
 
 #if defined(SPECULAR)
 varying vec3 v_cameraDirection; 

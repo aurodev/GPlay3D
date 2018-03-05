@@ -120,12 +120,12 @@ varying vec4 v_positionWorldViewSpace;
 //@@varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
 #endif
 
-#if (SPOT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-#if defined(BUMPED)
-varying vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
-#endif
-#endif
+//@@#if (SPOT_LIGHT_COUNT > 0)
+//@@varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
+//@@#if defined(BUMPED)
+//@@varying vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
+//@@#endif
+//@@#endif
 
 #if defined(SPECULAR)
 varying vec3 v_cameraDirection;
