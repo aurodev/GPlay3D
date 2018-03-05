@@ -105,8 +105,8 @@ varying vec2 v_texCoord1;
 varying vec3 v_normalVector;
 #endif
 
-#if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
-varying vec3 v_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
+#if defined(BUMPED)
+varying mat3 v_tangentSpaceTransformMatrix;
 #endif
 
 #if (POINT_LIGHT_COUNT > 0)
@@ -168,7 +168,8 @@ void main()
     vec3 binormalVector = normalize(inverseTransposeWorldViewMatrix * binormal);
     mat3 tangentSpaceTransformMatrix = mat3(tangentVector.x, binormalVector.x, normalVector.x, tangentVector.y, binormalVector.y, normalVector.y, tangentVector.z, binormalVector.z, normalVector.z);
     applyLight(position, tangentSpaceTransformMatrix);
-    
+    v_tangentSpaceTransformMatrix = tangentSpaceTransformMatrix;
+
     #else
     
     v_normalVector = normalVector;

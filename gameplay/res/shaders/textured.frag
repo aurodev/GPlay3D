@@ -37,9 +37,7 @@ uniform sampler2D u_normalmapTexture;
 
 #if (DIRECTIONAL_LIGHT_COUNT > 0)
 uniform vec4 u_directionalLightColor[DIRECTIONAL_LIGHT_COUNT];
-#if !defined(BUMPED)
 uniform vec4 u_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
-#endif
 #endif
 
 #if (POINT_LIGHT_COUNT > 0)
@@ -91,7 +89,7 @@ varying vec3 v_normalVector;
 #endif
 
 #if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
-varying vec3 v_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
+varying mat3 v_tangentSpaceTransformMatrix;
 #endif
 
 #if (POINT_LIGHT_COUNT > 0)

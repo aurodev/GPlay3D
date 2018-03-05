@@ -46,7 +46,8 @@ vec3 getLitPixel()
     for (int i = 0; i < DIRECTIONAL_LIGHT_COUNT; ++i)
     {
         #if defined(BUMPED)
-        vec3 lightDirection = normalize(v_directionalLightDirection[i] * 2.0);
+        vec3 directionalLightDirection = v_tangentSpaceTransformMatrix * u_directionalLightDirection[i].xyz;
+        vec3 lightDirection = normalize(directionalLightDirection * 2.0);
         #else
         vec3 lightDirection = normalize(u_directionalLightDirection[i].xyz * 2.0);
         #endif 

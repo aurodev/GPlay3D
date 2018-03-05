@@ -6,14 +6,6 @@ void applyLight(vec4 position, mat3 tangentSpaceTransformMatrix)
     vec4 positionWorldViewSpace = u_worldViewMatrix * position;
     #endif
     
-    #if (DIRECTIONAL_LIGHT_COUNT > 0)
-    for (int i = 0; i < DIRECTIONAL_LIGHT_COUNT; ++i)
-    {
-        // Transform light direction to tangent space
-        v_directionalLightDirection[i] = tangentSpaceTransformMatrix * u_directionalLightDirection[i].xyz;
-    }
-    #endif
-    
     #if (POINT_LIGHT_COUNT > 0)
     for (int i = 0; i < POINT_LIGHT_COUNT; ++i)
     {
