@@ -105,27 +105,8 @@ varying vec2 v_texCoord1;
 varying vec3 v_normalVector;
 #endif
 
-//#if defined(BUMPED)
-//varying mat3 v_tangentSpaceTransformMatrix;
-//#endif
-
-
-//---- NEW
 varying mat3 v_tangentSpaceTransformMatrix;
 varying vec4 v_positionWorldViewSpace;
-//---
-
-
-#if (POINT_LIGHT_COUNT > 0)
-//@@varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
-#endif
-
-//@@#if (SPOT_LIGHT_COUNT > 0)
-//@@varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-//@@#if defined(BUMPED)
-//@@varying vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
-//@@#endif
-//@@#endif
 
 #if defined(SPECULAR)
 varying vec3 v_cameraDirection;
@@ -162,52 +143,44 @@ void main()
 #endif
 
     #if defined(LIGHTING)
-    vec3 normal = getNormal();
-    // Transform the normal, tangent and binormals to view space.
-    mat3 inverseTransposeWorldViewMatrix = mat3(u_inverseTransposeWorldViewMatrix[0].xyz, u_inverseTransposeWorldViewMatrix[1].xyz, u_inverseTransposeWorldViewMatrix[2].xyz);
-    vec3 normalVector = normalize(inverseTransposeWorldViewMatrix * normal);
-    
+        vec3 normal = getNormal();
+        // Transform the normal, tangent and binormals to view space.
+        mat3 inverseTransposeWorldViewMatrix = mat3(u_inverseTransposeWorldViewMatrix[0].xyz, u_inverseTransposeWorldViewMatrix[1].xyz, u_inverseTransposeWorldViewMatrix[2].xyz);
+        vec3 normalVector = normalize(inverseTransposeWorldViewMatrix * normal);    
 
-#if defined(SPECULAR) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
-	v_positionWorldViewSpace = u_worldViewMatrix * position;
-#endif
-    
+        #if defined(SPECULAR) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
+    	   v_positionWorldViewSpace = u_worldViewMatrix * position;
+        #endif
 
-
-    #if defined(BUMPED)
-    
-    vec3 tangent = getTangent();
-    vec3 binormal = getBinormal();
-    vec3 tangentVector  = normalize(inverseTransposeWorldViewMatrix * tangent);
-    vec3 binormalVector = normalize(inverseTransposeWorldViewMatrix * binormal);
-    mat3 tangentSpaceTransformMatrix = mat3(tangentVector.x, binormalVector.x, normalVector.x, tangentVector.y, binormalVector.y, normalVector.y, tangentVector.z, binormalVector.z, normalVector.z);
-    applyLight(position, tangentSpaceTransformMatrix);
-    v_tangentSpaceTransformMatrix = tangentSpaceTransformMatrix;
-
-    #else
-    
-    v_normalVector = normalVector;
-    applyLight(position);
-    
-    #endif
-    
+        #if defined(BUMPED)    
+            vec3 tangent = getTangent();
+            vec3 binormal = getBinormal();
+            vec3 tangentVector  = normalize(inverseTransposeWorldViewMatrix * tangent);
+            vec3 binormalVector = normalize(inverseTransposeWorldViewMatrix * binormal);
+            mat3 tangentSpaceTransformMatrix = mat3(tangentVector.x, binormalVector.x, normalVector.x, tangentVector.y, binormalVector.y, normalVector.y, tangentVector.z, binormalVector.z, normalVector.z);
+            applyLight(position, tangentSpaceTransformMatrix);
+            v_tangentSpaceTransformMatrix = tangentSpaceTransformMatrix;
+        #else    
+            v_normalVector = normalVector;
+            applyLight(position);    
+        #endif    
     #endif    
     
     v_texCoord = vec2(a_texcoord0.x, 1.0 - a_texcoord0.y);
     
     #if defined(TEXTURE_REPEAT)
-    v_texCoord *= u_textureRepeat.xy;
+        v_texCoord *= u_textureRepeat.xy;
     #endif
     
     #if defined(TEXTURE_OFFSET)
-    v_texCoord += u_textureOffset.xy;
+        v_texCoord += u_textureOffset.xy;
     #endif
     
     #if defined(LIGHTMAP)
-    v_texCoord1 = a_texcoord1;
+        v_texCoord1 = a_texcoord1;
     #endif
     
     #if defined(CLIP_PLANE)
-    v_clipDistance = dot(u_worldMatrix * position, u_clipPlane);
+        v_clipDistance = dot(u_worldMatrix * position, u_clipPlane);
     #endif
 }

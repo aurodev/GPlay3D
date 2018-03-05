@@ -64,7 +64,6 @@ vec3 getLitPixel()
         vec3 ldir = vertexToPointLightDirection * u_pointLightRangeInverse[i].x;
         float attenuation = clamp(1.0 - dot(ldir, ldir), 0.0, 1.0);
         combinedColor += computeLighting(normalVector, normalize(vertexToPointLightDirection), u_pointLightColor[i].rgb, attenuation);
-
     }
     #endif
 

@@ -89,28 +89,8 @@ varying vec2 v_texCoord1;
 varying vec3 v_normalVector;
 #endif
 
-//#if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
-//varying mat3 v_tangentSpaceTransformMatrix;
-//#endif
-
-
-//---- NEW
 varying vec4 v_positionWorldViewSpace;
 varying mat3 v_tangentSpaceTransformMatrix;
-//---
-
-
-
-#if (POINT_LIGHT_COUNT > 0)
-//@@varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
-#endif
-
-//@@#if (SPOT_LIGHT_COUNT > 0)
-//@@varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-//@@#if defined(BUMPED)
-//@@varying vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
-//@@#endif
-//@@#endif
 
 #if defined(SPECULAR)
 varying vec3 v_cameraDirection; 
@@ -128,7 +108,7 @@ varying float v_clipDistance;
 void main()
 {
     #if defined(CLIP_PLANE)
-    if(v_clipDistance < 0.0) discard;
+        if(v_clipDistance < 0.0) discard;
     #endif
  
     _baseColor = texture2D(u_diffuseTexture, v_texCoord);
@@ -136,27 +116,26 @@ void main()
     gl_FragColor.a = _baseColor.a;
 
     #if defined(TEXTURE_DISCARD_ALPHA)
-    if (gl_FragColor.a < 0.5)
-        discard;
+        if (gl_FragColor.a < 0.5)
+            discard;
     #endif
 
     #if defined(LIGHTING)
-
-    gl_FragColor.rgb = getLitPixel();
+        gl_FragColor.rgb = getLitPixel();
     #else
-    gl_FragColor.rgb = _baseColor.rgb;
+        gl_FragColor.rgb = _baseColor.rgb;
     #endif
 
 	#if defined(LIGHTMAP)
-	vec4 lightColor = texture2D(u_lightmapTexture, v_texCoord1);
-	gl_FragColor.rgb *= lightColor.rgb;
+	   vec4 lightColor = texture2D(u_lightmapTexture, v_texCoord1);
+	   gl_FragColor.rgb *= lightColor.rgb;
 	#endif
 
     #if defined(MODULATE_COLOR)
-    gl_FragColor *= u_modulateColor;
+        gl_FragColor *= u_modulateColor;
     #endif
 
     #if defined(MODULATE_ALPHA)
-    gl_FragColor.a *= u_modulateAlpha.x;
+        gl_FragColor.a *= u_modulateAlpha.x;
     #endif
 }
