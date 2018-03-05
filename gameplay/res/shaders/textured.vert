@@ -112,7 +112,7 @@ varying vec4 v_positionWorldViewSpace;
 varying vec3 v_cameraDirection;
 #endif
 
-#include "lighting.vert"
+//@@#include "lighting.vert"
 
 #endif
 
@@ -158,12 +158,21 @@ void main()
             vec3 tangentVector  = normalize(inverseTransposeWorldViewMatrix * tangent);
             vec3 binormalVector = normalize(inverseTransposeWorldViewMatrix * binormal);
             mat3 tangentSpaceTransformMatrix = mat3(tangentVector.x, binormalVector.x, normalVector.x, tangentVector.y, binormalVector.y, normalVector.y, tangentVector.z, binormalVector.z, normalVector.z);
-            applyLight(position, tangentSpaceTransformMatrix);
+            //@@applyLight(position, tangentSpaceTransformMatrix);
             v_tangentSpaceTransformMatrix = tangentSpaceTransformMatrix;
         #else    
             v_normalVector = normalVector;
-            applyLight(position);    
-        #endif    
+            //@@applyLight(position);    
+        #endif
+
+        #if defined(SPECULAR)
+            #if defined(BUMPED)
+                v_cameraDirection = tangentSpaceTransformMatrix * (u_cameraPosition.xyz - v_positionWorldViewSpace.xyz);
+            #else
+                v_cameraDirection = u_cameraPosition.xyz - v_positionWorldViewSpace.xyz;
+            #endif
+        #endif
+
     #endif    
     
     v_texCoord = vec2(a_texcoord0.x, 1.0 - a_texcoord0.y);
