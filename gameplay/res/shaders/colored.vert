@@ -91,29 +91,12 @@ varying vec3 v_color;
 #if defined(LIGHTING)
 
 varying vec3 v_normalVector;
-
-#if (DIRECTIONAL_LIGHT_COUNT > 0) 
-//@@varying vec3 v_lightDirection[DIRECTIONAL_LIGHT_COUNT];
-#endif
-
-#if (POINT_LIGHT_COUNT > 0)
-//@@vvarying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
-#endif
-
-#if (SPOT_LIGHT_COUNT > 0)
-//@@vvarying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-#endif
-
-
 varying mat3 v_tangentSpaceTransformMatrix;
 varying vec4 v_positionWorldViewSpace;
-
 
 #if defined(SPECULAR)
 varying vec3 v_cameraDirection;
 #endif
-
-#include "lighting.vert"
 
 #endif
 
@@ -145,43 +128,37 @@ void main()
 
     #if defined (LIGHTING)
 
-    vec3 normal = getNormal();
+        vec3 normal = getNormal();
 
-    // Transform normal to view space.
-    mat3 inverseTransposeWorldViewMatrix = mat3(u_inverseTransposeWorldViewMatrix[0].xyz, u_inverseTransposeWorldViewMatrix[1].xyz, u_inverseTransposeWorldViewMatrix[2].xyz);
-    v_normalVector = inverseTransposeWorldViewMatrix * normal;
+        // Transform normal to view space.
+        mat3 inverseTransposeWorldViewMatrix = mat3(u_inverseTransposeWorldViewMatrix[0].xyz, u_inverseTransposeWorldViewMatrix[1].xyz, u_inverseTransposeWorldViewMatrix[2].xyz);
+        v_normalVector = inverseTransposeWorldViewMatrix * normal;
 
+    	#if defined(SPECULAR) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
+        	v_positionWorldViewSpace = u_worldViewMatrix * position;
+    	#endif
 
-	#if defined(SPECULAR) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
-    	v_positionWorldViewSpace = u_worldViewMatrix * position;
-	#endif
-
-    // Apply light.
-    //applyLight(position);
-
-    #if defined(SPECULAR)
-		#if defined(BUMPED)
-			v_cameraDirection = tangentSpaceTransformMatrix * (u_cameraPosition.xyz - v_positionWorldViewSpace.xyz);
-		#else
-			v_cameraDirection = u_cameraPosition.xyz - v_positionWorldViewSpace.xyz;
-		#endif
-	#endif
-
-
+        #if defined(SPECULAR)
+    		#if defined(BUMPED)
+    			v_cameraDirection = tangentSpaceTransformMatrix * (u_cameraPosition.xyz - v_positionWorldViewSpace.xyz);
+    		#else
+    			v_cameraDirection = u_cameraPosition.xyz - v_positionWorldViewSpace.xyz;
+    		#endif
+    	#endif
 
     #endif
 
     // Pass the lightmap texture coordinate
     #if defined(LIGHTMAP)
-    v_texCoord1 = a_texcoord1;
+        v_texCoord1 = a_texcoord1;
     #endif
     
     // Pass the vertex color
     #if defined(VERTEX_COLOR)
-	v_color = a_color0;
+	   v_color = a_color0;
     #endif
     
     #if defined(CLIP_PLANE)
-    v_clipDistance = dot(u_worldMatrix * position, u_clipPlane);
+        v_clipDistance = dot(u_worldMatrix * position, u_clipPlane);
     #endif    
 }

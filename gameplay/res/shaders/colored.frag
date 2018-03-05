@@ -103,41 +103,41 @@ varying float v_clipDistance;
 void main()
 {
     #if defined(CLIP_PLANE)
-    if(v_clipDistance < 0.0) discard;
+        if(v_clipDistance < 0.0) discard;
     #endif
  
     #if defined(LIGHTING)
 
-    #if defined(VERTEX_COLOR)
-	_baseColor.rgb = v_color;
-    #else
-    _baseColor = u_diffuseColor;
-	#endif
+        #if defined(VERTEX_COLOR)
+    	   _baseColor.rgb = v_color;
+        #else
+            _baseColor = u_diffuseColor;
+    	#endif
+        
+        gl_FragColor.a = _baseColor.a;
+        gl_FragColor.rgb = getLitPixel();
     
-    gl_FragColor.a = _baseColor.a;
-    gl_FragColor.rgb = getLitPixel();
-    
     #else
     
-    #if defined(VERTEX_COLOR)
-    gl_FragColor.rgb = v_color;
-    gl_FragColor.a = 1.0;
-    #else
-    gl_FragColor = u_diffuseColor;
-    #endif
+        #if defined(VERTEX_COLOR)
+            gl_FragColor.rgb = v_color;
+            gl_FragColor.a = 1.0;
+        #else
+            gl_FragColor = u_diffuseColor;
+        #endif
     
     #endif
 
 	#if defined(LIGHTMAP)
-	vec4 lightColor = texture2D(u_lightmapTexture, v_texCoord1);
-	gl_FragColor.rgb *= lightColor.rgb;
+	   vec4 lightColor = texture2D(u_lightmapTexture, v_texCoord1);
+	   gl_FragColor.rgb *= lightColor.rgb;
 	#endif
 
 	#if defined(MODULATE_COLOR)
-    gl_FragColor *= u_modulateColor;
+        gl_FragColor *= u_modulateColor;
     #endif
 
 	#if defined(MODULATE_ALPHA)
-    gl_FragColor.a *= u_modulateAlpha.x;
+        gl_FragColor.a *= u_modulateAlpha.x;
     #endif
 }
