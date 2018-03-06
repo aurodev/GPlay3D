@@ -1,6 +1,6 @@
 vec3 v_color                    : COLOR0 = vec3(1.0, 0.0, 0.0);
 vec2 v_texcoord1                : TEXCOORD1 = vec2(0.0, 0.0);
-vec3 v_normal                   : NORMAL = vec3(0.0, 0.0, 0.0);  
+vec3 v_normalVector                   : NORMAL = vec3(0.0, 0.0, 0.0);  
 vec4 v_positionWorldViewSpace   : TEXCOORD2 = vec4(0.0, 0.0, 0.0, 0.0);
 vec3 v_cameraDirection          : TEXCOORD3 = vec3(0.0, 0.0, 0.0);
 float v_clipDistance            : TEXCOORD4 = float(0.0);

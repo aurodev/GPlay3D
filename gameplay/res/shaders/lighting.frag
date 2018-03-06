@@ -41,8 +41,9 @@ vec3 getLitPixel()
     vec3 ambientColor = _baseColor.rgb * u_ambientColor.rgb;
     vec3 combinedColor = ambientColor;
 
-
+#if defined(BUMPED) 
     mat3 tangentSpaceTransformMatrix = mat3(v_tangentVector.x, v_binormalVector.x, v_normalVector.x, v_tangentVector.y, v_binormalVector.y, v_normalVector.y, v_tangentVector.z, v_binormalVector.z, v_normalVector.z);
+#endif
 
 
     // Directional light contribution

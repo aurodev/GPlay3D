@@ -1,5 +1,5 @@
 $input v_color
-$input v_normal
+$input v_normalVector
 $input v_positionWorldViewSpace
 $input v_cameraDirection
 $input v_texcoord1

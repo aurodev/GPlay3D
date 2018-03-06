@@ -5,7 +5,7 @@ $input a_normal
 
 // Varyings
 $output v_color
-$output v_normal
+$output v_normalVector
 $output v_positionWorldViewSpace
 $output v_cameraDirection
 $output v_texcoord1
@@ -150,7 +150,7 @@ void main()
 
         // Transform normal to view space.
         mat3 inverseTransposeWorldViewMatrix = mat3(u_inverseTransposeWorldViewMatrix[0].xyz, u_inverseTransposeWorldViewMatrix[1].xyz, u_inverseTransposeWorldViewMatrix[2].xyz);
-        v_normal = inverseTransposeWorldViewMatrix * normal;
+        v_normalVector = inverseTransposeWorldViewMatrix * normal;
 
     	#if defined(SPECULAR) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
         	v_positionWorldViewSpace = u_worldViewMatrix * position;
