@@ -1,22 +1,13 @@
-#ifdef OPENGL_ES
-precision highp float;
-#endif
+$input v_vertexRefractionPosition, v_vertexReflectionPosition, v_texcoord0, v_eyePosition
 
-//////////////////////////
-// Uniforms
-uniform sampler2D u_refractionTexture;
-uniform sampler2D u_reflectionTexture;
-uniform sampler2D u_normalMap;
+#include "../../shaders/common/common.sh"
+
+
+SAMPLER2D(u_refractionTexture,0);
+SAMPLER2D(u_reflectionTexture,1);
+SAMPLER2D(u_normalMap,2);
 uniform vec4 u_time;
 
-//////////////////////////
-// Varyings
-varying vec4 v_vertexRefractionPosition;
-varying vec4 v_vertexReflectionPosition;
-varying vec2 v_texCoord;
-varying vec3 v_eyePosition;
-
-//////////////////////////
 
 const float distortAmount = 0.05;
 const float specularAmount = 2.5;
@@ -26,15 +17,18 @@ const vec4 viewNormal = vec4(0.0, 1.0, 0.0, 0.0);
 const vec4 bitangent = vec4(0.0, 0.0, 1.0, 0.0);
 const vec4 waterColour = vec4(0.36, 0.32, 0.2,1.0);
 
+
+
 vec2 fromClipSpace(vec4 position)
 {
     return position.xy / position.w / 2.0 + 0.5;
 }
 
+
 void main()
 {	
     // Get normal
-    vec4 normal = texture2D(u_normalMap, v_texCoord * textureRepeat + u_time.x);
+    vec4 normal = texture2D(u_normalMap, v_texcoord0 * textureRepeat + u_time.x);
     normal = normalize(normal * 2.0 - 1.0);
     
     // Distortion offset
