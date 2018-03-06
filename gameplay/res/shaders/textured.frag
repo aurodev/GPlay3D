@@ -50,12 +50,13 @@ uniform vec4 u_pointLightRangeInverse[POINT_LIGHT_COUNT];
 
 #if (SPOT_LIGHT_COUNT > 0)
 uniform vec4 u_spotLightColor[SPOT_LIGHT_COUNT];
+uniform vec4 u_spotLightPosition[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightRangeInverse[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightInnerAngleCos[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightOuterAngleCos[SPOT_LIGHT_COUNT];
-#if !defined(BUMPED)
+//#if !defined(BUMPED)
 uniform vec4 u_spotLightDirection[SPOT_LIGHT_COUNT];
-#endif
+//#endif
 #endif
 
 #if defined(SPECULAR)
@@ -102,7 +103,7 @@ varying vec2 v_texCoord1;
 #endif
 
 #if (POINT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
+//varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
 #endif
 
 #if (SPOT_LIGHT_COUNT > 0)
@@ -121,7 +122,7 @@ varying vec3 v_cameraDirection;
 varying vec3 v_tangentVector;
 varying vec3 v_binormalVector;
 varying vec3 v_normalVector;
-
+varying vec4 v_positionWorldViewSpace;
 
 
 #include "lighting.frag"

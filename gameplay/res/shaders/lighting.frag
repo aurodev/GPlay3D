@@ -67,9 +67,25 @@ vec3 getLitPixel()
     #if (POINT_LIGHT_COUNT > 0)
     for (int i = 0; i < POINT_LIGHT_COUNT; ++i)
     {
-        vec3 ldir = v_vertexToPointLightDirection[i] * u_pointLightRangeInverse[i].x;
+
+            #if defined(BUMPED)
+
+                // Compute the vertex to light direction, in tangent space
+                vec3 vertexToPointLightDirection = tangentSpaceTransformMatrix * (u_pointLightPosition[i].xyz - v_positionWorldViewSpace.xyz);
+
+            #else
+
+                // Compute the light direction with light position and the vertex position.
+                vec3 vertexToPointLightDirection = u_pointLightPosition[i].xyz - v_positionWorldViewSpace.xyz;
+
+            #endif
+
+
+
+
+        vec3 ldir = vertexToPointLightDirection * u_pointLightRangeInverse[i].x;
         float attenuation = clamp(1.0 - dot(ldir, ldir), 0.0, 1.0);
-        combinedColor += computeLighting(normalVector, normalize(v_vertexToPointLightDirection[i]), u_pointLightColor[i].rgb, attenuation);
+        combinedColor += computeLighting(normalVector, normalize(vertexToPointLightDirection), u_pointLightColor[i].rgb, attenuation);
     }
     #endif
 
@@ -77,13 +93,31 @@ vec3 getLitPixel()
     #if (SPOT_LIGHT_COUNT > 0)
     for (int i = 0; i < SPOT_LIGHT_COUNT; ++i)
     {
+
+
+            #if defined(BUMPED)
+
+                // Compute the vertex to light direction, in tangent space
+                    vec3 vertexToSpotLightDirectionTmp = tangentSpaceTransformMatrix * (u_spotLightPosition[i].xyz - v_positionWorldViewSpace.xyz);
+                    vec3 spotLightDirectionTmp = tangentSpaceTransformMatrix * u_spotLightDirection[i].xyz;
+
+            #else
+
+                // Compute the light direction with light position and the vertex position.
+                vec3 vertexToSpotLightDirectionTmp = u_spotLightPosition[i].xyz - v_positionWorldViewSpace.xyz;
+
+            #endif
+
+
+
+
         // Compute range attenuation
-        vec3 ldir = v_vertexToSpotLightDirection[i] * u_spotLightRangeInverse[i].x;
+        vec3 ldir = vertexToSpotLightDirectionTmp * u_spotLightRangeInverse[i].x;
         float attenuation = clamp(1.0 - dot(ldir, ldir), 0.0, 1.0);
-        vec3 vertexToSpotLightDirection = normalize(v_vertexToSpotLightDirection[i]);
+        vec3 vertexToSpotLightDirection = normalize(vertexToSpotLightDirectionTmp);
 
         #if defined(BUMPED)
-            vec3 spotLightDirection = normalize(v_spotLightDirection[i] * 2.0);
+            vec3 spotLightDirection = normalize(spotLightDirectionTmp * 2.0);
         #else
             vec3 spotLightDirection = normalize(u_spotLightDirection[i].xyz * 2.0);
         #endif
