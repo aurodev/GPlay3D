@@ -29,9 +29,16 @@ BGFXGpuProgram::~BGFXGpuProgram()
 
 void BGFXGpuProgram::set(const char* vshPath, const char* fshPath, const char* defines)
 {
+    // use custom varying def file if exists or default "varying.def.sc"
+    std::string basename = FileSystem::getBaseName(vshPath);
+    std::string varyingFile = basename + ".io";
+    bool useCustomVaryingDef = FileSystem::fileExists(varyingFile.c_str());
+    if(!useCustomVaryingDef)
+        varyingFile = FileSystem::getDirectoryName(vshPath) + "varying.def.sc";
+
     // Compile shaders using brtshaderc library
-    const bgfx::Memory* memVsh = shaderc::compileShader(shaderc::ST_VERTEX, vshPath, defines, "res/shaders/varying.def.sc");
-    const bgfx::Memory* memFsh = shaderc::compileShader(shaderc::ST_FRAGMENT, fshPath, defines, "res/shaders/varying.def.sc");
+    const bgfx::Memory* memVsh = shaderc::compileShader(shaderc::ST_VERTEX, vshPath, defines, varyingFile.c_str());
+    const bgfx::Memory* memFsh = shaderc::compileShader(shaderc::ST_FRAGMENT, fshPath, defines, varyingFile.c_str());
 
     GP_ASSERT(memVsh);
     GP_ASSERT(memFsh);
