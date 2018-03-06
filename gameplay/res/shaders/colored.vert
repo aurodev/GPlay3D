@@ -1,12 +1,15 @@
 // Attributes
-$input a_position   // vec4
-$input a_color0     // vec3
-$input a_normal     // vec3
+$input a_position
+$input a_color0
+$input a_normal
 
 // Varyings
-$output v_color     // vec3
-
-
+$output v_color
+$output v_normal
+$output v_positionWorldViewSpace
+$output v_cameraDirection
+$output v_texcoord1
+$output v_clipDistance
 
 #include "common/common.sh"
 
@@ -95,25 +98,25 @@ uniform vec4 u_clipPlane;
 
 ///////////////////////////////////////////////////////////
 // Varyings
-#if defined(LIGHTMAP)
-varying vec2 v_texCoord1;
-#endif
-
-#if defined(VERTEX_COLOR)
-//@@varying vec3 v_color;
-#endif
-
-#if defined(LIGHTING)
-
-
-varying vec3 v_normal;
-varying vec4 v_positionWorldViewSpace;
-
-#if defined(SPECULAR)
-varying vec3 v_cameraDirection;
-#endif
-
-#endif
+//@@#if defined(LIGHTMAP)
+//@@varying vec2 v_texCoord1;
+//@@#endif
+//@@
+//@@#if defined(VERTEX_COLOR)
+//@@//@@varying vec3 v_color;
+//@@#endif
+//@@
+//@@#if defined(LIGHTING)
+//@@
+//@@
+//@@//@@varying vec3 v_normal;
+//@@//@@varying vec4 v_positionWorldViewSpace;
+//@@
+//@@#if defined(SPECULAR)
+//@@//@@varying vec3 v_cameraDirection;
+//@@#endif
+//@@
+#endif//@@
 
 #if defined(SKINNING)
 #include "skinning.vert"
@@ -121,9 +124,9 @@ varying vec3 v_cameraDirection;
 #include "skinning-none.vert" 
 #endif
 
-#if defined(CLIP_PLANE)
-varying float v_clipDistance;
-#endif
+//@@#if defined(CLIP_PLANE)
+//@@varying float v_clipDistance;
+//@@#endif
 
 void main()
 {

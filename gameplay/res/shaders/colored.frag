@@ -1,4 +1,9 @@
-$input v_color     // vec3
+$input v_color
+$input v_normal
+$input v_positionWorldViewSpace
+$input v_cameraDirection
+$input v_texcoord1
+$input v_clipDistance
 
 
 #ifdef OPENGL_ES
@@ -54,8 +59,8 @@ uniform vec4 u_spotLightOuterAngleCos[SPOT_LIGHT_COUNT];
 #endif
 
 
-varying mat3 v_tangentSpaceTransformMatrix;
-varying vec4 v_positionWorldViewSpace;
+//@@varying mat3 v_tangentSpaceTransformMatrix;
+//@@varying vec4 v_positionWorldViewSpace;
 
 
 #if defined(SPECULAR)
@@ -78,30 +83,42 @@ vec4 _baseColor;
 
 ///////////////////////////////////////////////////////////
 // Varyings
-#if defined(VERTEX_COLOR)
-//@@varying vec3 v_color;
-#endif
+//@@#if defined(VERTEX_COLOR)
+//@@//@@varying vec3 v_color;
+//@@#endif
+//@@
+//@@#if defined(LIGHTMAP)
+//@@varying vec2 v_texCoord1;
+//@@#endif
+//@@
+//@@#if defined(LIGHTING)
+//@@
+//@@//@@varying vec3 v_normal;
+//@@
+//@@
+//@@#if defined(SPECULAR)
+//@@varying vec3 v_cameraDirection; 
+//@@#endif
+//@@
+//@@#include "lighting.frag"
+//@@
+//@@#endif
+//@@
+//@@#if defined(CLIP_PLANE)
+//@@varying float v_clipDistance;
+//@@#endif
 
-#if defined(LIGHTMAP)
-varying vec2 v_texCoord1;
-#endif
+
+
+
 
 #if defined(LIGHTING)
-
-varying vec3 v_normal;
-
-
-#if defined(SPECULAR)
-varying vec3 v_cameraDirection; 
+    #include "lighting.frag"
 #endif
 
-#include "lighting.frag"
 
-#endif
 
-#if defined(CLIP_PLANE)
-varying float v_clipDistance;
-#endif
+
 
 void main()
 {
@@ -132,7 +149,7 @@ void main()
     #endif
 
 	#if defined(LIGHTMAP)
-	   vec4 lightColor = texture2D(u_lightmapTexture, v_texCoord1);
+	   vec4 lightColor = texture2D(u_lightmapTexture, v_texcoord1);
 	   gl_FragColor.rgb *= lightColor.rgb;
 	#endif
 
