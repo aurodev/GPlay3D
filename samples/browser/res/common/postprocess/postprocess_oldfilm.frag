@@ -1,21 +1,16 @@
-#ifdef OPENGL_ES
-precision mediump float;
-#endif
+$input v_texcoord0
 
-// Uniforms
-uniform sampler2D u_texture;
+#include "../../shaders/common/common.sh"
+
+SAMPLER2D(u_texture, 0);
+
 uniform vec4 u_sepiaValue;
 uniform vec4 u_noiseValue;
 uniform vec4 u_scratchValue;
 uniform vec4 u_innerVignetting;
 uniform vec4 u_outerVignetting;
-
 uniform vec4 u_elapsedTime;
 uniform vec4 u_random;
-
-
-// Varying
-varying vec2 v_texcoord0;
 
 
 

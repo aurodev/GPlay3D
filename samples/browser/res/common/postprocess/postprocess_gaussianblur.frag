@@ -1,14 +1,12 @@
-#ifdef OPENGL_ES
-precision mediump float;
-#endif
+$input v_texcoord0
 
-// Uniforms
-uniform sampler2D u_texture;
+#include "../../shaders/common/common.sh"
+
+
+SAMPLER2D(u_texture, 0);
 uniform vec4 u_length;
 #define LENGTH u_length.x 
 
-// Inputs
-varying vec2 v_texcoord0;
 
 void main()
 {

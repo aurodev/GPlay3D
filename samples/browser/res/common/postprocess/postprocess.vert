@@ -1,9 +1,19 @@
+$input a_position, a_texcoord0
+$output v_texcoord0
+
+#include "../../shaders/common/common.sh"
+
+
+
 // Inputs
-attribute vec2 a_position;
-attribute vec2 a_texcoord0;
+//attribute vec2 a_position;
+//attribute vec2 a_texcoord0;
 
 // Varying
-varying vec2 v_texcoord0;
+//varying vec2 v_texcoord0;
+
+
+
 
 void main()
 {

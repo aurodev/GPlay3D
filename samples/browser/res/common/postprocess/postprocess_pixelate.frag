@@ -1,12 +1,8 @@
-#ifdef OPENGL_ES
-precision mediump float;
-#endif
+$input v_texcoord0
 
-// Uniforms
-uniform sampler2D u_texture;
+#include "../../shaders/common/common.sh"
 
-// Inputs
-varying vec2 v_texcoord0;
+SAMPLER2D(u_texture, 0);
 
 
 float discretize(float f, float d)
