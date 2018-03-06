@@ -1,50 +1,54 @@
+//----------------------------------------------------------
+// Attributes
+//----------------------------------------------------------
+$input a_position
+$input a_normal
+$input a_tangent
+$input a_bitangent
+$input a_texcoord0
+$input a_texcoord1
+$input i_data0
+$input i_data1
+$input i_data2
+$input i_data3
+
+//----------------------------------------------------------
+// Varyings
+//----------------------------------------------------------
+$output v_texcoord0
+$output v_texcoord1
+$output v_normalVector
+$output v_tangent
+$output v_bitangent
+$output v_normal
+$output v_positionWorldViewSpace
+$output v_cameraDirection
+$output v_clipDistance
+
+
+
+#include "common/common.sh"
+
+
+
 #ifndef DIRECTIONAL_LIGHT_COUNT
-#define DIRECTIONAL_LIGHT_COUNT 0
+    #define DIRECTIONAL_LIGHT_COUNT 0
 #endif
 #ifndef SPOT_LIGHT_COUNT
-#define SPOT_LIGHT_COUNT 0
+    #define SPOT_LIGHT_COUNT 0
 #endif
 #ifndef POINT_LIGHT_COUNT
-#define POINT_LIGHT_COUNT 0
+    #define POINT_LIGHT_COUNT 0
 #endif
 #if (DIRECTIONAL_LIGHT_COUNT > 0) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
-#define LIGHTING
+    #define LIGHTING
 #endif
 
-///////////////////////////////////////////////////////////
-// Atributes
-attribute vec4 a_position;
 
-#if defined(SKINNING)
-attribute vec4 a_weight;
-attribute vec4 a_indices;
-#endif
 
-attribute vec2 a_texcoord0;
-
-#if defined(LIGHTMAP)
-attribute vec2 a_texcoord1; 
-#endif
-
-#if defined(LIGHTING)
-attribute vec3 a_normal;
-
-#if defined(BUMPED)
-attribute vec3 a_tangent;
-attribute vec3 a_bitangent;
-#endif
-
-#endif
-
-#if defined(INSTANCED)
-attribute vec4 i_data0;
-attribute vec4 i_data1;
-attribute vec4 i_data2;
-attribute vec4 i_data3;
-#endif
-
-///////////////////////////////////////////////////////////
+//----------------------------------------------------------
 // Uniforms
+//----------------------------------------------------------
 uniform mat4 u_worldViewProjectionMatrix;
 #if defined(SKINNING)
 uniform vec4 u_matrixPalette[SKINNING_JOINT_COUNT * 3];
@@ -91,44 +95,18 @@ uniform mat4 u_worldMatrix;
 uniform vec4 u_clipPlane;
 #endif
 
-///////////////////////////////////////////////////////////
-// Varyings
-varying vec2 v_texCoord;
 
-#if defined(LIGHTMAP)
-varying vec2 v_texCoord1;
-#endif
-
-#if defined(LIGHTING)
-
-#if !defined(BUMPED)
-varying vec3 v_normalVector;
-#endif
-
-//@@varying mat3 v_tangentSpaceTransformMatrix;
-varying vec3 v_tangent;
-varying vec3 v_bitangent;
-varying vec3 v_normal;
-varying vec4 v_positionWorldViewSpace;
-
-#if defined(SPECULAR)
-varying vec3 v_cameraDirection;
-#endif
-
-//@@#include "lighting.vert"
-
-#endif
 
 #if defined(SKINNING)
-#include "skinning.vert"
+    #include "skinning.vert"
 #else
-#include "skinning-none.vert" 
+    #include "skinning-none.vert" 
 #endif
 
-#if defined(CLIP_PLANE)
-varying float v_clipDistance;
-#endif
 
+//----------------------------------------------------------
+// Code
+//----------------------------------------------------------
 void main()
 {
     vec4 position = getPosition();
@@ -186,18 +164,18 @@ void main()
 
     #endif    
     
-    v_texCoord = vec2(a_texcoord0.x, 1.0 - a_texcoord0.y);
+    v_texcoord0 = vec2(a_texcoord0.x, 1.0 - a_texcoord0.y);
     
     #if defined(TEXTURE_REPEAT)
-        v_texCoord *= u_textureRepeat.xy;
+        v_texcoord0 *= u_textureRepeat.xy;
     #endif
     
     #if defined(TEXTURE_OFFSET)
-        v_texCoord += u_textureOffset.xy;
+        v_texcoord0 += u_textureOffset.xy;
     #endif
     
     #if defined(LIGHTMAP)
-        v_texCoord1 = a_texcoord1;
+        v_texcoord1 = a_texcoord1;
     #endif
     
     #if defined(CLIP_PLANE)

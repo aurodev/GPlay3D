@@ -1,26 +1,36 @@
-#ifdef OPENGL_ES
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-precision highp float;
-#else
-precision mediump float;
-#endif
-#endif
+//----------------------------------------------------------
+// Varyings
+//----------------------------------------------------------
+$input v_texcoord0
+$input v_texcoord1
+$input v_normalVector
+$input v_tangent
+$input v_bitangent
+$input v_normal
+$input v_positionWorldViewSpace
+$input v_cameraDirection
+$input v_clipDistance
+
+
 
 #ifndef DIRECTIONAL_LIGHT_COUNT
-#define DIRECTIONAL_LIGHT_COUNT 0
+    #define DIRECTIONAL_LIGHT_COUNT 0
 #endif
 #ifndef SPOT_LIGHT_COUNT
-#define SPOT_LIGHT_COUNT 0
+    #define SPOT_LIGHT_COUNT 0
 #endif
 #ifndef POINT_LIGHT_COUNT
-#define POINT_LIGHT_COUNT 0
+    #define POINT_LIGHT_COUNT 0
 #endif
 #if (DIRECTIONAL_LIGHT_COUNT > 0) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
-#define LIGHTING
+    #define LIGHTING
 #endif
 
-///////////////////////////////////////////////////////////
+
+
+//----------------------------------------------------------
 // Uniforms
+//----------------------------------------------------------
 uniform vec4 u_ambientColor;
 
 uniform sampler2D u_diffuseTexture;
@@ -75,47 +85,23 @@ uniform vec4 u_modulateAlpha;
 // Variables
 vec4 _baseColor;
 
-///////////////////////////////////////////////////////////
-// Varyings
-varying vec2 v_texCoord;
 
-#if defined(LIGHTMAP)
-varying vec2 v_texCoord1;
-#endif
 
 #if defined(LIGHTING)
-
-#if !defined(BUMPED)
-varying vec3 v_normalVector;
-#endif
-
-varying vec4 v_positionWorldViewSpace;
-//varying mat3 v_tangentSpaceTransformMatrix;
-varying vec3 v_tangent;
-varying vec3 v_bitangent;
-varying vec3 v_normal;
-
-
-#if defined(SPECULAR)
-varying vec3 v_cameraDirection; 
-#endif
-
-#include "lighting.frag"
-
-#endif
-
-#if defined(CLIP_PLANE)
-varying float v_clipDistance;
+    #include "lighting.frag"
 #endif
 
 
+//----------------------------------------------------------
+// Code
+//----------------------------------------------------------
 void main()
 {
     #if defined(CLIP_PLANE)
         if(v_clipDistance < 0.0) discard;
     #endif
  
-    _baseColor = texture2D(u_diffuseTexture, v_texCoord);
+    _baseColor = texture2D(u_diffuseTexture, v_texcoord0);
  
     gl_FragColor.a = _baseColor.a;
 
@@ -131,7 +117,7 @@ void main()
     #endif
 
 	#if defined(LIGHTMAP)
-	   vec4 lightColor = texture2D(u_lightmapTexture, v_texCoord1);
+	   vec4 lightColor = texture2D(u_lightmapTexture, v_texcoord1);
 	   gl_FragColor.rgb *= lightColor.rgb;
 	#endif
 
