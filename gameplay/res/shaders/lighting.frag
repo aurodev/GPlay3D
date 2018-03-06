@@ -31,18 +31,27 @@ vec3 getLitPixel()
     #if defined(BUMPED)    
         vec3 normalVector = normalize(texture2D(u_normalmapTexture, v_texCoord).rgb * 2.0 - 1.0);
     #else    
-        vec3 normalVector = normalize(v_normalVector);
+        vec3 normalVector = normalize(v_normal);
     #endif
     
     vec3 ambientColor = _baseColor.rgb * u_ambientColor.rgb;
     vec3 combinedColor = ambientColor;
+
+    #if defined(BUMPED)
+        mat3 tbn = mat3(
+                normalize(v_tangent),
+                normalize(v_bitangent),
+                normalize(v_normal)
+                );
+    #endif 
+
 
     // Directional light contribution
     #if (DIRECTIONAL_LIGHT_COUNT > 0)
     for (int i = 0; i < DIRECTIONAL_LIGHT_COUNT; ++i)
     {
         #if defined(BUMPED)
-            vec3 directionalLightDirection = v_tangentSpaceTransformMatrix * u_directionalLightDirection[i].xyz;
+            vec3 directionalLightDirection = tbn * u_directionalLightDirection[i].xyz;
             vec3 lightDirection = normalize(directionalLightDirection * 2.0);
         #else
             vec3 lightDirection = normalize(u_directionalLightDirection[i].xyz * 2.0);
@@ -56,7 +65,7 @@ vec3 getLitPixel()
     for (int i = 0; i < POINT_LIGHT_COUNT; ++i)
     {
         #if defined(BUMPED)
-        	vec3 vertexToPointLightDirection = v_tangentSpaceTransformMatrix * (u_pointLightPosition[i].xyz - v_positionWorldViewSpace.xyz);
+        	vec3 vertexToPointLightDirection = tbn * (u_pointLightPosition[i].xyz - v_positionWorldViewSpace.xyz);
         #else
         	vec3 vertexToPointLightDirection = u_pointLightPosition[i].xyz - v_positionWorldViewSpace.xyz;
         #endif
@@ -72,8 +81,8 @@ vec3 getLitPixel()
     for (int i = 0; i < SPOT_LIGHT_COUNT; ++i)
     {
         #if defined(BUMPED)
-            vec3 v_vertexToSpotLightDirection = v_tangentSpaceTransformMatrix * (u_spotLightPosition[i].xyz - v_positionWorldViewSpace.xyz);
-            vec3 v_spotLightDirection = v_tangentSpaceTransformMatrix * u_spotLightDirection[i].xyz;
+            vec3 v_vertexToSpotLightDirection = tbn * (u_spotLightPosition[i].xyz - v_positionWorldViewSpace.xyz);
+            vec3 v_spotLightDirection = tbn * u_spotLightDirection[i].xyz;
         #else
             vec3 v_vertexToSpotLightDirection = u_spotLightPosition[i].xyz - v_positionWorldViewSpace.xyz; 
         #endif

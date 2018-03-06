@@ -90,7 +90,11 @@ varying vec3 v_normalVector;
 #endif
 
 varying vec4 v_positionWorldViewSpace;
-varying mat3 v_tangentSpaceTransformMatrix;
+//varying mat3 v_tangentSpaceTransformMatrix;
+varying vec3 v_tangent;
+varying vec3 v_bitangent;
+varying vec3 v_normal;
+
 
 #if defined(SPECULAR)
 varying vec3 v_cameraDirection; 

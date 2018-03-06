@@ -90,8 +90,9 @@ varying vec3 v_color;
 
 #if defined(LIGHTING)
 
-varying vec3 v_normalVector;
-varying mat3 v_tangentSpaceTransformMatrix;
+//varying vec3 v_normalVector;
+//varying mat3 v_tangentSpaceTransformMatrix;
+varying vec3 v_normal;
 varying vec4 v_positionWorldViewSpace;
 
 #if defined(SPECULAR)
@@ -132,7 +133,7 @@ void main()
 
         // Transform normal to view space.
         mat3 inverseTransposeWorldViewMatrix = mat3(u_inverseTransposeWorldViewMatrix[0].xyz, u_inverseTransposeWorldViewMatrix[1].xyz, u_inverseTransposeWorldViewMatrix[2].xyz);
-        v_normalVector = inverseTransposeWorldViewMatrix * normal;
+        v_normal = inverseTransposeWorldViewMatrix * normal;
 
     	#if defined(SPECULAR) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
         	v_positionWorldViewSpace = u_worldViewMatrix * position;

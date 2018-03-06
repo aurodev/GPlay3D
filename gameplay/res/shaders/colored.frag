@@ -85,7 +85,7 @@ varying vec2 v_texCoord1;
 
 #if defined(LIGHTING)
 
-varying vec3 v_normalVector;
+varying vec3 v_normal;
 
 
 #if defined(SPECULAR)

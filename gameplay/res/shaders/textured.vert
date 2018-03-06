@@ -105,7 +105,10 @@ varying vec2 v_texCoord1;
 varying vec3 v_normalVector;
 #endif
 
-varying mat3 v_tangentSpaceTransformMatrix;
+//@@varying mat3 v_tangentSpaceTransformMatrix;
+varying vec3 v_tangent;
+varying vec3 v_bitangent;
+varying vec3 v_normal;
 varying vec4 v_positionWorldViewSpace;
 
 #if defined(SPECULAR)
@@ -146,7 +149,7 @@ void main()
         vec3 normal = getNormal();
         // Transform the normal, tangent and binormals to view space.
         mat3 inverseTransposeWorldViewMatrix = mat3(u_inverseTransposeWorldViewMatrix[0].xyz, u_inverseTransposeWorldViewMatrix[1].xyz, u_inverseTransposeWorldViewMatrix[2].xyz);
-        vec3 normalVector = normalize(inverseTransposeWorldViewMatrix * normal);    
+        v_normal = normalize(inverseTransposeWorldViewMatrix * normal);    
 
         #if defined(SPECULAR) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
     	   v_positionWorldViewSpace = u_worldViewMatrix * position;
@@ -155,14 +158,22 @@ void main()
         #if defined(BUMPED)    
             vec3 tangent = getTangent();
             vec3 binormal = getBinormal();
-            vec3 tangentVector  = normalize(inverseTransposeWorldViewMatrix * tangent);
-            vec3 binormalVector = normalize(inverseTransposeWorldViewMatrix * binormal);
-            mat3 tangentSpaceTransformMatrix = mat3(tangentVector.x, binormalVector.x, normalVector.x, tangentVector.y, binormalVector.y, normalVector.y, tangentVector.z, binormalVector.z, normalVector.z);
+            v_tangent  = normalize(inverseTransposeWorldViewMatrix * tangent);
+            v_bitangent = normalize(inverseTransposeWorldViewMatrix * binormal);
+            
+             mat3 tangentSpaceTransformMatrix = mat3(
+                normalize(v_tangent),
+                normalize(v_bitangent),
+                normalize(v_normal)
+                );   
+
+            //mat3 tangentSpaceTransformMatrix = mat3(tangentVector.x, binormalVector.x, normalVector.x, tangentVector.y, binormalVector.y, normalVector.y, tangentVector.z, binormalVector.z, normalVector.z);
             //@@applyLight(position, tangentSpaceTransformMatrix);
-            v_tangentSpaceTransformMatrix = tangentSpaceTransformMatrix;
+            //v_tangentSpaceTransformMatrix = tangentSpaceTransformMatrix;
         #else    
-            v_normalVector = normalVector;
-            //@@applyLight(position);    
+            //v_normalVector = normalVector;
+            //@@applyLight(position);
+            //v_normal = normalVector;
         #endif
 
         #if defined(SPECULAR)
