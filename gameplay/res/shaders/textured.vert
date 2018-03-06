@@ -12,6 +12,21 @@ $input i_data1
 $input i_data2
 $input i_data3
 
+
+$output v_texcoord0
+$output v_texcoord1
+$output v_normalVector
+$output v_tangentVector
+$output v_binormalVector
+$output v_positionWorldViewSpace
+$output v_cameraDirection
+$output v_clipDistance
+
+
+
+
+
+
 #include "common/common.sh"
 
 
@@ -113,64 +128,66 @@ uniform vec4 u_clipPlane;
 
 
 
-///////////////////////////////////////////////////////////
-// Varyings
-varying vec2 v_texCoord;
+//@@  ///////////////////////////////////////////////////////////
+//@@  // Varyings
+//@@  varying vec2 v_texCoord;
+//@@  
+//@@  #if defined(LIGHTMAP)
+//@@  varying vec2 v_texCoord1;
+//@@  #endif
+//@@  
+//@@  #if defined(LIGHTING)
+//@@  
+//@@  #if !defined(BUMPED)
+//@@  //varying vec3 v_normalVector;
+//@@  #endif
+//@@  
+//@@  #if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
+//@@  //varying vec3 v_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
+//@@  #endif
+//@@  
+//@@  #if (POINT_LIGHT_COUNT > 0)
+//@@  //varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
+//@@  #endif
+//@@  
+//@@  #if (SPOT_LIGHT_COUNT > 0)
+//@@  varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
+//@@  #if defined(BUMPED)
+//@@  varying vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
+//@@  #endif
+//@@  #endif
+//@@  
+//@@  #if defined(SPECULAR)
+//@@  varying vec3 v_cameraDirection;
+//@@  #endif
+//@@  
+//@@  //#include "lighting.vert"
+//@@  
+//@@  #endif
+//@@  
+//@@  #if defined(SKINNING)
+//@@  #include "skinning.vert"
+//@@  #else
+//@@  #include "skinning-none.vert" 
+//@@  #endif
+//@@  
+//@@  #if defined(CLIP_PLANE)
+//@@  varying float v_clipDistance;
+//@@  #endif
+//@@  
+//@@  
+//@@  varying vec3 v_tangentVector;
+//@@  varying vec3 v_binormalVector;
+//@@  varying vec3 v_normalVector;
+//@@  varying vec4 v_positionWorldViewSpace;
 
-#if defined(LIGHTMAP)
-varying vec2 v_texCoord1;
-#endif
 
-#if defined(LIGHTING)
-
-#if !defined(BUMPED)
-//varying vec3 v_normalVector;
-#endif
-
-#if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
-//varying vec3 v_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
-#endif
-
-#if (POINT_LIGHT_COUNT > 0)
-//varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
-#endif
-
-#if (SPOT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-#if defined(BUMPED)
-varying vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
-#endif
-#endif
-
-#if defined(SPECULAR)
-varying vec3 v_cameraDirection;
-#endif
-
-//#include "lighting.vert"
-
-#endif
 
 #if defined(SKINNING)
-#include "skinning.vert"
+    #include "skinning.vert"
 #else
-#include "skinning-none.vert" 
+    #include "skinning-none.vert" 
 #endif
-
-#if defined(CLIP_PLANE)
-varying float v_clipDistance;
-#endif
-
-
-
-
-
-
-
-
-varying vec3 v_tangentVector;
-varying vec3 v_binormalVector;
-varying vec3 v_normalVector;
-varying vec4 v_positionWorldViewSpace;
 
 
 
@@ -241,18 +258,18 @@ v_binormalVector = binormalVector;
 
     #endif    
     
-    v_texCoord = vec2(a_texcoord0.x, 1.0 - a_texcoord0.y);
+    v_texcoord0 = vec2(a_texcoord0.x, 1.0 - a_texcoord0.y);
     
     #if defined(TEXTURE_REPEAT)
-    v_texCoord *= u_textureRepeat.xy;
+    v_texcoord0 *= u_textureRepeat.xy;
     #endif
     
     #if defined(TEXTURE_OFFSET)
-    v_texCoord += u_textureOffset.xy;
+    v_texcoord0 += u_textureOffset.xy;
     #endif
     
     #if defined(LIGHTMAP)
-    v_texCoord1 = a_texcoord1;
+    v_texcoord1 = a_texcoord1;
     #endif
     
     #if defined(CLIP_PLANE)

@@ -1,8 +1,8 @@
 vec2 v_texcoord0				: TEXCOORD0 = vec2(0.0, 0.0);
 vec2 v_texcoord1				: TEXCOORD1 = vec2(0.0, 0.0);
-vec3 v_normal 					: NORMAL = vec3(0.0, 0.0, 0.0);
-vec3 v_tangent 					: TANGENT = vec3(0.0, 0.0, 0.0);
-vec3 v_bitangent				: BINORMAL = vec3(0.0, 0.0, 0.0);
+vec3 v_normalVector 			: NORMAL = vec3(0.0, 0.0, 0.0);
+vec3 v_tangentVector 			: TANGENT = vec3(0.0, 0.0, 0.0);
+vec3 v_binormalVector			: BINORMAL = vec3(0.0, 0.0, 0.0);
 vec4 v_positionWorldViewSpace	: TEXCOORD2 = vec4(0.0, 0.0, 0.0, 0.0);
 vec3 v_cameraDirection			: TEXCOORD3 = vec3(1.0, 0.0, 0.0);
 float v_clipDistance			: TEXCOORD4 = float(0.0);

@@ -1,10 +1,14 @@
-#ifdef OPENGL_ES
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-precision highp float;
-#else
-precision mediump float;
-#endif
-#endif
+$input v_texcoord0
+$input v_texcoord1
+$input v_normalVector
+$input v_tangentVector
+$input v_binormalVector
+$input v_positionWorldViewSpace
+$input v_cameraDirection
+$input v_clipDistance
+
+
+
 
 #ifndef DIRECTIONAL_LIGHT_COUNT
 #define DIRECTIONAL_LIGHT_COUNT 0
@@ -84,58 +88,60 @@ vec4 _baseColor;
 
 
 
-///////////////////////////////////////////////////////////
-// Varyings
-varying vec2 v_texCoord;
+//@@  ///////////////////////////////////////////////////////////
+//@@  // Varyings
+//@@  varying vec2 v_texCoord;
+//@@  
+//@@  #if defined(LIGHTMAP)
+//@@  varying vec2 v_texCoord1;
+//@@  #endif
+//@@  
+//@@  #if defined(LIGHTING)
+//@@  
+//@@  #if !defined(BUMPED)
+//@@  //varying vec3 v_normalVector;
+//@@  #endif
+//@@  
+//@@  #if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
+//@@  //varying vec3 v_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
+//@@  #endif
+//@@  
+//@@  #if (POINT_LIGHT_COUNT > 0)
+//@@  //varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
+//@@  #endif
+//@@  
+//@@  #if (SPOT_LIGHT_COUNT > 0)
+//@@  varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
+//@@  #if defined(BUMPED)
+//@@  varying vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
+//@@  #endif
+//@@  #endif
+//@@  
+//@@  #if defined(SPECULAR)
+//@@  varying vec3 v_cameraDirection; 
+//@@  #endif
+//@@  
+//@@  
+//@@  
+//@@  varying vec3 v_tangentVector;
+//@@  varying vec3 v_binormalVector;
+//@@  varying vec3 v_normalVector;
+//@@  varying vec4 v_positionWorldViewSpace;
+//@@  
+//@@  
+//@@  #include "lighting.frag"
+//@@  
+//@@  #endif
+//@@  
+//@@  #if defined(CLIP_PLANE)
+//@@  varying float v_clipDistance;
+//@@  #endif
 
-#if defined(LIGHTMAP)
-varying vec2 v_texCoord1;
-#endif
+
 
 #if defined(LIGHTING)
-
-#if !defined(BUMPED)
-//varying vec3 v_normalVector;
+    #include "lighting.frag"
 #endif
-
-#if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
-//varying vec3 v_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
-#endif
-
-#if (POINT_LIGHT_COUNT > 0)
-//varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
-#endif
-
-#if (SPOT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-#if defined(BUMPED)
-varying vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
-#endif
-#endif
-
-#if defined(SPECULAR)
-varying vec3 v_cameraDirection; 
-#endif
-
-
-
-varying vec3 v_tangentVector;
-varying vec3 v_binormalVector;
-varying vec3 v_normalVector;
-varying vec4 v_positionWorldViewSpace;
-
-
-#include "lighting.frag"
-
-#endif
-
-#if defined(CLIP_PLANE)
-varying float v_clipDistance;
-#endif
-
-
-
-
 
 
 
@@ -149,7 +155,7 @@ void main()
     if(v_clipDistance < 0.0) discard;
     #endif
  
-    _baseColor = texture2D(u_diffuseTexture, v_texCoord);
+    _baseColor = texture2D(u_diffuseTexture, v_texcoord0);
  
     gl_FragColor.a = _baseColor.a;
 
@@ -166,7 +172,7 @@ void main()
     #endif
 
 	#if defined(LIGHTMAP)
-	vec4 lightColor = texture2D(u_lightmapTexture, v_texCoord1);
+	vec4 lightColor = texture2D(u_lightmapTexture, v_texcoord1);
 	gl_FragColor.rgb *= lightColor.rgb;
 	#endif
 
