@@ -1,3 +1,6 @@
+$input v_color     // vec3
+
+
 #ifdef OPENGL_ES
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
@@ -76,7 +79,7 @@ vec4 _baseColor;
 ///////////////////////////////////////////////////////////
 // Varyings
 #if defined(VERTEX_COLOR)
-varying vec3 v_color;
+//@@varying vec3 v_color;
 #endif
 
 #if defined(LIGHTMAP)

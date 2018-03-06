@@ -1,3 +1,18 @@
+// Attributes
+$input a_position   // vec4
+$input a_color0     // vec3
+$input a_normal     // vec3
+
+// Varyings
+$output v_color     // vec3
+
+
+
+#include "common/common.sh"
+
+
+
+
 #ifndef DIRECTIONAL_LIGHT_COUNT
 #define DIRECTIONAL_LIGHT_COUNT 0
 #endif
@@ -13,31 +28,31 @@
 
 ///////////////////////////////////////////////////////////
 // Attributes
-attribute vec4 a_position;
-
-#if defined(SKINNING)
-attribute vec4 a_blendWeights;
-attribute vec4 a_blendIndices;
-#endif
-
-#if defined(LIGHTMAP)
-attribute vec2 a_texcoord1;
-#endif
-
-#if defined(LIGHTING)
-attribute vec3 a_normal;
-#endif
-
-#if defined(VERTEX_COLOR)
-attribute vec3 a_color0;
-#endif
-
-#if defined(INSTANCED)
-attribute vec4 i_data0;
-attribute vec4 i_data1;
-attribute vec4 i_data2;
-attribute vec4 i_data3;
-#endif
+//@@attribute vec4 a_position;
+//@@
+//@@#if defined(SKINNING)
+//@@attribute vec4 a_blendWeights;
+//@@attribute vec4 a_blendIndices;
+//@@#endif
+//@@
+//@@#if defined(LIGHTMAP)
+//@@attribute vec2 a_texcoord1;
+//@@#endif
+//@@
+//@@#if defined(LIGHTING)
+//@@attribute vec3 a_normal;
+//@@#endif
+//@@
+//@@#if defined(VERTEX_COLOR)
+//@@attribute vec3 a_color0;
+//@@#endif
+//@@
+//@@#if defined(INSTANCED)
+//@@attribute vec4 i_data0;
+//@@attribute vec4 i_data1;
+//@@attribute vec4 i_data2;
+//@@attribute vec4 i_data3;
+//@@#endif
 
 ///////////////////////////////////////////////////////////
 // Uniforms
@@ -85,13 +100,12 @@ varying vec2 v_texCoord1;
 #endif
 
 #if defined(VERTEX_COLOR)
-varying vec3 v_color;
+//@@varying vec3 v_color;
 #endif
 
 #if defined(LIGHTING)
 
-//varying vec3 v_normalVector;
-//varying mat3 v_tangentSpaceTransformMatrix;
+
 varying vec3 v_normal;
 varying vec4 v_positionWorldViewSpace;
 
@@ -151,7 +165,7 @@ void main()
 
     // Pass the lightmap texture coordinate
     #if defined(LIGHTMAP)
-        v_texCoord1 = a_texcoord1;
+        v_texcoord1 = a_texcoord1;
     #endif
     
     // Pass the vertex color
