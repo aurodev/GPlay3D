@@ -195,7 +195,19 @@ uniform vec4 u_clipPlane;
 void main()
 {
     vec4 position = getPosition();
+    //gl_Position = u_worldViewProjectionMatrix * position;
+#if defined (INSTANCED)
+    mat4 model;
+    model[0] = i_data0;
+    model[1] = i_data1;
+    model[2] = i_data2;
+    model[3] = i_data3;
+    vec4 worldPos = model * position;
+    gl_Position = u_worldViewProjectionMatrix * worldPos;
+#else
     gl_Position = u_worldViewProjectionMatrix * position;
+#endif
+
 
     #if defined(LIGHTING)
     vec3 normal = getNormal();

@@ -2,6 +2,10 @@
 $input a_position
 $input a_color0
 $input a_normal
+$input i_data0
+$input i_data1
+$input i_data2
+$input i_data3
 
 // Varyings
 $output v_color
