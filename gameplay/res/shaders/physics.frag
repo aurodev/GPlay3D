@@ -1,14 +1,6 @@
-#ifdef OPENGL_ES
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-precision highp float;
-#else
-precision mediump float;
-#endif
-#endif
+$input v_color
 
-///////////////////////////////////////////////////////////
-// Varyings
-varying vec4 v_color;
+#include "common/common.sh"
 
 
 void main()
