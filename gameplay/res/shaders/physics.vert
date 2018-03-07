@@ -3,11 +3,11 @@ $output v_color
 
 #include "common/common.sh"
 
-uniform mat4 u_projectionMatrix;
+uniform mat4 u_viewProjectionMatrix;
 
 
 void main()
 {
-    gl_Position = u_projectionMatrix * vec4(a_position, 1);
+    gl_Position = u_viewProjectionMatrix * vec4(a_position, 1);
     v_color = a_color0;
 }
