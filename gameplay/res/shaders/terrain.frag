@@ -1,4 +1,4 @@
-$input v_normal
+$input v_normalVector
 $input v_texcoord0
 $input v_texCoordLayer0
 $input v_texCoordLayer1

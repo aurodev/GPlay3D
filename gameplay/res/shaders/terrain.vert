@@ -9,7 +9,7 @@ $input a_texcoord0
 //----------------------------------------------------------
 // Varyings
 //----------------------------------------------------------
-$output v_normal
+$output v_normalVector
 $output v_texcoord0
 $output v_texCoordLayer0
 $output v_texCoordLayer1
@@ -80,7 +80,7 @@ void main()
 #if defined(LIGHTING)
 
     #if !defined(NORMAL_MAP) 
-        v_normal = normalize((u_normalMatrix * vec4(a_normal.x, a_normal.y, a_normal.z, 0)).xyz);
+        v_normalVector = normalize((u_normalMatrix * vec4(a_normal.x, a_normal.y, a_normal.z, 0)).xyz);
     #endif
 
 #endif
