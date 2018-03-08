@@ -134,11 +134,10 @@ macx
     QMAKE_BUNDLE_DATA += res
 }
 
-win32: PRE_TARGETDEPS += $$DESTDIR/gameplay.lib
 win32: CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../external-deps/lib/windows/x86_64/Debug/gameplay-deps.lib
 win32: CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../external-deps/lib/windows/x86_64/Release/gameplay-deps.lib
 win32: DEFINES += WIN32 _WINDOWS _UNICODE UNICODE
-win32: LIBS += -L$$DESTDIR -lgameplay
+win32: LIBS += -L$$DESTDIR\..\ -lgameplay
 win32: CONFIG(debug, debug|release): LIBS += -L$$PWD/../../external-deps/lib/windows/x86_64/Debug/ -lgameplay-deps
 win32: CONFIG(release, debug|release): LIBS += -L$$PWD/../../external-deps/lib/windows/x86_64/Release/ -lgameplay-deps
 win32: LIBS += -lopengl32 -lkernel32 -luser32 -lwinmm -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -limm32 -lole32 -loleaut32 -luuid -lversion -lodbc32 -lodbccp32
