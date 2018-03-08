@@ -9,6 +9,8 @@
 
 #include "Renderer.h"
 
+#include "BGFX/BGFXImGui.h"
+
 #if !defined(GP_PLATFORM_WINDOWS)
 int __argc = 0;
 char** __argv = 0;
@@ -36,7 +38,6 @@ uint8_t _translateKey[256];
 
 // mobile device gesture
 static bool __multiTouch = false;
-
 
 
 extern int strcmpnocase(const char* s1, const char* s2)
@@ -95,8 +96,6 @@ void updateWindowSize()
     __windowSize[1] = height;
 }
 
-
-
 inline bool sdlSetWindow(SDL_Window* _window)
 {
     SDL_SysWMinfo wmi;
@@ -128,9 +127,6 @@ inline bool sdlSetWindow(SDL_Window* _window)
     return true;
 }
 
-
-
-
 void initTranslateKey(uint16_t sdl, Keyboard::Key key)
 {
     _translateKey[sdl & 0xff] = (uint8_t)key;
@@ -143,8 +139,196 @@ Keyboard::Key translateKey(SDL_Scancode sdl)
 
 
 
+//-------------------------------------------------------------------------------------------------------------
+// ImGui-SDL2 binding
+//-------------------------------------------------------------------------------------------------------------
+
+static bool g_MousePressed[3] = { false, false, false };
+static SDL_Cursor* g_MouseCursors[ImGuiMouseCursor_Count_] = { 0 };
+static Uint64 g_Time = 0;
 
 
+static const char* ImGui_ImplSdlGL3_GetClipboardText(void*)
+{
+    return SDL_GetClipboardText();
+}
+
+static void ImGui_ImplSdlGL3_SetClipboardText(void*, const char* text)
+{
+    SDL_SetClipboardText(text);
+}
+
+void ImGui_ImplSdlGL3_Shutdown()
+{
+    // Destroy SDL mouse cursors
+    for (ImGuiMouseCursor cursor_n = 0; cursor_n < ImGuiMouseCursor_Count_; cursor_n++)
+        SDL_FreeCursor(g_MouseCursors[cursor_n]);
+    memset(g_MouseCursors, 0, sizeof(g_MouseCursors));
+
+    // Destroy OpenGL objects
+    GPImGui::Get()->imguiShutdown();
+}
+
+bool ImGui_ImplSdlGL3_Init(SDL_Window* window)
+{
+    // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
+    ImGuiIO& io = ImGui::GetIO();
+    io.KeyMap[ImGuiKey_Tab] = SDL_SCANCODE_TAB;
+    io.KeyMap[ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;
+    io.KeyMap[ImGuiKey_RightArrow] = SDL_SCANCODE_RIGHT;
+    io.KeyMap[ImGuiKey_UpArrow] = SDL_SCANCODE_UP;
+    io.KeyMap[ImGuiKey_DownArrow] = SDL_SCANCODE_DOWN;
+    io.KeyMap[ImGuiKey_PageUp] = SDL_SCANCODE_PAGEUP;
+    io.KeyMap[ImGuiKey_PageDown] = SDL_SCANCODE_PAGEDOWN;
+    io.KeyMap[ImGuiKey_Home] = SDL_SCANCODE_HOME;
+    io.KeyMap[ImGuiKey_End] = SDL_SCANCODE_END;
+    io.KeyMap[ImGuiKey_Insert] = SDL_SCANCODE_INSERT;
+    io.KeyMap[ImGuiKey_Delete] = SDL_SCANCODE_DELETE;
+    io.KeyMap[ImGuiKey_Backspace] = SDL_SCANCODE_BACKSPACE;
+    io.KeyMap[ImGuiKey_Space] = SDL_SCANCODE_SPACE;
+    io.KeyMap[ImGuiKey_Enter] = SDL_SCANCODE_RETURN;
+    io.KeyMap[ImGuiKey_Escape] = SDL_SCANCODE_ESCAPE;
+    io.KeyMap[ImGuiKey_A] = SDL_SCANCODE_A;
+    io.KeyMap[ImGuiKey_C] = SDL_SCANCODE_C;
+    io.KeyMap[ImGuiKey_V] = SDL_SCANCODE_V;
+    io.KeyMap[ImGuiKey_X] = SDL_SCANCODE_X;
+    io.KeyMap[ImGuiKey_Y] = SDL_SCANCODE_Y;
+    io.KeyMap[ImGuiKey_Z] = SDL_SCANCODE_Z;
+
+    io.SetClipboardTextFn = ImGui_ImplSdlGL3_SetClipboardText;
+    io.GetClipboardTextFn = ImGui_ImplSdlGL3_GetClipboardText;
+    io.ClipboardUserData = NULL;
+
+    g_MouseCursors[ImGuiMouseCursor_Arrow] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+    g_MouseCursors[ImGuiMouseCursor_TextInput] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM);
+    g_MouseCursors[ImGuiMouseCursor_ResizeAll] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
+    g_MouseCursors[ImGuiMouseCursor_ResizeNS] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENS);
+    g_MouseCursors[ImGuiMouseCursor_ResizeEW] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
+    g_MouseCursors[ImGuiMouseCursor_ResizeNESW] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENESW);
+    g_MouseCursors[ImGuiMouseCursor_ResizeNWSE] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENWSE);
+
+#ifdef _WIN32
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);
+    SDL_GetWindowWMInfo(window, &wmInfo);
+    io.ImeWindowHandle = wmInfo.info.win.window;
+#else
+    (void)window;
+#endif
+
+    return true;
+}
+
+void ImGui_ImplSdlGL3_NewFrame(SDL_Window* window)
+{
+    ImGuiIO& io = ImGui::GetIO();
+
+    // Setup display size (every frame to accommodate for window resizing)
+    int w, h;
+    int display_w, display_h;
+    SDL_GetWindowSize(window, &w, &h);
+    SDL_GL_GetDrawableSize(window, &display_w, &display_h);
+    io.DisplaySize = ImVec2((float)w, (float)h);
+    io.DisplayFramebufferScale = ImVec2(w > 0 ? ((float)display_w / w) : 0, h > 0 ? ((float)display_h / h) : 0);
+
+    // Setup time step (we don't use SDL_GetTicks() because it is using millisecond resolution)
+    /*static Uint64 frequency = SDL_GetPerformanceFrequency();
+    Uint64 current_time = SDL_GetPerformanceCounter();
+    io.DeltaTime = g_Time > 0 ? (float)((double)(current_time - g_Time) / frequency) : (float)(1.0f / 60.0f);
+    g_Time = current_time;*/
+
+    // Setup mouse inputs (we already got mouse wheel, keyboard keys & characters from our event handler)
+    int mx, my;
+    Uint32 mouse_buttons = SDL_GetMouseState(&mx, &my);
+    io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
+    io.MouseDown[0] = g_MousePressed[0] || (mouse_buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;  // If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
+    io.MouseDown[1] = g_MousePressed[1] || (mouse_buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
+    io.MouseDown[2] = g_MousePressed[2] || (mouse_buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
+    g_MousePressed[0] = g_MousePressed[1] = g_MousePressed[2] = false;
+
+    // We need to use SDL_CaptureMouse() to easily retrieve mouse coordinates outside of the client area. This is only supported from SDL 2.0.4 (released Jan 2016)
+#if (SDL_MAJOR_VERSION >= 2) && (SDL_MINOR_VERSION >= 0) && (SDL_PATCHLEVEL >= 4)
+    if ((SDL_GetWindowFlags(window) & (SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_MOUSE_CAPTURE)) != 0)
+        io.MousePos = ImVec2((float)mx, (float)my);
+    bool any_mouse_button_down = false;
+    for (int n = 0; n < IM_ARRAYSIZE(io.MouseDown); n++)
+        any_mouse_button_down |= io.MouseDown[n];
+    if (any_mouse_button_down && (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_CAPTURE) == 0)
+        SDL_CaptureMouse(SDL_TRUE);
+    if (!any_mouse_button_down && (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_CAPTURE) != 0)
+        SDL_CaptureMouse(SDL_FALSE);
+#else
+    if ((SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0)
+        io.MousePos = ImVec2((float)mx, (float)my);
+#endif
+
+    // Update OS/hardware mouse cursor if imgui isn't drawing a software cursor
+    ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
+    if (io.MouseDrawCursor || cursor == ImGuiMouseCursor_None)
+    {
+        SDL_ShowCursor(0);
+    }
+    else
+    {
+        SDL_SetCursor(g_MouseCursors[cursor] ? g_MouseCursors[cursor] : g_MouseCursors[ImGuiMouseCursor_Arrow]);
+        SDL_ShowCursor(1);
+    }
+
+    // Start the frame. This call will update the io.WantCaptureMouse, io.WantCaptureKeyboard flag that you can use to dispatch inputs (or not) to your application.
+    ImGui::NewFrame();
+}
+
+// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
+// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+bool ImGui_ImplSdlGL3_ProcessEvent(SDL_Event* event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    switch (event->type)
+    {
+    case SDL_MOUSEWHEEL:
+        {
+            if (event->wheel.x > 0) io.MouseWheelH += 1;
+            if (event->wheel.x < 0) io.MouseWheelH -= 1;
+            if (event->wheel.y > 0) io.MouseWheel += 1;
+            if (event->wheel.y < 0) io.MouseWheel -= 1;
+            return true;
+        }
+    case SDL_MOUSEBUTTONDOWN:
+        {
+            if (event->button.button == SDL_BUTTON_LEFT) g_MousePressed[0] = true;
+            if (event->button.button == SDL_BUTTON_RIGHT) g_MousePressed[1] = true;
+            if (event->button.button == SDL_BUTTON_MIDDLE) g_MousePressed[2] = true;
+            return true;
+        }
+    case SDL_TEXTINPUT:
+        {
+            io.AddInputCharactersUTF8(event->text.text);
+            return true;
+        }
+    case SDL_KEYDOWN:
+    case SDL_KEYUP:
+        {
+            int key = event->key.keysym.scancode;
+            IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
+            io.KeysDown[key] = (event->type == SDL_KEYDOWN);
+            io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
+            io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
+            io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
+            io.KeySuper = ((SDL_GetModState() & KMOD_GUI) != 0);
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+
+//-------------------------------------------------------------------------------------------------------------
+// Platform SDL2 impl
+//-------------------------------------------------------------------------------------------------------------
 
 Platform::Platform(Game* game) :
     _game(game)
@@ -316,7 +500,6 @@ Platform* Platform::create(Game* game)
 
     bgfx::init(bgfx::RendererType::OpenGL);
 
-
     uint32_t debug = BGFX_DEBUG_TEXT;
     uint32_t reset = BGFX_RESET_VSYNC;
     bgfx::reset(__width, __height, reset);
@@ -341,6 +524,22 @@ Platform* Platform::create(Game* game)
 
     updateWindowSize();
 
+
+
+    // Create ImGui context and init
+
+    ImGuiContext* imguiContext = ImGui::CreateContext();
+    ImGui::SetCurrentContext(imguiContext);
+    ImGui::StyleColorsClassic();
+
+    GPImGui::Get()->imguiInit();
+    //GPImGui::Get()->imguiReset(__width, __height);
+    // Setup ImGui binding
+    //ImGuiIO& io = ImGui::GetIO(); (void)io;
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    ImGui_ImplSdlGL3_Init(__window);
+
+
     return platform;
 }
 
@@ -360,15 +559,13 @@ int Platform::enterMessagePump()
 
     while (loop)
     {
-        if (_game)
-        {
-            Renderer::getInstance().beginFrame();
-            _game->frame();
-            Renderer::getInstance().endFrame();
-        }
-
         while (SDL_PollEvent(&evt))
         {
+            // Process ImGui events
+            ImGui_ImplSdlGL3_ProcessEvent(&evt);
+            //ImGuiIO& io = ImGui::GetIO().wa;
+
+            // Process SDL2 events
             switch (evt.type)
             {
                 case SDL_QUIT:
@@ -404,6 +601,7 @@ int Platform::enterMessagePump()
                         break;
                     }
 
+                    if(!ImGui::GetIO().WantCaptureMouse)
                     if (!gameplay::Platform::mouseEventInternal(mouseEvt, sdlMouseEvent.x, sdlMouseEvent.y, 0))
                     {
                         gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_PRESS, sdlMouseEvent.x, sdlMouseEvent.y, 0, true);
@@ -429,6 +627,7 @@ int Platform::enterMessagePump()
                         break;
                     }
 
+                    if(!ImGui::GetIO().WantCaptureMouse)
                     if (!gameplay::Platform::mouseEventInternal(mouseEvt, sdlMouseEvent.x, sdlMouseEvent.y, 0))
                     {
                         gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_RELEASE, sdlMouseEvent.x, sdlMouseEvent.y, 0, true);
@@ -458,6 +657,7 @@ int Platform::enterMessagePump()
                         SDL_WarpMouseInWindow(__window, __mouseCapturePointX, __mouseCapturePointY);
                     }
 
+                    if(!ImGui::GetIO().WantMoveMouse)
                     if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_MOVE, x, y, 0))
                     {
                         //if (evt.xmotion.state & Button1Mask)
@@ -472,41 +672,63 @@ int Platform::enterMessagePump()
 
                 case SDL_KEYDOWN:
                 {
-                    const SDL_KeyboardEvent& keyEvent = evt.key;
-                    Keyboard::Key key = translateKey(keyEvent.keysym.scancode);
-                    gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_PRESS, key);
-
-                    switch (key)
+                    if(!ImGui::GetIO().WantTextInput)
                     {
-                    case Keyboard::KEY_F1:
-                        Renderer::getInstance().toggleDebugStats();
-                        break;
-                    case Keyboard::KEY_F3:
-                        Renderer::getInstance().toggleWireFrame();
-                        break;
-                    case Keyboard::KEY_F7:
-                        Renderer::getInstance().toggleVSync();
-                        break;
+                        const SDL_KeyboardEvent& keyEvent = evt.key;
+                        Keyboard::Key key = translateKey(keyEvent.keysym.scancode);
+                        gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_PRESS, key);
+
+                        switch (key)
+                        {
+                        case Keyboard::KEY_F1:
+                            Renderer::getInstance().toggleDebugStats();
+                            break;
+                        case Keyboard::KEY_F3:
+                            Renderer::getInstance().toggleWireFrame();
+                            break;
+                        case Keyboard::KEY_F7:
+                            Renderer::getInstance().toggleVSync();
+                            break;
+                        }
                     }
                 }
                 break;
 
                 case SDL_KEYUP:
                 {
-                    const SDL_KeyboardEvent& keyEvent = evt.key;
-                    Keyboard::Key key = translateKey(keyEvent.keysym.scancode);
-                    gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_RELEASE, key);
+                    if(!ImGui::GetIO().WantTextInput)
+                    {
+                        const SDL_KeyboardEvent& keyEvent = evt.key;
+                        Keyboard::Key key = translateKey(keyEvent.keysym.scancode);
+                        gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_RELEASE, key);
+                    }
                 }
                 break;
             }
         }
+
+        if (_game)
+        {
+            Renderer::getInstance().beginFrame();
+
+            ImGui_ImplSdlGL3_NewFrame(__window);
+
+            _game->frame();
+
+            ImGui::Render();
+            GPImGui::Get()->imguiRender(ImGui::GetDrawData());
+
+            Renderer::getInstance().endFrame();
+        }
+
     }
 
+    ImGui_ImplSdlGL3_Shutdown();
+    bgfx::shutdown();
     SDL_DestroyWindow(__window);
     SDL_Quit();
 
     return 0;
-
 }
 
 void Platform::swapBuffers()
@@ -757,11 +979,6 @@ void Platform::pollGamepadState(Gamepad* gamepad)
 {
     GP_ERROR("Fix me !");
 }
-
-
-
-
-
 
 
 }

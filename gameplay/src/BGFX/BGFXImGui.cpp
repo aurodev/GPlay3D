@@ -4,7 +4,6 @@
 #include <imgui/imgui.h>
 #include <brtshaderc/brtshaderc.h>
 #include <bx/math.h>
-#include <Keyboard.h>
 
 namespace gameplay {
 
@@ -14,8 +13,6 @@ void BGFXImGui::imguiInit()
     unsigned char* data;
     int width, height;
 
-    ImGuiContext* imguiContext = ImGui::CreateContext();
-    ImGui::SetCurrentContext(imguiContext);
     ImGuiIO& io = ImGui::GetIO();
 
     // Setup vertex declaration
@@ -38,40 +35,6 @@ void BGFXImGui::imguiInit()
     bgfx::ShaderHandle vs = bgfx::createShader(memVsh);
     bgfx::ShaderHandle fs = bgfx::createShader(memFsh);
     imguiProgram = bgfx::createProgram( vs, fs, true );
-
-    // Setup render callback
-    //io.RenderDrawListsFn = imguiRender;
-
-    // Key mapping
-    io.KeyMap[ ImGuiKey_Tab ] = Keyboard::KEY_TAB;
-    io.KeyMap[ ImGuiKey_LeftArrow ] = Keyboard::KEY_LEFT_ARROW;
-    io.KeyMap[ ImGuiKey_RightArrow ] = Keyboard::KEY_RIGHT_ARROW;
-    io.KeyMap[ ImGuiKey_UpArrow ] = Keyboard::KEY_UP_ARROW;
-    io.KeyMap[ ImGuiKey_DownArrow ] = Keyboard::KEY_DOWN_ARROW;
-    io.KeyMap[ ImGuiKey_PageUp ] = Keyboard::KEY_PG_UP;
-    io.KeyMap[ ImGuiKey_PageDown ] = Keyboard::KEY_PG_DOWN;
-    io.KeyMap[ ImGuiKey_Home ] = Keyboard::KEY_HOME;
-    io.KeyMap[ ImGuiKey_End ] = Keyboard::KEY_END;
-    io.KeyMap[ ImGuiKey_Delete ] = Keyboard::KEY_DELETE;
-    io.KeyMap[ ImGuiKey_Backspace ] = Keyboard::KEY_BACKSPACE;
-    io.KeyMap[ ImGuiKey_Enter ] = Keyboard::KEY_KP_ENTER;
-    io.KeyMap[ ImGuiKey_Escape ] = Keyboard::KEY_ESCAPE;
-    io.KeyMap[ ImGuiKey_A ] = Keyboard::KEY_A;
-    io.KeyMap[ ImGuiKey_C ] = Keyboard::KEY_C;
-    io.KeyMap[ ImGuiKey_V ] = Keyboard::KEY_V;
-    io.KeyMap[ ImGuiKey_X ] = Keyboard::KEY_X;
-    io.KeyMap[ ImGuiKey_Y ] = Keyboard::KEY_Y;
-    io.KeyMap[ ImGuiKey_Z ] = Keyboard::KEY_Z;
-    /*io.SetClipboardTextFn = imguiSetClipboardText;
-    io.GetClipboardTextFn = imguiGetClipboardText;*/
-
-
-
-    //ImGuiIO& io = ImGui::GetIO();
-
-    //io.DisplaySize = ImVec2(1280.0f, 720.0f);
-    //io.DeltaTime   = 1.0f / 60.0f;
-    //io.IniFilename = NULL;
 }
 
 void BGFXImGui::imguiReset( uint16_t width, uint16_t height )
@@ -80,7 +43,6 @@ void BGFXImGui::imguiReset( uint16_t width, uint16_t height )
     io.DisplaySize = ImVec2(width, height);
     io.DeltaTime   = 1.0f / 60.0f;
     io.IniFilename = NULL;
-
 
     //bgfx::setViewRect( 200, 0, 0, width, height );
     //bgfx::setViewClear( 0, BGFX_CLEAR_COLOR, 0x00000000 );
@@ -97,8 +59,7 @@ void BGFXImGui::imguiRender( ImDrawData* drawData )
     bgfx::setViewName(m_viewId, "ImGui");
     bgfx::setViewMode(m_viewId, bgfx::ViewMode::Sequential);
 
-
-
+    // set view
     const bgfx::HMD*  hmd  = bgfx::getHMD();
     const bgfx::Caps* caps = bgfx::getCaps();
     if (NULL != hmd && 0 != (hmd->flags & BGFX_HMD_RENDERING) )
@@ -130,12 +91,7 @@ void BGFXImGui::imguiRender( ImDrawData* drawData )
     }
 
 
-
-
-
-
-
-
+    // draw
     for ( int ii = 0, num = drawData->CmdListsCount; ii < num; ++ii )
     {
         bgfx::TransientVertexBuffer tvb;
@@ -199,8 +155,6 @@ void BGFXImGui::imguiRender( ImDrawData* drawData )
             offset += cmd->ElemCount;
         }
     }
-
-
 }
 
 void BGFXImGui::imguiShutdown()
@@ -210,20 +164,6 @@ void BGFXImGui::imguiShutdown()
     bgfx::destroy( imguiProgram );
     ImGui::DestroyContext();
 }
-
-/* static const char* imguiGetClipboardText( void* userData )
-{
-    return glfwGetClipboardString( ( GLFWwindow* )userData );
-}
-
-static void imguiSetClipboardText( void* userData, const char* text )
-{
-    glfwSetClipboardString( ( GLFWwindow* )userData, text );
-}*/
-
-
-
-
 
 
 }

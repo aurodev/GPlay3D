@@ -488,6 +488,9 @@ void ImGuiTest::render(float elapsedTime)
     ImGui::SliderFloat("Pixelate", &guiPixelateValue, 12.0f, 128.0f);
     ImGui::End();
 
+    ImGui::ShowTestWindow();
+
+
     ///ImGui::Render();
    //// GPImGui::Get()->imguiRender(ImGui::GetDrawData());
 
