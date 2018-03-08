@@ -8,6 +8,7 @@
 #include "ControlFactory.h"
 #include "Theme.h"
 #include "Form.h"
+#include "BGFX/BGFXImGui.h"
 
 /** @script{ignore} */
 GLenum __gl_error_code = GL_NO_ERROR;
@@ -163,6 +164,9 @@ bool Game::startup()
     setViewport(Rectangle(0.0f, 0.0f, (float)_width, (float)_height));
     RenderState::initialize();
     //@@FrameBuffer::initialize();
+
+    GPImGui::Get()->imguiInit();
+    GPImGui::Get()->imguiReset(_width, _height);
 
     _animationController = new AnimationController();
     _animationController->initialize();
@@ -353,7 +357,6 @@ void Game::exit()
 #endif
 }
 
-
 void Game::frame()
 {
     if (!_initialized)
@@ -385,6 +388,9 @@ void Game::frame()
         float elapsedTime = (frameTime - lastFrameTime);
         lastFrameTime = frameTime;
 
+        // Start new ImGui frame
+        ImGui::NewFrame();
+
         // Update the scheduled and running animations.
         _animationController->update(elapsedTime);
 
@@ -412,6 +418,10 @@ void Game::frame()
 
         // Graphics Rendering.
         render(elapsedTime);
+
+        // ImGui Rendering.
+        ImGui::Render();
+        GPImGui::Get()->imguiRender(ImGui::GetDrawData());
 
         // Run script render.
         if (_scriptTarget)

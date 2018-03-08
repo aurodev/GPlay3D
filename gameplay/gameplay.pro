@@ -156,7 +156,8 @@ SOURCES += src/AbsoluteLayout.cpp \
     src/BGFX/BGFXIndexBuffer.cpp \
     src/BGFX/BGFXVertexBuffer.cpp \
     src/BGFX/GeometryBuffer.cpp \
-    src/BGFX/MemoryBuffer.cpp
+    src/BGFX/MemoryBuffer.cpp \
+    src/BGFX/BGFXImGui.cpp
 
 HEADERS += src/AbsoluteLayout.h \
     src/AIAgent.h \
@@ -280,7 +281,9 @@ HEADERS += src/AbsoluteLayout.h \
     src/BGFX/BGFXIndexBuffer.h \
     src/BGFX/BGFXVertexBuffer.h \
     src/BGFX/GeometryBuffer.h \
-    src/BGFX/MemoryBuffer.h
+    src/BGFX/MemoryBuffer.h \
+    src/BGFX/BGFXImGui.h \
+    src/Singleton.h
 
 
 #DEFINES += COMPIL_WITH_LUA

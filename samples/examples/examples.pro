@@ -30,7 +30,8 @@ SOURCES += \
     src/Cube.cpp \
     src/Sponza.cpp \
     src/FirstPersonCamera.cpp \
-    src/RenderToTexture.cpp
+    src/RenderToTexture.cpp \
+    src/ImGuiTest.cpp
 
 HEADERS += \
     src/SamplesGame.h \
@@ -41,7 +42,8 @@ HEADERS += \
     src/Cube.h \
     src/Sponza.h \
     src/FirstPersonCamera.h \
-    src/RenderToTexture.h
+    src/RenderToTexture.h \
+    src/ImGuiTest.h
 
 INCLUDEPATH += ../../gameplay/src
 INCLUDEPATH += ../../external-deps/include
