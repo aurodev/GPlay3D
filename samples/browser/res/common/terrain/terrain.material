@@ -11,6 +11,39 @@ material terrain
     u_directionalLightDirection[0] = LIGHT_DIRECTION_0
     u_directionalLightColor[0] = LIGHT_COLOR_0
 
+
+    sampler u_surfaceLayerMaps_0
+    {
+        path = res/common/terrain/rock.dds
+        mipmap = true
+        wrapS = REPEAT
+        wrapT = REPEAT
+        minFilter = LINEAR_MIPMAP_LINEAR
+        magFilter = LINEAR
+    }
+
+    sampler u_surfaceLayerMaps_1
+    {
+        path = res/common/terrain/dirt.dds
+        mipmap = true
+        wrapS = REPEAT
+        wrapT = REPEAT
+        minFilter = LINEAR_MIPMAP_LINEAR
+        magFilter = LINEAR
+    }
+
+    sampler u_surfaceLayerMaps_2
+    {
+        path = res/common/terrain/grass.dds
+        mipmap = true
+        wrapS = REPEAT
+        wrapT = REPEAT
+        minFilter = LINEAR_MIPMAP_LINEAR
+        magFilter = LINEAR
+    }
+
+
+
     renderState
     {
         cullFace = true

@@ -56,8 +56,18 @@ uniform vec4 u_row;
 uniform vec4 u_column;
 #endif
 
+
+
 #if (LAYER_COUNT > 0)
-uniform sampler2D u_surfaceLayerMaps[SAMPLER_COUNT];
+uniform sampler2D u_surfaceLayerMaps_0;
+#endif
+
+#if (LAYER_COUNT > 1)
+uniform sampler2D u_surfaceLayerMaps_1;
+#endif
+
+#if (LAYER_COUNT > 2)
+uniform sampler2D u_surfaceLayerMaps_2;
 #endif
 
 ///////////////////////////////////////////////////////////
@@ -115,7 +125,7 @@ void main()
 {
     #if (LAYER_COUNT > 0)
     // Sample base texture
-	_baseColor.rgb = texture2D(u_surfaceLayerMaps[TEXTURE_INDEX_0], mod(v_texCoordLayer0, vec2(1,1))).rgb;
+	_baseColor.rgb = texture2D(u_surfaceLayerMaps_0, mod(v_texCoordLayer0, vec2(1,1))).rgb;
     _baseColor.a = 1.0;
     #else
     // If no layers are defined, simply use a white color
@@ -123,10 +133,10 @@ void main()
     #endif
 
     #if (LAYER_COUNT > 1)
-    blendLayer(u_surfaceLayerMaps[TEXTURE_INDEX_1], v_texCoordLayer1, texture2D(u_surfaceLayerMaps[BLEND_INDEX_1], v_texCoord0)[BLEND_CHANNEL_1]);
+    blendLayer(u_surfaceLayerMaps_1, v_texCoordLayer1, texture2D(u_surfaceLayerMaps_1, v_texCoord0)[BLEND_CHANNEL_1]);
     #endif
     #if (LAYER_COUNT > 2)
-    blendLayer(u_surfaceLayerMaps[TEXTURE_INDEX_2], v_texCoordLayer2, texture2D(u_surfaceLayerMaps[BLEND_INDEX_2], v_texCoord0)[BLEND_CHANNEL_2]);
+    blendLayer(u_surfaceLayerMaps_2, v_texCoordLayer2, texture2D(u_surfaceLayerMaps_2, v_texCoord0)[BLEND_CHANNEL_2]);
     #endif
 
     #if defined(DEBUG_PATCHES)
