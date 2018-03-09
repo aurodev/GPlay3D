@@ -10,7 +10,7 @@
 #include "Form.h"
 
 /** @script{ignore} */
-GLenum __gl_error_code = GL_NO_ERROR;
+int __gl_error_code = 0;
 /** @script{ignore} */
 ALenum __al_error_code = AL_NO_ERROR;
 

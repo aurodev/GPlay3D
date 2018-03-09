@@ -39,6 +39,8 @@ DepthStencilTarget* DepthStencilTarget::create(const char* id, Format format, un
     // Create the depth stencil target.
     DepthStencilTarget* depthStencilTarget = new DepthStencilTarget(id, format, width, height);
 
+#if 0//@@
+
     // Create a render buffer for this new depth+stencil target
     GL_ASSERT( glGenRenderbuffers(1, &depthStencilTarget->_depthBuffer) );
     GL_ASSERT( glBindRenderbuffer(GL_RENDERBUFFER, depthStencilTarget->_depthBuffer) );
@@ -80,6 +82,8 @@ DepthStencilTarget* DepthStencilTarget::create(const char* id, Format format, un
         // Packed format GL_DEPTH24_STENCIL8 is used mark format as packed.
         depthStencilTarget->_packed = true;
     }
+
+#endif//@@
 
     // Add it to the cache.
     __depthStencilTargets.push_back(depthStencilTarget);

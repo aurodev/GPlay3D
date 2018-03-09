@@ -100,13 +100,17 @@ const IndexBuffer* MeshPart::getIndexBuffer() const
 void* MeshPart::mapIndexBuffer()
 {
     //@@GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer) );
+    //@@return (void*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
 
-    return (void*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
+    return _indexBuffer->lock(0, _indexCount);
 }
 
 bool MeshPart::unmapIndexBuffer()
 {
-    return glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+    //@@ return glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+
+    _indexBuffer->unLock();
+    return true;
 }
 
 void MeshPart::setIndexData(const void* indexData, unsigned int indexStart, unsigned int indexCount)

@@ -210,9 +210,9 @@ public:
      */
     enum CullFaceSide
     {
-        CULL_FACE_SIDE_BACK = GL_BACK,
-        CULL_FACE_SIDE_FRONT = GL_FRONT,
-        CULL_FACE_SIDE_FRONT_AND_BACK = GL_FRONT_AND_BACK
+        CULL_FACE_SIDE_BACK,            //@@ = GL_BACK,
+        CULL_FACE_SIDE_FRONT,           //@@ = GL_FRONT,
+        CULL_FACE_SIDE_FRONT_AND_BACK   //@@ = GL_FRONT_AND_BACK
     };
 
     /**
@@ -222,8 +222,8 @@ public:
      */
     enum FrontFace
     {
-        FRONT_FACE_CW = GL_CW,
-        FRONT_FACE_CCW = GL_CCW
+        FRONT_FACE_CW,  //@@ = GL_CW,
+        FRONT_FACE_CCW  //@@ = GL_CCW
     };
 
 	/**
@@ -235,14 +235,14 @@ public:
      */
     enum StencilFunction
     {
-		STENCIL_NEVER = GL_NEVER,
-		STENCIL_ALWAYS = GL_ALWAYS,
-		STENCIL_LESS = GL_LESS,
-		STENCIL_LEQUAL = GL_LEQUAL,
-		STENCIL_EQUAL = GL_EQUAL,
-		STENCIL_GREATER = GL_GREATER,
-		STENCIL_GEQUAL = GL_GEQUAL,
-		STENCIL_NOTEQUAL = GL_NOTEQUAL
+        STENCIL_NEVER,      //@@ = GL_NEVER,
+        STENCIL_ALWAYS,     //@@ = GL_ALWAYS,
+        STENCIL_LESS,       //@@ = GL_LESS,
+        STENCIL_LEQUAL,     //@@ = GL_LEQUAL,
+        STENCIL_EQUAL,      //@@ = GL_EQUAL,
+        STENCIL_GREATER,    //@@ = GL_GREATER,
+        STENCIL_GEQUAL,     //@@ = GL_GEQUAL,
+        STENCIL_NOTEQUAL,   //@@ = GL_NOTEQUAL
     };
 
 	/**
@@ -255,14 +255,14 @@ public:
      */
     enum StencilOperation
     {
-		STENCIL_OP_KEEP = GL_KEEP,
-		STENCIL_OP_ZERO = GL_ZERO,
-		STENCIL_OP_REPLACE = GL_REPLACE,
-		STENCIL_OP_INCR = GL_INCR,
-		STENCIL_OP_DECR = GL_DECR,
-		STENCIL_OP_INVERT = GL_INVERT,
-		STENCIL_OP_INCR_WRAP = GL_INCR_WRAP,
-		STENCIL_OP_DECR_WRAP = GL_DECR_WRAP
+        STENCIL_OP_KEEP,        //@@ = GL_KEEP,
+        STENCIL_OP_ZERO,        //@@ = GL_ZERO,
+        STENCIL_OP_REPLACE,     //@@ = GL_REPLACE,
+        STENCIL_OP_INCR,        //@@ = GL_INCR,
+        STENCIL_OP_DECR,        //@@ = GL_DECR,
+        STENCIL_OP_INVERT,      //@@ = GL_INVERT,
+        STENCIL_OP_INCR_WRAP,   //@@ = GL_INCR_WRAP,
+        STENCIL_OP_DECR_WRAP    //@@ = GL_DECR_WRAP
     };
 
     /**

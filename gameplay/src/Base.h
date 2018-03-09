@@ -247,8 +247,8 @@ using std::va_list;
         #define GP_USE_VAO
         #include <bgfx/bgfx.h>
 #elif __linux__
-        #define GLEW_STATIC
-        #include <GL/glew.h>
+        //#define GLEW_STATIC
+        //#include <GL/glew.h>
         #define GP_USE_VAO
         #include <bgfx/bgfx.h>
 #elif __APPLE__
@@ -293,6 +293,26 @@ using std::va_list;
 // Hardware buffer
 namespace gameplay
 {
+
+typedef int GLint;
+typedef unsigned int GLuint;
+typedef unsigned int GLenum;
+typedef int GLboolean;
+typedef size_t GLsizei;
+#define GL_FALSE 0
+#define GL_TRUE 1
+#define GL_RGB 0x1907
+#define GL_RGBA 0x1908
+#define GL_RED 0x1903
+#define GL_DEPTH_COMPONENT32F 0x8CAC
+#define GL_UNSIGNED_BYTE 0x1401
+#define GL_UNSIGNED_SHORT_5_6_5 0x8363
+#define GL_UNSIGNED_SHORT_4_4_4_4 0x8033
+#define GL_UNSIGNED_SHORT_5_5_5_1 0x8034
+#define GL_FLOAT 0x1406
+#define GL_UNSIGNED_INT 0x1405
+
+
 /** Vertex attribute. */
 typedef GLint VertexAttribute;
 /** Vertex buffer handle. */
@@ -336,7 +356,7 @@ typedef unsigned long GamepadHandle;
 
 /** Global variable to hold GL errors
  * @script{ignore} */
-extern GLenum __gl_error_code;
+extern int __gl_error_code;
 
 /**
  * Executes the specified AL code and checks the AL error afterwards

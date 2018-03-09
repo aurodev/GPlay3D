@@ -110,6 +110,8 @@ Texture* Texture::create(Image* image, bool generateMipmaps)
     }
 }
 
+
+
 GLint Texture::getFormatInternal(Format format)
 {
     switch (format)

@@ -286,12 +286,17 @@ void* Mesh::mapVertexBuffer()
 {
     //@@GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer) );
 
-    return (void*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+    //@@ return (void*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+
+    return _vertexBuffer->lock(0, _vertexCount);
 }
 
 bool Mesh::unmapVertexBuffer()
 {
-    return glUnmapBuffer(GL_ARRAY_BUFFER);
+    //@@ return glUnmapBuffer(GL_ARRAY_BUFFER);
+
+    _vertexBuffer->unLock();
+    return true;
 }
 
 void Mesh::setVertexData(const void* vertexData, unsigned int vertexStart, unsigned int vertexCount)
