@@ -144,11 +144,13 @@ void DynamicMeshUpdate::update(float elapsedTime)
     float t = Game::getAbsoluteTime() * 0.001f;
     float phase = t * 10.0f;
 
-    VertexBuffer * vb = (VertexBuffer *)_cubeModel->getMesh()->getVertexBuffer();
-    PosColorVertex * vbPtr = (PosColorVertex*)vb->lock(0, vb->getElementCount());
+    PosColorVertex * vbPtr = (PosColorVertex*)_cubeModel->getMesh()->mapVertexBuffer();
+    //VertexBuffer * vb = (VertexBuffer *)_cubeModel->getMesh()->getVertexBuffer();
+    //PosColorVertex * vbPtr = (PosColorVertex*)vb->lock(0, vb->getElementCount());
     if(vbPtr)
     {
-        for(int i=0; i<vb->getElementCount(); i++)
+        unsigned int vertexCount = _cubeModel->getMesh()->getVertexCount();
+        for(int i=0; i<vertexCount; i++)
         {
             Vector3& src = vertices[i].m_pos;
             Vector3& dest = vbPtr->m_pos;
@@ -162,17 +164,19 @@ void DynamicMeshUpdate::update(float elapsedTime)
             vbPtr++;
         }
     }
-    vb->unLock();
+    //vb->unLock();
+    _cubeModel->getMesh()->unmapVertexBuffer();
 
 
     // Update index buffer.
     // Rewrite always the same, no interest, but only for testing
 
-    IndexBuffer * ib = (IndexBuffer *)_cubeModel->getMesh()->getPart(0)->getIndexBuffer();
-    unsigned short * ibPtr = (unsigned short *)ib->lock(0, ib->getElementCount());
+    unsigned short * ibPtr = (unsigned short *)_cubeModel->getMesh()->getPart(0)->mapIndexBuffer();
+    //IndexBuffer * ib = (IndexBuffer *)_cubeModel->getMesh()->getPart(0)->getIndexBuffer();
+    //unsigned short * ibPtr = (unsigned short *)ib->lock(0, ib->getElementCount());
     if(ibPtr)
     {
-        unsigned short indices[] =
+        unsigned short indices[36] =
         {
             0, 1, 2,
             2, 1, 3,
@@ -187,10 +191,10 @@ void DynamicMeshUpdate::update(float elapsedTime)
             20, 21, 22,
             22, 21, 23
         };
-
-        memcpy(ibPtr, indices, sizeof(unsigned short) * 3 * 12);
+        memcpy(ibPtr, indices, sizeof(unsigned short) * 36);
     }
-    ib->unLock();
+    //ib->unLock();
+    _cubeModel->getMesh()->getPart(0)->unmapIndexBuffer();
 }
 
 void DynamicMeshUpdate::render(float elapsedTime)
