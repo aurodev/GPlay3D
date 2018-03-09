@@ -158,19 +158,24 @@ static void ImGui_ImplSdlGL3_SetClipboardText(void*, const char* text)
     SDL_SetClipboardText(text);
 }
 
-void ImGui_ImplSdlGL3_Shutdown()
+static void ImGui_ImplSdlGL3_Shutdown()
 {
     // Destroy SDL mouse cursors
     for (ImGuiMouseCursor cursor_n = 0; cursor_n < ImGuiMouseCursor_Count_; cursor_n++)
         SDL_FreeCursor(g_MouseCursors[cursor_n]);
     memset(g_MouseCursors, 0, sizeof(g_MouseCursors));
 
-    // Destroy OpenGL objects
+    // Destroy bgfx imgui objects
     GPImGui::Get()->imguiShutdown();
 }
 
-bool ImGui_ImplSdlGL3_Init(SDL_Window* window)
+static bool ImGui_ImplSdlGL3_Init(SDL_Window* window)
 {
+    ImGui::StyleColorsClassic();
+
+    // Create bgfx imgui objects
+    GPImGui::Get()->imguiInit();
+
     // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
     ImGuiIO& io = ImGui::GetIO();
     io.KeyMap[ImGuiKey_Tab] = SDL_SCANCODE_TAB;
@@ -219,7 +224,7 @@ bool ImGui_ImplSdlGL3_Init(SDL_Window* window)
     return true;
 }
 
-void ImGui_ImplSdlGL3_NewFrame(SDL_Window* window)
+static void ImGui_ImplSdlGL3_NewFrame(SDL_Window* window)
 {
     ImGuiIO& io = ImGui::GetIO();
 
@@ -282,7 +287,7 @@ void ImGui_ImplSdlGL3_NewFrame(SDL_Window* window)
 // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
 // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
 // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-bool ImGui_ImplSdlGL3_ProcessEvent(SDL_Event* event)
+static bool ImGui_ImplSdlGL3_ProcessEvent(SDL_Event* event)
 {
     ImGuiIO& io = ImGui::GetIO();
     switch (event->type)
@@ -524,21 +529,9 @@ Platform* Platform::create(Game* game)
 
     updateWindowSize();
 
-
-
     // Create ImGui context and init
-
-    ImGuiContext* imguiContext = ImGui::CreateContext();
-    ImGui::SetCurrentContext(imguiContext);
-    ImGui::StyleColorsClassic();
-
-    GPImGui::Get()->imguiInit();
-    //GPImGui::Get()->imguiReset(__width, __height);
-    // Setup ImGui binding
-    //ImGuiIO& io = ImGui::GetIO(); (void)io;
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    ImGui::CreateContext();
     ImGui_ImplSdlGL3_Init(__window);
-
 
     return platform;
 }
@@ -563,7 +556,6 @@ int Platform::enterMessagePump()
         {
             // Process ImGui events
             ImGui_ImplSdlGL3_ProcessEvent(&evt);
-            //ImGuiIO& io = ImGui::GetIO().wa;
 
             // Process SDL2 events
             switch (evt.type)

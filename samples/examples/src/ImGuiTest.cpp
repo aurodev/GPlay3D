@@ -135,12 +135,15 @@ void ImGuiTest::finalize()
 
 void ImGuiTest::update(float elapsedTime)
 {
+    // Show ImGui test window
+    ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
     ImGui::ShowTestWindow();
 
+    // Create some ImGui controls to manage cube rotation
     static float axis[] = { 0.2f, 0.4f, 0.3f };
     static float speed = { 0.5f };
-
-    ImGui::Begin("Controls");
+    ImGui::SetNextWindowSize(ImVec2(200,200), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Cube Controls");
     ImGui::SliderFloat3("Axis", axis, 0.0f, 1.0f);
     ImGui::SliderFloat("Speed", &speed, -10.0f, 10.0f);
     ImGui::End();

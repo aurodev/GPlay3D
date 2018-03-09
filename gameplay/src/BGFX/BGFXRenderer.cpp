@@ -91,8 +91,6 @@ void BGFXRenderer::beginFrame()
 #ifdef GP_DRAW_DEBUG
     bgfx::dbgTextClear();
 #endif
-
-    bgfx::touch(0);
 }
 
 void BGFXRenderer::endFrame()
@@ -107,17 +105,5 @@ void BGFXRenderer::submit(const BGFXGpuProgram *gpuProgram)
     bgfx::submit(Game::getInstance()->_curentViewId, gpuProgram->getProgram());
 }
 
-
-// in test
-
-//void BGFXRenderer::setViewTransform(Matrix &view, Matrix &proj, unsigned short viewId)
-//{
-//    bgfx::setViewTransform(viewId, view.m, proj.m);
-//}
-//
-//void BGFXRenderer::setModelTransform(Matrix *matrix, unsigned short count)
-//{
-//    bgfx::setTransform(&matrix->m[0], count);
-//}
 
 } // end namespace gameplay

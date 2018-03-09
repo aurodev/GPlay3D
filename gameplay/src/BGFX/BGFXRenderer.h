@@ -36,8 +36,6 @@ public:
     }
 
 
-
-
     static void initInstance();
 
     void queryCaps();
@@ -58,19 +56,12 @@ public:
     void endFrame();
 
 
-    //void setViewTransform(Matrix& view, Matrix& proj, unsigned short viewId = 0);
-    //void setModelTransform(Matrix * matrix, unsigned short count = 1);
-
-
-
 protected:
     BGFXRenderer();
     ~BGFXRenderer();
 
-
     uint32_t _debug_flags;
     uint32_t _reset_flags;
-
 
     Caps        _caps;
     unsigned    _width;

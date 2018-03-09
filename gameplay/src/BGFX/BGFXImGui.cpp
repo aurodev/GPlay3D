@@ -7,6 +7,7 @@
 
 namespace gameplay {
 
+static const bgfx::ViewId GP_IMGUI_VIEW_ID = 255;
 
 void BGFXImGui::imguiInit()
 {
@@ -43,21 +44,16 @@ void BGFXImGui::imguiReset( uint16_t width, uint16_t height )
     io.DisplaySize = ImVec2(width, height);
     io.DeltaTime   = 1.0f / 60.0f;
     io.IniFilename = NULL;
-
-    //bgfx::setViewRect( 200, 0, 0, width, height );
-    //bgfx::setViewClear( 0, BGFX_CLEAR_COLOR, 0x00000000 );
 }
 
 void BGFXImGui::imguiRender( ImDrawData* drawData )
 {
-    bgfx::ViewId m_viewId = 255;
-
     const ImGuiIO& io = ImGui::GetIO();
     const float width  = io.DisplaySize.x;
     const float height = io.DisplaySize.y;
 
-    bgfx::setViewName(m_viewId, "ImGui");
-    bgfx::setViewMode(m_viewId, bgfx::ViewMode::Sequential);
+    bgfx::setViewName(GP_IMGUI_VIEW_ID, "ImGui");
+    bgfx::setViewMode(GP_IMGUI_VIEW_ID, bgfx::ViewMode::Sequential);
 
     // set view
     const bgfx::HMD*  hmd  = bgfx::getHMD();
@@ -65,10 +61,7 @@ void BGFXImGui::imguiRender( ImDrawData* drawData )
     if (NULL != hmd && 0 != (hmd->flags & BGFX_HMD_RENDERING) )
     {
         float proj[16];
-        bx::mtxProj(proj, hmd->eye[0].fov, 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
-
-        static float time = 0.0f;
-        time += 0.05f;
+        bx::mtxProj(proj, hmd->eye[0].fov, 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);    
 
         const float dist = 10.0f;
         const float offset0 = -proj[8] + (hmd->eye[0].viewOffset[0] / dist * proj[0]);
@@ -79,15 +72,15 @@ void BGFXImGui::imguiRender( ImDrawData* drawData )
         const float viewWidth  = width/2.0f;
         bx::mtxOrtho(ortho[0], viewOffset, viewOffset + viewWidth, height, 0.0f, 0.0f, 1000.0f, offset0, caps->homogeneousDepth);
         bx::mtxOrtho(ortho[1], viewOffset, viewOffset + viewWidth, height, 0.0f, 0.0f, 1000.0f, offset1, caps->homogeneousDepth);
-        bgfx::setViewTransform(m_viewId, NULL, ortho[0], BGFX_VIEW_STEREO, ortho[1]);
-        bgfx::setViewRect(m_viewId, 0, 0, hmd->width, hmd->height);
+        bgfx::setViewTransform(GP_IMGUI_VIEW_ID, NULL, ortho[0], BGFX_VIEW_STEREO, ortho[1]);
+        bgfx::setViewRect(GP_IMGUI_VIEW_ID, 0, 0, hmd->width, hmd->height);
     }
     else
     {
         float ortho[16];
         bx::mtxOrtho(ortho, 0.0f, width, height, 0.0f, 0.0f, 1000.0f, 0.0f, caps->homogeneousDepth);
-        bgfx::setViewTransform(m_viewId, NULL, ortho);
-        bgfx::setViewRect(m_viewId, 0, 0, uint16_t(width), uint16_t(height) );
+        bgfx::setViewTransform(GP_IMGUI_VIEW_ID, NULL, ortho);
+        bgfx::setViewRect(GP_IMGUI_VIEW_ID, 0, 0, uint16_t(width), uint16_t(height) );
     }
 
 
@@ -124,7 +117,6 @@ void BGFXImGui::imguiRender( ImDrawData* drawData )
             }
             else if ( 0 != cmd->ElemCount )
             {
-
                 uint64_t state = 0
                         | BGFX_STATE_WRITE_RGB
                         | BGFX_STATE_WRITE_A
@@ -149,7 +141,7 @@ void BGFXImGui::imguiRender( ImDrawData* drawData )
                 bgfx::setTexture( 0, imguiFontUniform, th );
                 bgfx::setVertexBuffer( 0, &tvb, 0, numVertices );
                 bgfx::setIndexBuffer( &tib, offset, cmd->ElemCount );
-                bgfx::submit(m_viewId, imguiProgram );
+                bgfx::submit(GP_IMGUI_VIEW_ID, imguiProgram );
             }
 
             offset += cmd->ElemCount;
