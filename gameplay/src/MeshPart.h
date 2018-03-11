@@ -109,6 +109,9 @@ public:
      */
     bool isDynamic() const;
 
+
+    bool setDrawRange(uint32_t indexStart, uint32_t indexCount);
+
 private:
 
     /**

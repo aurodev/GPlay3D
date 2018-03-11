@@ -151,6 +151,11 @@ void MeshPart::setIndexData(const void* indexData, unsigned int indexStart, unsi
     _indexBuffer->set(indexData, indexCount, indexStart);
 }
 
+bool MeshPart::setDrawRange(uint32_t indexStart, uint32_t indexCount)
+{
+    return _indexBuffer->setRange(indexStart, indexCount);
+}
+
 bool MeshPart::isDynamic() const
 {
     return _dynamic;

@@ -146,12 +146,12 @@ void BGFXVertexBuffer::bind()
     if(_dynamic)
     {
         GP_ASSERT(bgfx::isValid(_dvbh));
-        bgfx::setVertexBuffer(0, _dvbh, _elementStart, _elementCount);
+        bgfx::setVertexBuffer(0, _dvbh, _drawStart, _drawCount);
     }
     else
     {
         GP_ASSERT(bgfx::isValid(_svbh));
-        bgfx::setVertexBuffer(0, _svbh, _elementStart, _elementCount);
+        bgfx::setVertexBuffer(0, _svbh, _drawStart, _drawCount);
     }
 }
 

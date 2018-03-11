@@ -101,12 +101,12 @@ void BGFXIndexBuffer::bind()
     if(_dynamic)
     {
         GP_ASSERT(bgfx::isValid(_dibh));
-        bgfx::setIndexBuffer(_dibh, _elementStart, _elementCount);
+        bgfx::setIndexBuffer(_dibh, _drawStart, _drawCount);
     }
     else
     {
         GP_ASSERT(bgfx::isValid(_sibh));
-        bgfx::setIndexBuffer(_sibh, _elementStart, _elementCount);
+        bgfx::setIndexBuffer(_sibh, _drawStart, _drawCount);
     }
 }
 

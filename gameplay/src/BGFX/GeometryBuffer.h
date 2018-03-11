@@ -26,15 +26,17 @@ public:
     bool setRange(uint32_t start, uint32_t count);
 
 protected:
-    uint32_t _elementSize;
-    uint32_t _elementCount;
-    uint32_t _elementStart;
-    MemoryBuffer _memoryBuffer;
-    bool _dynamic;
+    uint32_t _elementSize;      // size of 1 element
+    uint32_t _elementCount;     // number of element
+    MemoryBuffer _memoryBuffer; // memory buffer
+    bool _dynamic;              // is dynamic
     LockState _lockState;
     uint32_t _lockStart;
     uint32_t _lockCount;
     void* _lockData;
+
+    uint32_t _drawStart;        // draw range start
+    uint32_t _drawCount;        // draw range count
 };
 
 }

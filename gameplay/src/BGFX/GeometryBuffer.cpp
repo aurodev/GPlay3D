@@ -6,12 +6,13 @@ namespace gameplay
 GeometryBuffer::GeometryBuffer() :
     _elementSize(0)
     , _elementCount(0)
-    , _elementStart(0)
     , _dynamic(false)
     , _lockState(LOCK_NONE)
     , _lockStart(0)
     , _lockCount(0)
     , _lockData(nullptr)
+    , _drawStart(0)
+    , _drawCount(0)
 {
 }
 
@@ -25,7 +26,6 @@ void GeometryBuffer::initialize(uint32_t elementSize, uint32_t elementCount, boo
     _elementSize = elementSize;
     _elementCount = elementCount;
     _dynamic = dynamic;
-    _elementStart = 0;
 
     // allocate memory buffer
     uint32_t size = _elementSize * _elementCount;
@@ -40,8 +40,8 @@ bool GeometryBuffer::setRange(uint32_t start, uint32_t count)
         return false;
     }
 
-    _elementStart = start;
-    _elementCount = count;
+    _drawStart = start;
+    _drawCount = count;
 
     return true;
 }
@@ -49,7 +49,6 @@ bool GeometryBuffer::setRange(uint32_t start, uint32_t count)
 void GeometryBuffer::set(const void* data, uint32_t count, uint32_t start)
 {
     count = count == 0 ? _elementCount : count;
-    start = start == 0 ? _elementStart : start;
 
     bool needResize = start + count > _elementCount;
 
@@ -73,6 +72,8 @@ void GeometryBuffer::set(const void* data, uint32_t count, uint32_t start)
         }
     }
 
+    setRange(start, count);
+
     // copy data into memory buffer
     if(data)
     {
@@ -89,7 +90,7 @@ void GeometryBuffer::bind()
 void* GeometryBuffer::lock(uint32_t start, uint32_t count)
 {
     _lockCount = count == 0 ? _elementCount : count;
-    _lockStart = start == 0 ? _elementStart : start;
+    _lockStart = start;
 
     GP_ASSERT(_lockStart + _lockCount <= _elementCount);
     GP_ASSERT(_memoryBuffer.getSize() >= _elementSize * (_lockStart + _lockCount));
