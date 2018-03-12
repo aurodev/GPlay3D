@@ -25,7 +25,7 @@ SparkQuadRenderBuffer::SparkQuadRenderBuffer(size_t nbParticles, size_t nbVertic
     gameplay::VertexFormat::Element elements[] =
     {
         gameplay::VertexFormat::Element(gameplay::VertexFormat::POSITION, 3),
-        gameplay::VertexFormat::Element(gameplay::VertexFormat::COLOR, 4),
+        gameplay::VertexFormat::Element(gameplay::VertexFormat::COLOR, 4, gameplay::VertexFormat::Uint8, true),
         gameplay::VertexFormat::Element(gameplay::VertexFormat::TEXCOORD0, 2)
 
     };
@@ -222,44 +222,28 @@ void SparkQuadRenderer::render(const Group& group,const DataSet* dataSet,RenderB
         dest[index++] = v0.x;
         dest[index++] = v0.y;
         dest[index++] = v0.z;
-            //((unsigned&)dest[3]) = color;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
+        ((unsigned&)dest[index++]) = color;
         dest[index++] = _u0;
         dest[index++] = _v0;
 
         dest[index++] = v1.x;
         dest[index++] = v1.y;
         dest[index++] = v1.z;
-            //((unsigned&)dest[9]) = color;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
+        ((unsigned&)dest[index++]) = color;
         dest[index++] = _u0;
         dest[index++] = _v1;
 
         dest[index++] = v2.x;
         dest[index++] = v2.y;
         dest[index++] = v2.z;
-            //((unsigned&)dest[15]) = color;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
+        ((unsigned&)dest[index++]) = color;
         dest[index++] = _u1;
         dest[index++] = _v0;
 
         dest[index++] = v3.x;
         dest[index++] = v3.y;
         dest[index++] = v3.z;
-        //((unsigned&)dest[21]) = color;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
-            dest[index++] = 1.0f;
+        ((unsigned&)dest[index++]) = color;
         dest[index++] = _u1;
         dest[index++] = _v1;
 
