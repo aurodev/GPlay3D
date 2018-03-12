@@ -103,9 +103,9 @@ RenderBuffer* SparkQuadRenderer::attachRenderBuffer(const Group& group) const
             dest[0] = vertexIndex + 0;
             dest[1] = vertexIndex + 1;
             dest[2] = vertexIndex + 2;
-            dest[3] = vertexIndex + 2;
+            dest[3] = vertexIndex + 1;
             dest[4] = vertexIndex + 3;
-            dest[5] = vertexIndex + 0;
+            dest[5] = vertexIndex + 2;
 
             dest += NB_INDICES_PER_PARTICLE;
             vertexIndex += NB_VERTICES_PER_PARTICLE;
@@ -122,9 +122,9 @@ RenderBuffer* SparkQuadRenderer::attachRenderBuffer(const Group& group) const
             dest[0] = vertexIndex + 0;
             dest[1] = vertexIndex + 1;
             dest[2] = vertexIndex + 2;
-            dest[3] = vertexIndex + 2;
+            dest[3] = vertexIndex + 1;
             dest[4] = vertexIndex + 3;
-            dest[5] = vertexIndex + 0;
+            dest[5] = vertexIndex + 2;
 
             dest += NB_INDICES_PER_PARTICLE;
             vertexIndex += NB_VERTICES_PER_PARTICLE;
@@ -196,23 +196,23 @@ void SparkQuadRenderer::render(const Group& group,const DataSet* dataSet,RenderB
 
         // Vertices are drawn in clockwise order (front face).
         // First triangle  : v0,v1,v2
-        // Second triangle : v2,v3,v0
-        // UV coord are same as DirectX
-
-        //    Vertices     |          UV
+        // Second triangle : v1,v3,v0
         //                 |
-        //   v0     v1     |     0,0        1,0
+        //   v1     v3     |     0,1        1,1
         //     x---x       |        x------x
         //     |\  |       |        |      |
         //     | \ |       |        |      |
         //     |  \|       |        |      |
         //     x---x       |        x------x
-        //   v3     v2     |     0,1        1,1
+        //   v0     v2     |     0,0        1,0
+        //                 |
+        //     Pos         |           UV
 
-        Vector3D v0 = particle.position() + quadSide() + quadUp(); // top left vertex
-        Vector3D v1 = particle.position() - quadSide() + quadUp(); // top right vertex
-        Vector3D v2 = particle.position() - quadSide() - quadUp(); // bottom right vertex
-        Vector3D v3 = particle.position() + quadSide() - quadUp(); // bottom left vertex
+
+        Vector3D v0 = particle.position() - quadSide() - quadUp(); // bottom left vertex
+        Vector3D v1 = particle.position() - quadSide() + quadUp(); // top left vertex
+        Vector3D v2 = particle.position() + quadSide() - quadUp(); // bottom right vertex
+        Vector3D v3 = particle.position() + quadSide() + quadUp(); // top right vertex
 
         const unsigned& color =  particle.getColor().getABGR();
 
@@ -237,8 +237,8 @@ void SparkQuadRenderer::render(const Group& group,const DataSet* dataSet,RenderB
             dest[index++] = 1.0f;
             dest[index++] = 1.0f;
             dest[index++] = 1.0f;
-        dest[index++] = _u1;
-        dest[index++] = _v0;
+        dest[index++] = _u0;
+        dest[index++] = _v1;
 
         dest[index++] = v2.x;
         dest[index++] = v2.y;
@@ -249,7 +249,7 @@ void SparkQuadRenderer::render(const Group& group,const DataSet* dataSet,RenderB
             dest[index++] = 1.0f;
             dest[index++] = 1.0f;
         dest[index++] = _u1;
-        dest[index++] = _v1;
+        dest[index++] = _v0;
 
         dest[index++] = v3.x;
         dest[index++] = v3.y;
@@ -259,7 +259,7 @@ void SparkQuadRenderer::render(const Group& group,const DataSet* dataSet,RenderB
             dest[index++] = 1.0f;
             dest[index++] = 1.0f;
             dest[index++] = 1.0f;
-        dest[index++] = _u0;
+        dest[index++] = _u1;
         dest[index++] = _v1;
 
         dest += index;

@@ -46,8 +46,8 @@ void SparkParticleEmitter::update(float dt)
         //invModelView.invert();
 
         invModelView = _node->getWorldViewProjectionMatrix();//camera->getInverseViewMatrix();
-        //invModelView.transpose();
-        invModelView.invert();
+        invModelView.transpose();
+        //invModelView.invert();
 
         SPK::Vector3D vpos(cameraNode->getTranslation().x, cameraNode->getTranslation().y, cameraNode->getTranslation().z);
         _sparkSystem->setCameraPosition(vpos);
