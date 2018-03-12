@@ -101,11 +101,11 @@ RenderBuffer* SparkQuadRenderer::attachRenderBuffer(const Group& group) const
         while (numParticles--)
         {
             dest[0] = vertexIndex + 0;
-            dest[1] = vertexIndex + 1;
-            dest[2] = vertexIndex + 2;
-            dest[3] = vertexIndex + 1;
+            dest[1] = vertexIndex + 2;
+            dest[2] = vertexIndex + 1;
+            dest[3] = vertexIndex + 2;
             dest[4] = vertexIndex + 3;
-            dest[5] = vertexIndex + 2;
+            dest[5] = vertexIndex + 1;
 
             dest += NB_INDICES_PER_PARTICLE;
             vertexIndex += NB_VERTICES_PER_PARTICLE;
@@ -120,11 +120,11 @@ RenderBuffer* SparkQuadRenderer::attachRenderBuffer(const Group& group) const
         while (numParticles--)
         {
             dest[0] = vertexIndex + 0;
-            dest[1] = vertexIndex + 1;
-            dest[2] = vertexIndex + 2;
-            dest[3] = vertexIndex + 1;
+            dest[1] = vertexIndex + 2;
+            dest[2] = vertexIndex + 1;
+            dest[3] = vertexIndex + 2;
             dest[4] = vertexIndex + 3;
-            dest[5] = vertexIndex + 2;
+            dest[5] = vertexIndex + 1;
 
             dest += NB_INDICES_PER_PARTICLE;
             vertexIndex += NB_VERTICES_PER_PARTICLE;
@@ -194,9 +194,9 @@ void SparkQuadRenderer::render(const Group& group,const DataSet* dataSet,RenderB
         // call render method to compute quad
         (this->*renderParticle)(particle,buffer);
 
-        // Vertices are drawn in clockwise order (front face).
-        // First triangle  : v0,v1,v2
-        // Second triangle : v1,v3,v0
+        // Vertices are drawn in counter clockwise order.
+        // First triangle  : v0,v2,v1
+        // Second triangle : v2,v3,v1
         //                 |
         //   v1     v3     |     0,1        1,1
         //     x---x       |        x------x
@@ -213,6 +213,7 @@ void SparkQuadRenderer::render(const Group& group,const DataSet* dataSet,RenderB
         Vector3D v1 = particle.position() - quadSide() + quadUp(); // top left vertex
         Vector3D v2 = particle.position() + quadSide() - quadUp(); // bottom right vertex
         Vector3D v3 = particle.position() + quadSide() + quadUp(); // top right vertex
+
 
         const unsigned& color =  particle.getColor().getABGR();
 
