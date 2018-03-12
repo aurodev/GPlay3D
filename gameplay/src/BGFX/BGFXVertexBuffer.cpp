@@ -141,7 +141,7 @@ void BGFXVertexBuffer::set(const void* data, uint32_t count, uint32_t start)
     }
 }
 
-void BGFXVertexBuffer::bind()
+void BGFXVertexBuffer::bind() const
 {
     if(_dynamic)
     {

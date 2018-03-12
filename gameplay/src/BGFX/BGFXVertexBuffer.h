@@ -17,7 +17,7 @@ public:
     const bgfx::VertexDecl getVertexDecl() const { return _vertexDecl; }
 
     void set(const void* data, uint32_t count, uint32_t start) override;
-    void bind() override;
+    void bind() const override;
     void* lock(uint32_t start, uint32_t count) override;
     void unLock() override;
 

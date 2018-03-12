@@ -96,7 +96,7 @@ void BGFXIndexBuffer::set(const void* data, uint32_t count, uint32_t start)
     }
 }
 
-void BGFXIndexBuffer::bind()
+void BGFXIndexBuffer::bind() const
 {
     if(_dynamic)
     {

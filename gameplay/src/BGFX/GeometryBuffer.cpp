@@ -83,7 +83,7 @@ void GeometryBuffer::set(const void* data, uint32_t count, uint32_t start)
     }
 }
 
-void GeometryBuffer::bind()
+void GeometryBuffer::bind() const
 {
 }
 
