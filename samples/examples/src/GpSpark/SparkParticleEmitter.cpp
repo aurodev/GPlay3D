@@ -38,21 +38,41 @@ void SparkParticleEmitter::update(float dt)
 
     if(_node)
     {
-        Node* cameraNode = _node->getScene()->getActiveCamera()->getNode();
-        Camera* camera = cameraNode->getCamera();
 
-        //invModelView = camera->getViewProjectionMatrix();// getViewMatrix();
+
+
+        Node* cameraNode = _node->getScene()->getActiveCamera()->getNode();
+        Camera* camera = _node->getScene()->getActiveCamera(); //cameraNode->getCamera();
+
+        //invModelView = camera->getViewProjectionMatrix();//*/ camera->getInverseViewMatrix();
         //invModelView.transpose();
         //invModelView.invert();
 
-        invModelView = _node->getWorldViewProjectionMatrix();//camera->getInverseViewMatrix();
-        invModelView.transpose();
-        //invModelView.invert();
+        /*invModelView = _node->getWorldViewProjectionMatrix();//camera->getInverseViewMatrix();
+        invModelView.transpose();-*/
+        //invModelView.invert();*/
+        //_node->getViewMatrix()
 
+        invModelView = camera->getViewMatrix();
+        //invModelView = camera->getViewProjectionMatrix();
+        //invModelView = _node->getWorldMatrix();
+        //invModelView.transpose();
+        invModelView.invert();
+
+        //invModelView.setIdentity();
+
+
+        // Set spark camera position for sorted group
         SPK::Vector3D vpos(cameraNode->getTranslation().x, cameraNode->getTranslation().y, cameraNode->getTranslation().z);
         _sparkSystem->setCameraPosition(vpos);
 
-        //_sparkSystem->getTransform().setNC(_node->getMatrix().m);
+
+
+
+        // Transform spark system with node tranformation
+        _sparkSystem->getTransform().set(_node->getWorldMatrix().m);
+
+
     }
 
 

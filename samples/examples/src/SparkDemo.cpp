@@ -142,7 +142,7 @@ void SparkDemo::initialize()
     _cubeNode = _scene->addNode("cube");
     _cubeNode->setDrawable(cubeModel);
     //_cubeNode->rotateY(MATH_PIOVER4);
-    _cubeNode->setScale(Vector3(5.0f, 0.1f, 5.0f));
+    _cubeNode->setScale(Vector3(5.0f, 0.01f, 5.0f));
     SAFE_RELEASE(cubeModel);
 
 
@@ -155,27 +155,28 @@ void SparkDemo::initialize()
 
 
 
-
-
     // Create the material for particles
-    Material* material2 = Material::create("res/shaders/textured.vert", "res/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT=1");
-    material2->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
-    material2->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", "INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX");
+    Material* material2 = Material::create("res/shaders/sprite2.vert", "res/shaders/sprite2.frag");
+    //material2->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
+    //material2->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
+    //material2->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", "INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX");
+    //material2->getParameter("u_worldViewProjectionMatrix")->setValue(_worldViewProjectionMatrix);
+    material2->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::VIEW_PROJECTION_MATRIX);
+
     material2->getParameter("u_ambientColor")->setValue(Vector3(1.0f, 1.0f, 1.0f));
     material2->getParameter("u_directionalLightColor[0]")->setValue(lightNode->getLight()->getColor());
     material2->getParameter("u_directionalLightDirection[0]")->bindValue(lightNode, &Node::getForwardVectorWorld);
 
     // Load the texture from file.
-    Texture::Sampler* sampler2 = material2->getParameter("u_diffuseTexture")->setValue("res/png/Flare1.png", true);
+    Texture::Sampler* sampler2 = material2->getParameter("u_diffuseTexture")->setValue("res/png/f.png", true);
     sampler2->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
     material2->getStateBlock()->setCullFace(false);
     material2->getStateBlock()->setDepthTest(true);
     material2->getStateBlock()->setDepthWrite(false);
 
-    material2->getStateBlock()->setBlend(true);
+   material2->getStateBlock()->setBlend(true);
    material2->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
    material2->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
-
 
 
 
@@ -196,7 +197,7 @@ void SparkDemo::initialize()
     // Emitter
     SPK::Ref<SPK::SphericEmitter> particleEmitter = SPK::SphericEmitter::create(SPK::Vector3D(0.0f,1.0f,0.0f),0.1f * M_PI, 0.1f * M_PI);
     particleEmitter->setZone(SPK::Point::create(SPK::Vector3D(0.0f,0.015f,0.0f)));
-    particleEmitter->setFlow(125);
+    particleEmitter->setFlow(400);
     particleEmitter->setForce(1.5f,1.5f);
 
     // Obstacle
@@ -206,14 +207,14 @@ void SparkDemo::initialize()
     obstacle->setFriction(1.0f);
 
     // Group
-    SPK::Ref<SPK::Group> particleGroup = system_->createGroup(5000);
+    SPK::Ref<SPK::Group> particleGroup = system_->createGroup(4500);
     particleGroup->addEmitter(particleEmitter);
     particleGroup->addModifier(obstacle);
     particleGroup->setRenderer(renderer);
     particleGroup->addModifier(SPK::Gravity::create(SPK::Vector3D(0.0f,-1.0f,0.0f)));
     particleGroup->setLifeTime(14.2f,14.5f);
-    particleGroup->setColorInterpolator(SPK::ColorSimpleInterpolator::create(0xFF880035,0xFF0050FF));
-    particleGroup->enableSorting(false);
+    particleGroup->setColorInterpolator(SPK::ColorSimpleInterpolator::create(0xff0000ff,0x0000ffff));
+    particleGroup->enableSorting(true);
 
 
 
@@ -221,8 +222,8 @@ void SparkDemo::initialize()
 
     /*Node**/ _particleNode = _scene->addNode("spark");
     _particleNode->setDrawable(myspksystem);
-    _particleNode->setTranslationY(0.5f);
-    _particleNode->setScale(Vector3(1.0f, 1.0f, 1.0f));
+    //_particleNode->setTranslationZ(2);
+    _particleNode->setScale(Vector3(2.0f, 1.0f, 1.0f));
     //SAFE_RELEASE(myspksystem);
 
     material2->setNodeBinding(_particleNode);
@@ -237,13 +238,20 @@ void SparkDemo::finalize()
     SAFE_RELEASE(_scene);
 }
 
+
+
 void SparkDemo::update(float elapsedTime)
 {
     // Rotate the directional light.
     //_cubeNode->rotateY(elapsedTime * 0.001 * MATH_PI);
 
     _particleNode->rotateY(elapsedTime * 0.001 * MATH_PI);
-    //_particleNode->rotateX(elapsedTime * 0.0002 * MATH_PI);
+    //_particleNode->rotateX(elapsedTime * 0.0001 * MATH_PI);
+
+    static float t = 0;
+    t += elapsedTime;
+    _particleNode->translateX( sin(t * 0.001) * 0.01 );
+    _particleNode->translateZ( cos(t * 0.001) * 0.01 );
 
     myspksystem->update(elapsedTime);
 }
