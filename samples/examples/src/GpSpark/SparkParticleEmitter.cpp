@@ -35,8 +35,7 @@ void SparkParticleEmitter::updateCameraPosition() const
     Camera* camera = _node->getScene()->getActiveCamera();
 
     Matrix invTransform;
-    invTransform = camera->getViewMatrix();
-    invTransform.invert();
+    invTransform = camera->getInverseViewMatrix();
 
     SPK::GP3D::SparkBaseRenderer* renderer = nullptr;
 
