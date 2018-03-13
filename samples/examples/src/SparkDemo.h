@@ -3,7 +3,7 @@
 
 #include "gameplay.h"
 #include "Example.h"
-
+#include "FirstPersonCamera.h"
 #include <spark/SPARK.h>
 #include "GpSpark/SparkParticleEmitter.h"
 
@@ -16,6 +16,7 @@ public:
     SparkDemo();
     //~SparkDemo();
     void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    void keyEvent(Keyboard::KeyEvent evt, int key);
 
 protected:
 
@@ -25,6 +26,7 @@ protected:
     void render(float elapsedTime);
 
 private:
+
 
     bool drawScene(Node* node);
 
@@ -43,6 +45,9 @@ private:
     Scene* _scene;
     SPK::Ref<SPK::System> __effectFountain;
     SparkParticleEmitter* myspksystem;
+
+
+    FirstPersonCamera _fpCamera;
 };
 
 #endif

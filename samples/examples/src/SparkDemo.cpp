@@ -80,7 +80,7 @@ void SparkDemo::initialize()
     // Create a new empty scene.
     _scene = Scene::create();
 
-    // Create the camera.
+    /*// Create the camera.
     Camera* camera = Camera::createPerspective(45.0f, getAspectRatio(), 1.0f, 1000.0f);
     _cameraNode = _scene->addNode("camera");
 
@@ -94,7 +94,21 @@ void SparkDemo::initialize()
     // Move the camera to look at the origin.
     _cameraNode->translate(-3, 2, 10);
     _cameraNode->rotateX(MATH_DEG_TO_RAD(-10.0f));
-    _cameraNode->rotateY(MATH_DEG_TO_RAD(-30.0f));
+    _cameraNode->rotateY(MATH_DEG_TO_RAD(-30.0f));*/
+
+
+
+    // set fps camera
+    Vector3 cameraPosition(0, 1, 10);
+    _fpCamera.initialize(1.0, 100000.0f);
+    _fpCamera.setPosition(cameraPosition);
+    _scene->addNode(_fpCamera.getRootNode());
+    _scene->setActiveCamera(_fpCamera.getCamera());
+
+    // Update the aspect ratio for our scene's camera to match the current device resolution
+    _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
+
+
 
 
 
@@ -238,6 +252,9 @@ void SparkDemo::finalize()
 
 void SparkDemo::update(float elapsedTime)
 {
+    _fpCamera.updateCamera(elapsedTime);
+
+
     // Rotate the directional light.
     //_cubeNode->rotateY(elapsedTime * 0.001 * MATH_PI);
 
@@ -265,6 +282,8 @@ void SparkDemo::render(float elapsedTime)
 
 void SparkDemo::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
+    _fpCamera.touchEvent(evt, x, y, contactIndex);
+
     switch (evt)
     {
     case Touch::TOUCH_PRESS:
@@ -288,3 +307,10 @@ bool SparkDemo::drawScene(Node* node)
         drawable->draw();
     return true;
 }
+
+
+void SparkDemo::keyEvent(Keyboard::KeyEvent evt, int key)
+{
+    _fpCamera.keyEvent(evt, key);
+}
+
