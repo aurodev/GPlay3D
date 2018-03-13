@@ -80,10 +80,23 @@ public:
      */
     void rotate(float yaw, float pitch);
 
+
+
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    void keyEvent(Keyboard::KeyEvent evt, int key);
+    bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
+    void updateCamera(float elapsedTime);
+
+
 private:
 
     Node* _pitchNode;
     Node* _rootNode;
+
+    unsigned int _moveFlags;
+    int _prevX;
+    int _prevY;
+    bool _buttonPressed;
 };
 
 #endif
