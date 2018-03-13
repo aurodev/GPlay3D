@@ -7,7 +7,9 @@ namespace gameplay {
 
 SparkParticleEmitter::SparkParticleEmitter() : Drawable()
 {
-
+    _worldTransformed = false;
+    _onlyWhenVisible = false;
+    _alive = true;
 }
 
 SparkParticleEmitter::~SparkParticleEmitter()
@@ -15,10 +17,11 @@ SparkParticleEmitter::~SparkParticleEmitter()
 
 }
 
-SparkParticleEmitter* SparkParticleEmitter::create(SPK::Ref<SPK::System> sparkSystem)
+SparkParticleEmitter* SparkParticleEmitter::create(SPK::Ref<SPK::System> sparkSystem, bool worldTransformed)
 {
     SparkParticleEmitter* sparkParticleEmitter = new SparkParticleEmitter();
     sparkParticleEmitter->_sparkSystem = SPK::SPKObject::copy(sparkSystem);
+    sparkParticleEmitter->_worldTransformed = worldTransformed;
     return sparkParticleEmitter;
 }
 
@@ -27,78 +30,58 @@ Drawable* SparkParticleEmitter::clone(NodeCloneContext& context)
 
 }
 
-void SparkParticleEmitter::update(float dt)
+void SparkParticleEmitter::updateCameraPosition() const
 {
-    //GP_ASSERT(_node && _node->getScene() && _node->getScene()->getActiveCamera() && _node->getScene()->getActiveCamera()->getNode());
-    //const Matrix& cameraWorldMatrix = _node->getScene()->getActiveCamera()->getNode()->getWorldMatrix();
+    Camera* camera = _node->getScene()->getActiveCamera();
 
-    gameplay::Matrix invModelView;
-    //invModelView.transpose();
-    //invModelView.invert();
+    Matrix invTransform;
+    invTransform = camera->getViewMatrix();
+    invTransform.invert();
 
-    if(_node)
+    SPK::GP3D::SparkBaseRenderer* renderer = nullptr;
+
+    for (size_t i=0; i<_sparkSystem->getNbGroups(); ++i)
     {
+        // set view matrix for renderer
+        renderer = reinterpret_cast<SPK::GP3D::SparkBaseRenderer*>(_sparkSystem->getGroup(i)->getRenderer().get());
+        GP_ASSERT(renderer);
+        renderer->setViewMatrix(invTransform);
 
-
-
-        Node* cameraNode = _node->getScene()->getActiveCamera()->getNode();
-        Camera* camera = _node->getScene()->getActiveCamera(); //cameraNode->getCamera();
-
-        //invModelView = camera->getViewProjectionMatrix();//*/ camera->getInverseViewMatrix();
-        //invModelView.transpose();
-        //invModelView.invert();
-
-        /*invModelView = _node->getWorldViewProjectionMatrix();//camera->getInverseViewMatrix();
-        invModelView.transpose();-*/
-        //invModelView.invert();*/
-        //_node->getViewMatrix()
-
-        invModelView = camera->getViewMatrix();
-        //invModelView = camera->getViewProjectionMatrix();
-        //invModelView = _node->getWorldMatrix();
-        //invModelView.transpose();
-        invModelView.invert();
-
-        //invModelView.setIdentity();
-
-
-        // Set spark camera position for sorted group
-        SPK::Vector3D vpos(cameraNode->getTranslation().x, cameraNode->getTranslation().y, cameraNode->getTranslation().z);
-        _sparkSystem->setCameraPosition(vpos);
-
-
-
-
-        // Transform spark system with node tranformation
-        _sparkSystem->getTransform().set(_node->getWorldMatrix().m);
-
-
-    }
-
-
-    for(size_t i=0; i<_sparkSystem->getNbGroups(); ++i)
-    {
-        SPK::GP3D::SparkBaseRenderer* renderer =
-                reinterpret_cast<SPK::GP3D::SparkBaseRenderer*>(_sparkSystem->getGroup(i)->getRenderer().get());
-
-        if(renderer)
+        // set spark camera position when group do sorting or distance computation
+        if (_sparkSystem->getGroup(i)->isDistanceComputationEnabled())
         {
-            renderer->setViewMatrix(invModelView);
+            Vector3 pos = camera->getNode()->getTranslationWorld();
+            _sparkSystem->setCameraPosition(SPK::GP3D::gp3d2spk(pos));
         }
     }
+}
 
 
-    //_sparkSystem->setCameraPosition( cameraNode->getTranslation());
+void SparkParticleEmitter::update(float dt)
+{
+    if(_node && _node->isEnabled() && !_onlyWhenVisible)
+    {
+        if (_worldTransformed)
+        {
+            // move spark system using node transformation
+            _sparkSystem->getTransform().set(_node->getWorldMatrix().m);
+        }
 
+        updateCameraPosition();
 
-    // ->GetWorldTransform().Data());
-    _sparkSystem->updateParticles(dt * 0.001f);
+        _alive = _sparkSystem->updateParticles(dt * 0.001f);
+    }
 }
 
 unsigned int SparkParticleEmitter::draw(bool wireframe)
 {
-    _sparkSystem->renderParticles();
-    return 1;
+    if(_alive)
+    {
+        _sparkSystem->renderParticles();
+        return 1;
+    }
+
+    return 0;
 }
 
 }

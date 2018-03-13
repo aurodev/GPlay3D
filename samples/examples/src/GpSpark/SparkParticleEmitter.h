@@ -16,7 +16,7 @@ class SparkParticleEmitter : public Ref, public Drawable
 
 public:
 
-    static SparkParticleEmitter* create(SPK::Ref<SPK::System> sparkSystem);
+    static SparkParticleEmitter* create(SPK::Ref<SPK::System> sparkSystem, bool worldTransformed);
     unsigned int draw(bool wireframe = false) override;
     void update(float dt);
 
@@ -37,7 +37,14 @@ private:
      */
     Drawable* clone(NodeCloneContext& context);
 
+
+    void updateCameraPosition() const;
+
+
     SPK::Ref<SPK::System> _sparkSystem;
+    bool _worldTransformed;
+    bool _onlyWhenVisible;
+    bool _alive;
 
 };
 

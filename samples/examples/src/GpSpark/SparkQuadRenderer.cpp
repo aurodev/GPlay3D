@@ -154,7 +154,7 @@ void SparkQuadRenderer::render(const Group& group,const DataSet* dataSet,RenderB
     // Computes the inverse model view
     gameplay::Matrix invModelView = _viewMatrix;
     //invModelView.transpose();
-   //invModelView.invert();
+    //invModelView.invert();
 
 
     // select render method
@@ -180,9 +180,9 @@ void SparkQuadRenderer::render(const Group& group,const DataSet* dataSet,RenderB
 
     bool globalOrientation = precomputeOrientation3D(
                 group,
-                Vector3D(-invModelView.m[8],-invModelView.m[9],-invModelView.m[10]),
-                Vector3D(invModelView.m[4],invModelView.m[5],invModelView.m[6]),
-                Vector3D(invModelView.m[12],invModelView.m[13],invModelView.m[14]));
+                Vector3D( -invModelView.m[8], -invModelView.m[9], -invModelView.m[10]  ),
+                Vector3D(  invModelView.m[4],  invModelView.m[5],  invModelView.m[6]   ),
+                Vector3D(  invModelView.m[12], invModelView.m[13], invModelView.m[14]  ));
 
     if (globalOrientation)
         computeGlobalOrientation3D(group);

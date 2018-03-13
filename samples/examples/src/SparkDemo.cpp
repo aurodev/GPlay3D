@@ -92,7 +92,7 @@ void SparkDemo::initialize()
     SAFE_RELEASE(camera);
 
     // Move the camera to look at the origin.
-    _cameraNode->translate(-3, 2, 5);
+    _cameraNode->translate(-3, 2, 10);
     _cameraNode->rotateX(MATH_DEG_TO_RAD(-10.0f));
     _cameraNode->rotateY(MATH_DEG_TO_RAD(-30.0f));
 
@@ -163,20 +163,16 @@ void SparkDemo::initialize()
     //material2->getParameter("u_worldViewProjectionMatrix")->setValue(_worldViewProjectionMatrix);
     material2->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::VIEW_PROJECTION_MATRIX);
 
-    material2->getParameter("u_ambientColor")->setValue(Vector3(1.0f, 1.0f, 1.0f));
-    material2->getParameter("u_directionalLightColor[0]")->setValue(lightNode->getLight()->getColor());
-    material2->getParameter("u_directionalLightDirection[0]")->bindValue(lightNode, &Node::getForwardVectorWorld);
-
     // Load the texture from file.
     Texture::Sampler* sampler2 = material2->getParameter("u_diffuseTexture")->setValue("res/png/f.png", true);
     sampler2->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
-    material2->getStateBlock()->setCullFace(false);
+    material2->getStateBlock()->setCullFace(true);
     material2->getStateBlock()->setDepthTest(true);
     material2->getStateBlock()->setDepthWrite(false);
-
-   material2->getStateBlock()->setBlend(true);
-   material2->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
-   material2->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
+    // blending
+    material2->getStateBlock()->setBlend(true);
+    material2->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
+    material2->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
 
 
 
@@ -197,7 +193,7 @@ void SparkDemo::initialize()
     // Emitter
     SPK::Ref<SPK::SphericEmitter> particleEmitter = SPK::SphericEmitter::create(SPK::Vector3D(0.0f,1.0f,0.0f),0.1f * M_PI, 0.1f * M_PI);
     particleEmitter->setZone(SPK::Point::create(SPK::Vector3D(0.0f,0.015f,0.0f)));
-    particleEmitter->setFlow(400);
+    particleEmitter->setFlow(30);
     particleEmitter->setForce(1.5f,1.5f);
 
     // Obstacle
@@ -207,7 +203,7 @@ void SparkDemo::initialize()
     obstacle->setFriction(1.0f);
 
     // Group
-    SPK::Ref<SPK::Group> particleGroup = system_->createGroup(4500);
+    SPK::Ref<SPK::Group> particleGroup = system_->createGroup(5000);
     particleGroup->addEmitter(particleEmitter);
     particleGroup->addModifier(obstacle);
     particleGroup->setRenderer(renderer);
@@ -218,13 +214,13 @@ void SparkDemo::initialize()
 
 
 
-     myspksystem = SparkParticleEmitter::create(SPK::SPKObject::copy(system_));
 
-    /*Node**/ _particleNode = _scene->addNode("spark");
+     myspksystem = SparkParticleEmitter::create(system_, false);
+
+    _particleNode = _scene->addNode("spark");
     _particleNode->setDrawable(myspksystem);
-    //_particleNode->setTranslationZ(2);
+    _particleNode->setTranslationZ(0);
     _particleNode->setScale(Vector3(2.0f, 1.0f, 1.0f));
-    //SAFE_RELEASE(myspksystem);
 
     material2->setNodeBinding(_particleNode);
 
@@ -246,7 +242,7 @@ void SparkDemo::update(float elapsedTime)
     //_cubeNode->rotateY(elapsedTime * 0.001 * MATH_PI);
 
     _particleNode->rotateY(elapsedTime * 0.001 * MATH_PI);
-    //_particleNode->rotateX(elapsedTime * 0.0001 * MATH_PI);
+    _particleNode->rotateX(elapsedTime * 0.0001 * MATH_PI);
 
     static float t = 0;
     t += elapsedTime;
