@@ -4,7 +4,6 @@
 #include "ParticleSpark/SparkParticleEmitter.h"
 #include <spark/SPARK.h>
 
-
 const float ZOOM_DEFAULT = 4.0f;
 
 #if defined(ADD_SAMPLE)
@@ -78,23 +77,6 @@ void SparkDemo::initialize()
     // Create a new empty scene.
     _scene = Scene::create();
 
-    /*// Create the camera.
-    Camera* camera = Camera::createPerspective(45.0f, getAspectRatio(), 1.0f, 1000.0f);
-    _cameraNode = _scene->addNode("camera");
-
-    // Attach the camera to a node. This determines the position of the camera.
-    _cameraNode->setCamera(camera);
-
-    // Make this the active camera of the scene.
-    _scene->setActiveCamera(camera);
-    SAFE_RELEASE(camera);
-
-    // Move the camera to look at the origin.
-    _cameraNode->translate(-3, 2, 10);
-    _cameraNode->rotateX(MATH_DEG_TO_RAD(-10.0f));
-    _cameraNode->rotateY(MATH_DEG_TO_RAD(-30.0f));*/
-
-
 
     // set fps camera
     Vector3 cameraPosition(0, 1, 10);
@@ -109,11 +91,6 @@ void SparkDemo::initialize()
 
 
 
-
-
-
-
-
     // Create a white light.
     Light* light = Light::createDirectional(0.75f, 0.75f, 0.75f);
     Node* lightNode = _scene->addNode("light");
@@ -121,7 +98,6 @@ void SparkDemo::initialize()
     // Release the light because the node now holds a reference to it.
     SAFE_RELEASE(light);
     lightNode->rotateX(MATH_DEG_TO_RAD(-45.0f));
-
 
 
     // Create the cube mesh and model.
@@ -153,7 +129,6 @@ void SparkDemo::initialize()
 
     _cubeNode = _scene->addNode("cube");
     _cubeNode->setDrawable(cubeModel);
-    //_cubeNode->rotateY(MATH_PIOVER4);
     _cubeNode->setScale(Vector3(5.0f, 0.01f, 5.0f));
     SAFE_RELEASE(cubeModel);
 
@@ -163,34 +138,22 @@ void SparkDemo::initialize()
 
 
 
-
-
-
-
     // Create the material for particles
-    Material* material2 = Material::create("res/shaders/sprite2.vert", "res/shaders/sprite2.frag");
-    //material2->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
-    //material2->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
-    //material2->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", "INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX");
-    //material2->getParameter("u_worldViewProjectionMatrix")->setValue(_worldViewProjectionMatrix);
-    material2->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::VIEW_PROJECTION_MATRIX);
+    Material* materialParticle = Material::create("res/shaders/particle.vert", "res/shaders/particle.frag");
+    //materialParticle->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
+    materialParticle->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::VIEW_PROJECTION_MATRIX);
 
-    // Load the texture from file.
-    Texture::Sampler* sampler2 = material2->getParameter("u_diffuseTexture")->setValue("res/png/f.png", true);
+    Texture::Sampler* sampler2 = materialParticle->getParameter("u_diffuseTexture")->setValue("res/png/flare.png", true);
     sampler2->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
-    material2->getStateBlock()->setCullFace(true);
-    material2->getStateBlock()->setDepthTest(true);
-    material2->getStateBlock()->setDepthWrite(false);
-    // blending
-    material2->getStateBlock()->setBlend(true);
-    material2->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
-    material2->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
+    materialParticle->getStateBlock()->setCullFace(true);
+    materialParticle->getStateBlock()->setDepthTest(true);
+    materialParticle->getStateBlock()->setDepthWrite(false);
+    materialParticle->getStateBlock()->setBlend(true);
+    materialParticle->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
+    materialParticle->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
 
 
-
-
-
-    // Create fountain particle effect
+    // Create fountain particle effect using spark library
 
     SPK::Ref<SPK::System> system_ = SPK::System::create(true);
     system_->setName("Foutain");
@@ -199,13 +162,13 @@ void SparkDemo::initialize()
     SPK::Ref<SPK::GP3D::SparkQuadRenderer> renderer = SPK::GP3D::SparkQuadRenderer::create();
     renderer->setTexturingMode(SPK::TEXTURE_MODE_2D);
     renderer->setScale(0.1f,0.1f);
-    renderer->setMaterial(material2);
+    renderer->setMaterial(materialParticle);
     renderer->setOrientation(SPK::OrientationPreset::CAMERA_PLANE_ALIGNED);
 
     // Emitter
     SPK::Ref<SPK::SphericEmitter> particleEmitter = SPK::SphericEmitter::create(SPK::Vector3D(0.0f,1.0f,0.0f),0.1f * M_PI, 0.1f * M_PI);
     particleEmitter->setZone(SPK::Point::create(SPK::Vector3D(0.0f,0.015f,0.0f)));
-    particleEmitter->setFlow(30);
+    particleEmitter->setFlow(200);
     particleEmitter->setForce(1.5f,1.5f);
 
     // Obstacle
@@ -225,19 +188,11 @@ void SparkDemo::initialize()
     particleGroup->enableSorting(true);
 
 
-
-
-     myspksystem = SparkParticleEmitter::create(system_, false);
-
+    // Create a spark particle node and attach spark system
+    myspksystem = SparkParticleEmitter::create(system_, true);
     _particleNode = _scene->addNode("spark");
     _particleNode->setDrawable(myspksystem);
-    _particleNode->setTranslationZ(0);
-    _particleNode->setScale(Vector3(2.0f, 1.0f, 1.0f));
-
-    material2->setNodeBinding(_particleNode);
-
-
-
+    materialParticle->setNodeBinding(_particleNode);
 }
 
 void SparkDemo::finalize()
@@ -246,23 +201,21 @@ void SparkDemo::finalize()
     SAFE_RELEASE(_scene);
 }
 
-
-
 void SparkDemo::update(float elapsedTime)
 {
     _fpCamera.updateCamera(elapsedTime);
 
+    //_particleNode->rotateY(elapsedTime * 0.001 * MATH_PI);
+    //_particleNode->rotateX(elapsedTime * 0.0001 * MATH_PI);
 
-    // Rotate the directional light.
-    //_cubeNode->rotateY(elapsedTime * 0.001 * MATH_PI);
-
-    _particleNode->rotateY(elapsedTime * 0.001 * MATH_PI);
-    _particleNode->rotateX(elapsedTime * 0.0001 * MATH_PI);
-
-    static float t = 0;
-    t += elapsedTime;
-    _particleNode->translateX( sin(t * 0.001) * 0.01 );
-    _particleNode->translateZ( cos(t * 0.001) * 0.01 );
+    // translate the particle system around a circle
+    static float accuTime = 0;
+    accuTime += elapsedTime * 0.001f;
+    float speed = 0.85 * accuTime;
+    float radius = 1.0f;
+    float x = sin(speed) * radius;
+    float z = cos(speed) * radius;
+    _particleNode->setTranslation(x, 0.125f, z);
 
     myspksystem->update(elapsedTime);
 }
@@ -305,7 +258,6 @@ bool SparkDemo::drawScene(Node* node)
         drawable->draw();
     return true;
 }
-
 
 void SparkDemo::keyEvent(Keyboard::KeyEvent evt, int key)
 {
