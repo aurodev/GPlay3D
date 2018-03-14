@@ -25,11 +25,13 @@ protected:
 private:
     bool updateEmitters(Node* node, float elapsedTime);
     bool drawScene(Node* node);
+    void showToolbox();
 
     FirstPersonCamera _fpCamera;
     Font* _font;
     Scene* _scene;
     Node* _cubeNode;
+    Material* _materialParticle;
 };
 
 #endif

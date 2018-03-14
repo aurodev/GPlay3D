@@ -3,6 +3,7 @@
 #include "ParticleSpark/SparkQuadRenderer.h"
 #include "ParticleSpark/SparkParticleEmitter.h"
 #include <spark/SPARK.h>
+#include <imgui/imgui.h>
 
 #if defined(ADD_SAMPLE)
     ADD_SAMPLE("Graphics", "Spark Demo", SparkDemo, 15);
@@ -146,23 +147,23 @@ void SparkDemo::initialize()
 
 
     // Create a material for particles
-    Material* materialParticle = Material::create("res/shaders/particle.vert", "res/shaders/particle.frag");
+    _materialParticle = Material::create("res/shaders/particle.vert", "res/shaders/particle.frag");
     //materialParticle->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
-    materialParticle->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::VIEW_PROJECTION_MATRIX);
+    _materialParticle->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::VIEW_PROJECTION_MATRIX);
 
-    Texture::Sampler* sampler2 = materialParticle->getParameter("u_diffuseTexture")->setValue("res/png/flare.png", true);
+    Texture::Sampler* sampler2 = _materialParticle->getParameter("u_diffuseTexture")->setValue("res/png/flare.png", true);
     sampler2->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
-    materialParticle->getStateBlock()->setCullFace(true);
-    materialParticle->getStateBlock()->setDepthTest(true);
-    materialParticle->getStateBlock()->setDepthWrite(false);
-    materialParticle->getStateBlock()->setBlend(true);
-    materialParticle->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
-    materialParticle->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
+    _materialParticle->getStateBlock()->setCullFace(true);
+    _materialParticle->getStateBlock()->setDepthTest(true);
+    _materialParticle->getStateBlock()->setDepthWrite(false);
+    _materialParticle->getStateBlock()->setBlend(true);
+    _materialParticle->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
+    _materialParticle->getStateBlock()->setBlendDst(RenderState::BLEND_ONE);
 
     // material need to be binded to its node to get working setParameterAutoBinding
     // this hack is to ensure to bind the material, because it is not currently binded by SparkParticleEmitter.
     // TODO: bind material and node correctly when using SparkParticleEmitter
-    materialParticle->setNodeBinding(_scene->getFirstNode());
+    _materialParticle->setNodeBinding(_scene->getFirstNode());
 
 
 
@@ -175,7 +176,7 @@ void SparkDemo::initialize()
         SPK::Ref<SPK::GP3D::SparkQuadRenderer> renderer = SPK::GP3D::SparkQuadRenderer::create();
         renderer->setTexturingMode(SPK::TEXTURE_MODE_2D);
         renderer->setScale(0.1f,0.1f);
-        renderer->setMaterial(materialParticle);
+        renderer->setMaterial(_materialParticle);
         renderer->setOrientation(SPK::OrientationPreset::CAMERA_PLANE_ALIGNED);
 
         // Emitter
@@ -210,7 +211,7 @@ void SparkDemo::initialize()
         SPK::Ref<SPK::GP3D::SparkQuadRenderer> renderer = SPK::GP3D::SparkQuadRenderer::create();
         renderer->setTexturingMode(SPK::TEXTURE_MODE_2D);
         renderer->setScale(0.1f,0.1f);
-        renderer->setMaterial(materialParticle);
+        renderer->setMaterial(_materialParticle);
         renderer->setOrientation(SPK::OrientationPreset::CAMERA_PLANE_ALIGNED);
 
         // Emitter
@@ -238,10 +239,10 @@ void SparkDemo::initialize()
 
 
     // Create a node in scene and attach spark foutain effect
-    SparkParticleEmitter* foutainEmitter = SparkParticleEmitter::create(spkEffectFountain, false);
+    SparkParticleEmitter* foutainEmitter = SparkParticleEmitter::create(spkEffectFountain, true);
     Node* particleNode = _scene->addNode("sparkFoutain");
     particleNode->setDrawable(foutainEmitter);
-    particleNode->setTranslation(0.0f, 0.8f, 0.0f);
+    particleNode->setTranslation(0.0f, 0.1f, 0.0f);
     //materialParticle->setNodeBinding(particleNode);
 
 
@@ -266,7 +267,7 @@ void SparkDemo::finalize()
 void SparkDemo::render(float elapsedTime)
 {
     // Clear the color and depth buffers
-    clear(CLEAR_COLOR_DEPTH, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0);
+    clear(CLEAR_COLOR_DEPTH, 0.7f, 0.7f, 0.7f, 1.0f, 1.0f, 0);
 
     // Visit all the nodes in the scene, drawing the models.
     _scene->visit(this, &SparkDemo::drawScene);
@@ -274,8 +275,88 @@ void SparkDemo::render(float elapsedTime)
     drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());
 }
 
+void SparkDemo::showToolbox()
+{
+    ImGui::Begin("Particle material");
+
+    static bool depthTest = true;
+    static bool depthWrite = false;
+
+    ImGui::Checkbox("Depth test", &depthTest);
+    ImGui::Checkbox("Depth write", &depthWrite);
+
+    _materialParticle->getStateBlock()->setDepthTest(depthTest);
+    _materialParticle->getStateBlock()->setDepthWrite(depthWrite);
+
+
+    static bool usePreset = true;
+    ImGui::Checkbox("Use blend presets", &usePreset);
+
+    if(usePreset)
+    {
+        static int blend_preset = 2;
+        const char* blendPredefinedItems[] = { "None", "Alpha", "Additive", "Multiplied" };
+        ImGui::Combo("Blend preset", &blend_preset, blendPredefinedItems, IM_ARRAYSIZE(blendPredefinedItems));
+
+        switch(blend_preset)
+        {
+        default:
+        case 0: // None
+            _materialParticle->getStateBlock()->setBlend(false);
+            break;
+        case 1: // Alpha
+            _materialParticle->getStateBlock()->setBlend(true);
+            _materialParticle->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
+            _materialParticle->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
+            break;
+        case 2: // Additive
+            _materialParticle->getStateBlock()->setBlend(true);
+            _materialParticle->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
+            _materialParticle->getStateBlock()->setBlendDst(RenderState::BLEND_ONE);
+            break;
+        case 3: // Multiplied
+            _materialParticle->getStateBlock()->setBlend(true);
+            _materialParticle->getStateBlock()->setBlendSrc(RenderState::BLEND_ZERO);
+            _materialParticle->getStateBlock()->setBlendDst(RenderState::BLEND_SRC_COLOR);
+            break;
+        }
+    }
+    else
+    {
+        const char* blendItems[] = {
+            "BLEND_ZERO",
+            "BLEND_ONE",
+            "BLEND_SRC_COLOR",
+            "BLEND_ONE_MINUS_SRC_COLOR",
+            "BLEND_DST_COLOR",
+            "BLEND_ONE_MINUS_DST_COLOR",
+            "BLEND_SRC_ALPHA",
+            "BLEND_ONE_MINUS_SRC_ALPHA",
+            "BLEND_DST_ALPHA",
+            "BLEND_ONE_MINUS_DST_ALPHA",
+            "BLEND_CONSTANT_ALPHA",
+            "BLEND_ONE_MINUS_CONSTANT_ALPHA",
+            "BLEND_SRC_ALPHA_SATURATE"
+        };
+
+        static int custom_blend_src = 0;
+        static int custom_blend_dst = 0;
+        ImGui::Combo("BlendSrc", &custom_blend_src, blendItems, IM_ARRAYSIZE(blendItems));
+        ImGui::Combo("BlendDst", &custom_blend_dst, blendItems, IM_ARRAYSIZE(blendItems));
+
+        _materialParticle->getStateBlock()->setBlend(true);
+        _materialParticle->getStateBlock()->setBlendSrc(RenderState::Blend(custom_blend_src));
+        _materialParticle->getStateBlock()->setBlendDst(RenderState::Blend(custom_blend_dst));
+    }
+
+    ImGui::End();
+}
+
 void SparkDemo::update(float elapsedTime)
 {
+    // show toolbox
+    showToolbox();
+
     // update camera
     _fpCamera.updateCamera(elapsedTime);   
 
