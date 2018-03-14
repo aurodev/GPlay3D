@@ -2,8 +2,8 @@
 
 #include <spark/SPARK_Core.h>
 #include <spark/Core/SPK_Renderer.h>
-#include "Material.h"
 #include "SparkUtility.h"
+#include "../Material.h"
 
 namespace SPK {
 namespace GP3D {

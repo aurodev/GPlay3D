@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Vector3.h"
-#include "Vector4.h"
-
-//#include <spark/Core/SPK_Vector3D.h>
+#include "../Vector3.h"
+#include "../Vector4.h"
 #include <spark/SPARK_Core.h>
 
 namespace SPK {

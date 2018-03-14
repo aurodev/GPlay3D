@@ -157,7 +157,11 @@ SOURCES += src/AbsoluteLayout.cpp \
     src/BGFX/BGFXVertexBuffer.cpp \
     src/BGFX/GeometryBuffer.cpp \
     src/BGFX/MemoryBuffer.cpp \
-    src/BGFX/BGFXImGui.cpp
+    src/BGFX/BGFXImGui.cpp \
+    src/ParticleSpark/SparkBaseRenderer.cpp \
+    src/ParticleSpark/SparkParticleEmitter.cpp \
+    src/ParticleSpark/SparkQuadRenderer.cpp \
+    src/ParticleSpark/SparkUtility.cpp
 
 HEADERS += src/AbsoluteLayout.h \
     src/AIAgent.h \
@@ -283,7 +287,12 @@ HEADERS += src/AbsoluteLayout.h \
     src/BGFX/GeometryBuffer.h \
     src/BGFX/MemoryBuffer.h \
     src/BGFX/BGFXImGui.h \
-    src/Singleton.h
+    src/Singleton.h \
+    src/ParticleSpark/SparkBaseRenderer.h \
+    src/ParticleSpark/SparkGP3D.h \
+    src/ParticleSpark/SparkParticleEmitter.h \
+    src/ParticleSpark/SparkQuadRenderer.h \
+    src/ParticleSpark/SparkUtility.h
 
 
 #DEFINES += COMPIL_WITH_LUA

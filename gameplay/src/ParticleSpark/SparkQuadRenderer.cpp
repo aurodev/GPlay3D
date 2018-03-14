@@ -80,6 +80,8 @@ RenderBuffer* SparkQuadRenderer::attachRenderBuffer(const Group& group) const
     SparkQuadRenderBuffer* buffer = SPK_NEW(SparkQuadRenderBuffer,group.getCapacity(),NB_VERTICES_PER_PARTICLE,NB_INDICES_PER_PARTICLE);
 
 
+    size_t numParticles = group.getCapacity();
+
     // map index buffer and fill data
 
     gameplay::MeshPart* meshPart = buffer->getMesh()->getPart(0);
@@ -90,7 +92,6 @@ RenderBuffer* SparkQuadRenderer::attachRenderBuffer(const Group& group) const
     if(!destPtr)
         GP_ERROR("Unable to map index buffer.");
 
-    unsigned numParticles = group.getCapacity();
     gameplay::Mesh::IndexFormat indexFormat = meshPart->getIndexFormat();
     if (indexFormat == gameplay::Mesh::INDEX16)
     {
@@ -146,7 +147,7 @@ void SparkQuadRenderer::render(const Group& group,const DataSet* dataSet,RenderB
 
     unsigned numParticles = group.getNbParticles();
 
-    GP_ASSERT(buffer.getMesh()->getVertexBuffer()->getElementCount() == numParticles * NB_VERTICES_PER_PARTICLE);
+    GP_ASSERT(buffer.getMesh()->getVertexBuffer()->getElementCount() >= numParticles * NB_VERTICES_PER_PARTICLE);
 
     if(numParticles == 0)
        return;

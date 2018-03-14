@@ -1,10 +1,8 @@
 #include "SparkDemo.h"
 #include "SamplesGame.h"
-
-
+#include "ParticleSpark/SparkQuadRenderer.h"
+#include "ParticleSpark/SparkParticleEmitter.h"
 #include <spark/SPARK.h>
-#include "GpSpark/SparkQuadRenderer.h"
-#include "GpSpark/SparkParticleEmitter.h"
 
 
 const float ZOOM_DEFAULT = 4.0f;

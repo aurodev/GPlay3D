@@ -4,8 +4,8 @@
 #include "gameplay.h"
 #include "Example.h"
 #include "FirstPersonCamera.h"
+#include "ParticleSpark/SparkParticleEmitter.h"
 #include <spark/SPARK.h>
-#include "GpSpark/SparkParticleEmitter.h"
 
 using namespace gameplay;
 

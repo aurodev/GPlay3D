@@ -33,10 +33,6 @@ SOURCES += \
     src/RenderToTexture.cpp \
     src/ImGuiTest.cpp \
     src/SparkDemo.cpp \
-    src/GpSpark/SparkParticleEmitter.cpp \
-    src/GpSpark/SparkQuadRenderer.cpp \
-    src/GpSpark/SparkBaseRenderer.cpp \
-    src/GpSpark/SparkUtility.cpp
 
 HEADERS += \
     src/SamplesGame.h \
@@ -50,11 +46,6 @@ HEADERS += \
     src/RenderToTexture.h \
     src/ImGuiTest.h \
     src/SparkDemo.h \
-    src/GpSpark/SparkParticleEmitter.h \
-    src/GpSpark/SparkQuadRenderer.h \
-    src/GpSpark/SparkBaseRenderer.h \
-    src/GpSpark/SparkGP3D.h \
-    src/GpSpark/SparkUtility.h
 
 INCLUDEPATH += ../../gameplay/src
 INCLUDEPATH += ../../external-deps/include

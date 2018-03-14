@@ -1,10 +1,9 @@
 #pragma once
 
-#include "SparkBaseRenderer.h"
 #include <spark/Extensions/Renderers/SPK_QuadRenderBehavior.h>
 #include <spark/Extensions/Renderers/SPK_Oriented3DRenderBehavior.h>
-
 #include "SparkUtility.h"
+#include "SparkBaseRenderer.h"
 
 namespace SPK {
 namespace GP3D {

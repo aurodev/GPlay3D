@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Base.h"
-#include "Ref.h"
-#include "Drawable.h"
-
 #include <spark/SPARK.h>
+#include "../Base.h"
+#include "../Ref.h"
+#include "../Drawable.h"
 
 namespace gameplay {
 
