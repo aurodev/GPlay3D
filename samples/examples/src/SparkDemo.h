@@ -12,42 +12,24 @@ using namespace gameplay;
 class SparkDemo : public Example
 {
 public:
-
     SparkDemo();
-    //~SparkDemo();
     void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
     void keyEvent(Keyboard::KeyEvent evt, int key);
 
 protected:
-
     void initialize();
     void finalize();
     void update(float elapsedTime);
     void render(float elapsedTime);
 
 private:
-
-
+    bool updateEmitters(Node* node, float elapsedTime);
     bool drawScene(Node* node);
 
-    Font* _font;
-    Model* _triangleModel;
-    float _spinDirection;
-    Matrix _worldViewProjectionMatrix;
-    Model* _cubeModel;
-    Node* _cubeNode;
-
-    Node* _particleNode;
-
-    Node* _cameraNode;
-    Node* _cameraParent;
-
-    Scene* _scene;
-    SPK::Ref<SPK::System> __effectFountain;
-    SparkParticleEmitter* myspksystem;
-
-
     FirstPersonCamera _fpCamera;
+    Font* _font;
+    Scene* _scene;
+    Node* _cubeNode;
 };
 
 #endif

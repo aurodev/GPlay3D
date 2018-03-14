@@ -4,11 +4,10 @@
 #include "ParticleSpark/SparkParticleEmitter.h"
 #include <spark/SPARK.h>
 
-const float ZOOM_DEFAULT = 4.0f;
-
 #if defined(ADD_SAMPLE)
     ADD_SAMPLE("Graphics", "Spark Demo", SparkDemo, 15);
 #endif
+
 
 static Mesh* createCubeMesh(float size = 1.0f)
 {
@@ -77,18 +76,13 @@ void SparkDemo::initialize()
     // Create a new empty scene.
     _scene = Scene::create();
 
-
     // set fps camera
-    Vector3 cameraPosition(0, 1, 10);
+    Vector3 cameraPosition(0, 2, 5);
     _fpCamera.initialize(1.0, 100000.0f);
     _fpCamera.setPosition(cameraPosition);
     _scene->addNode(_fpCamera.getRootNode());
     _scene->setActiveCamera(_fpCamera.getCamera());
-
-    // Update the aspect ratio for our scene's camera to match the current device resolution
     _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
-
-
 
 
     // Create a white light.
@@ -100,45 +94,58 @@ void SparkDemo::initialize()
     lightNode->rotateX(MATH_DEG_TO_RAD(-45.0f));
 
 
-    // Create the cube mesh and model.
+    // Create a cube mesh for next models.
     Mesh* cubeMesh = createCubeMesh();
-    Model* cubeModel = Model::create(cubeMesh);
-    // Release the mesh because the model now holds a reference to it.
+
+    // Create a plane from a flattened cube mesh
+    {
+        Model* planeModel = Model::create(cubeMesh);
+
+        // Create a simple textured material for the plane
+        Material* material = planeModel->setMaterial("res/shaders/textured.vert", "res/shaders/textured.frag");
+        material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
+
+        // Load the texture from file.
+        Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/png/dirt.png", true);
+        sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+
+        Node* planeNode = _scene->addNode("plane");
+        planeNode->setDrawable(planeModel);
+        planeNode->setScale(Vector3(5.0f, 0.001f, 5.0f));
+        SAFE_RELEASE(planeModel);
+    }
+
+    // Create a small cube
+    {
+        Model* cubeModel = Model::create(cubeMesh);
+
+        // Create a material with a directional light for the cube
+        Material* material = cubeModel->setMaterial("res/shaders/textured.vert", "res/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT=1");
+        material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
+        material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", "INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX");
+        material->getParameter("u_ambientColor")->setValue(Vector3(0.2f, 0.2f, 0.2f));
+        material->getParameter("u_directionalLightColor[0]")->setValue(lightNode->getLight()->getColor());
+        material->getParameter("u_directionalLightDirection[0]")->bindValue(lightNode, &Node::getForwardVectorWorld);
+        Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/png/brick.png", true);
+        sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+        material->getStateBlock()->setCullFace(true);
+        material->getStateBlock()->setDepthTest(true);
+        material->getStateBlock()->setDepthWrite(true);
+
+        _cubeNode = _scene->addNode("cube");
+        _cubeNode->setDrawable(cubeModel);
+        _cubeNode->setScale(Vector3(0.25, 0.25, 0.25));
+        SAFE_RELEASE(cubeModel);
+
+    }
+
+    // we don't need more the cube mesh.
     SAFE_RELEASE(cubeMesh);
 
-    // Create the material for the cube model and assign it to the first mesh part.
-    Material* material = cubeModel->setMaterial("res/shaders/textured.vert", "res/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT=1");
-
-    // These parameters are normally set in a .material file but this example sets them programmatically.
-    // Bind the uniform "u_worldViewProjectionMatrix" to use the WORLD_VIEW_PROJECTION_MATRIX from the scene's active camera and the node that the model belongs to.
-    material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
-    material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", "INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX");
-    // Set the ambient color of the material.
-    material->getParameter("u_ambientColor")->setValue(Vector3(0.2f, 0.2f, 0.2f));
-
-    // Bind the light's color and direction to the material.
-    material->getParameter("u_directionalLightColor[0]")->setValue(lightNode->getLight()->getColor());
-    material->getParameter("u_directionalLightDirection[0]")->bindValue(lightNode, &Node::getForwardVectorWorld);
-
-    // Load the texture from file.
-    Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/png/dirt.png", true);
-    sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
-    material->getStateBlock()->setCullFace(false);
-    material->getStateBlock()->setDepthTest(true);
-    material->getStateBlock()->setDepthWrite(true);
-
-    _cubeNode = _scene->addNode("cube");
-    _cubeNode->setDrawable(cubeModel);
-    _cubeNode->setScale(Vector3(5.0f, 0.01f, 5.0f));
-    SAFE_RELEASE(cubeModel);
 
 
 
-
-
-
-
-    // Create the material for particles
+    // Create a material for particles
     Material* materialParticle = Material::create("res/shaders/particle.vert", "res/shaders/particle.frag");
     //materialParticle->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
     materialParticle->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::VIEW_PROJECTION_MATRIX);
@@ -152,72 +159,108 @@ void SparkDemo::initialize()
     materialParticle->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
     materialParticle->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
 
+    // material need to be binded to its node to get working setParameterAutoBinding
+    // this hack is to ensure to bind the material, because it is not currently binded by SparkParticleEmitter.
+    // TODO: bind material and node correctly when using SparkParticleEmitter
+    materialParticle->setNodeBinding(_scene->getFirstNode());
+
+
+
 
     // Create fountain particle effect using spark library
+    SPK::Ref<SPK::System> spkEffectFountain = SPK::System::create(true);
+    spkEffectFountain->setName("Foutain");
+    {
+        // Renderer
+        SPK::Ref<SPK::GP3D::SparkQuadRenderer> renderer = SPK::GP3D::SparkQuadRenderer::create();
+        renderer->setTexturingMode(SPK::TEXTURE_MODE_2D);
+        renderer->setScale(0.1f,0.1f);
+        renderer->setMaterial(materialParticle);
+        renderer->setOrientation(SPK::OrientationPreset::CAMERA_PLANE_ALIGNED);
 
-    SPK::Ref<SPK::System> system_ = SPK::System::create(true);
-    system_->setName("Foutain");
+        // Emitter
+        SPK::Ref<SPK::SphericEmitter> particleEmitter = SPK::SphericEmitter::create(SPK::Vector3D(0.0f,1.0f,0.0f),0.1f * M_PI, 0.1f * M_PI);
+        particleEmitter->setZone(SPK::Point::create(SPK::Vector3D(0.0f,0.015f,0.0f)));
+        particleEmitter->setFlow(150);
+        particleEmitter->setForce(1.5f,1.5f);
 
-    // Renderer
-    SPK::Ref<SPK::GP3D::SparkQuadRenderer> renderer = SPK::GP3D::SparkQuadRenderer::create();
-    renderer->setTexturingMode(SPK::TEXTURE_MODE_2D);
-    renderer->setScale(0.1f,0.1f);
-    renderer->setMaterial(materialParticle);
-    renderer->setOrientation(SPK::OrientationPreset::CAMERA_PLANE_ALIGNED);
+        // Obstacle
+        SPK::Ref<SPK::Plane> groundPlane = SPK::Plane::create();
+        SPK::Ref<SPK::Obstacle> obstacle = SPK::Obstacle::create(groundPlane,0.9f,1.0f);
+        obstacle->setBouncingRatio(0.6f);
+        obstacle->setFriction(1.0f);
 
-    // Emitter
-    SPK::Ref<SPK::SphericEmitter> particleEmitter = SPK::SphericEmitter::create(SPK::Vector3D(0.0f,1.0f,0.0f),0.1f * M_PI, 0.1f * M_PI);
-    particleEmitter->setZone(SPK::Point::create(SPK::Vector3D(0.0f,0.015f,0.0f)));
-    particleEmitter->setFlow(200);
-    particleEmitter->setForce(1.5f,1.5f);
-
-    // Obstacle
-    SPK::Ref<SPK::Plane> groundPlane = SPK::Plane::create();
-    SPK::Ref<SPK::Obstacle> obstacle = SPK::Obstacle::create(groundPlane,0.9f,1.0f);
-    obstacle->setBouncingRatio(0.6f);
-    obstacle->setFriction(1.0f);
-
-    // Group
-    SPK::Ref<SPK::Group> particleGroup = system_->createGroup(5000);
-    particleGroup->addEmitter(particleEmitter);
-    particleGroup->addModifier(obstacle);
-    particleGroup->setRenderer(renderer);
-    particleGroup->addModifier(SPK::Gravity::create(SPK::Vector3D(0.0f,-1.0f,0.0f)));
-    particleGroup->setLifeTime(14.2f,14.5f);
-    particleGroup->setColorInterpolator(SPK::ColorSimpleInterpolator::create(0xff0000ff,0x0000ffff));
-    particleGroup->enableSorting(true);
+        // Group
+        SPK::Ref<SPK::Group> particleGroup = spkEffectFountain->createGroup(2500);
+        particleGroup->addEmitter(particleEmitter);
+        particleGroup->addModifier(obstacle);
+        particleGroup->setRenderer(renderer);
+        particleGroup->addModifier(SPK::Gravity::create(SPK::Vector3D(0.0f,-1.0f,0.0f)));
+        particleGroup->setLifeTime(14.2f, 14.5f);
+        particleGroup->setColorInterpolator(SPK::ColorSimpleInterpolator::create(0xff0000ff,0x0000ffff));
+        particleGroup->enableSorting(true);
+    }
 
 
-    // Create a spark particle node and attach spark system
-    myspksystem = SparkParticleEmitter::create(system_, true);
-    _particleNode = _scene->addNode("spark");
-    _particleNode->setDrawable(myspksystem);
-    materialParticle->setNodeBinding(_particleNode);
+    // Create fountain particle effect using spark library
+    SPK::Ref<SPK::System> spkEffectTrail = SPK::System::create(true);
+    spkEffectTrail->setName("Trail");
+    {
+        // Renderer
+        SPK::Ref<SPK::GP3D::SparkQuadRenderer> renderer = SPK::GP3D::SparkQuadRenderer::create();
+        renderer->setTexturingMode(SPK::TEXTURE_MODE_2D);
+        renderer->setScale(0.1f,0.1f);
+        renderer->setMaterial(materialParticle);
+        renderer->setOrientation(SPK::OrientationPreset::CAMERA_PLANE_ALIGNED);
+
+        // Emitter
+        SPK::Ref<SPK::SphericEmitter> particleEmitter = SPK::SphericEmitter::create(SPK::Vector3D(0.0f,1.0f,0.0f),0.1f * M_PI, 0.1f * M_PI);
+        particleEmitter->setZone(SPK::Point::create(SPK::Vector3D(0.0f,0.015f,0.0f)));
+        particleEmitter->setFlow(50);
+        particleEmitter->setForce(1.5f,1.5f);
+
+        // Obstacle
+        /*SPK::Ref<SPK::Plane> groundPlane = SPK::Plane::create();
+        SPK::Ref<SPK::Obstacle> obstacle = SPK::Obstacle::create(groundPlane,0.9f,1.0f);
+        obstacle->setBouncingRatio(0.6f);
+        obstacle->setFriction(1.0f);*/
+
+        // Group
+        SPK::Ref<SPK::Group> particleGroup = spkEffectTrail->createGroup(2500);
+        particleGroup->addEmitter(particleEmitter);
+        //particleGroup->addModifier(obstacle);
+        particleGroup->setRenderer(renderer);
+        //particleGroup->addModifier(SPK::Gravity::create(SPK::Vector3D(0.0f,-1.0f,0.0f)));
+        particleGroup->setLifeTime(4.2f, 4.5f);
+        particleGroup->setColorInterpolator(SPK::ColorSimpleInterpolator::create(0xffff00ff,0xff00ffff));
+        particleGroup->enableSorting(false);
+    }
+
+
+    // Create a node in scene and attach spark foutain effect
+    SparkParticleEmitter* foutainEmitter = SparkParticleEmitter::create(spkEffectFountain, false);
+    Node* particleNode = _scene->addNode("sparkFoutain");
+    particleNode->setDrawable(foutainEmitter);
+    particleNode->setTranslation(0.0f, 0.8f, 0.0f);
+    //materialParticle->setNodeBinding(particleNode);
+
+
+    // Create a node and attach trail foutain effect
+    SparkParticleEmitter* trailEmitter = SparkParticleEmitter::create(spkEffectTrail, true);
+    Node* trailNode = Node::create("sparkTrail");
+    trailNode->setDrawable(trailEmitter);
+    trailNode->setTranslation(0.0f, 0.8f, 0.0f);
+    //materialParticle->setNodeBinding(trailNode);
+
+    // set this last node a child of the cube node to move with the cube.
+    _cubeNode->addChild(trailNode);
 }
 
 void SparkDemo::finalize()
 {
     SAFE_RELEASE(_font);
     SAFE_RELEASE(_scene);
-}
-
-void SparkDemo::update(float elapsedTime)
-{
-    _fpCamera.updateCamera(elapsedTime);
-
-    //_particleNode->rotateY(elapsedTime * 0.001 * MATH_PI);
-    //_particleNode->rotateX(elapsedTime * 0.0001 * MATH_PI);
-
-    // translate the particle system around a circle
-    static float accuTime = 0;
-    accuTime += elapsedTime * 0.001f;
-    float speed = 0.85 * accuTime;
-    float radius = 1.0f;
-    float x = sin(speed) * radius;
-    float z = cos(speed) * radius;
-    _particleNode->setTranslation(x, 0.125f, z);
-
-    myspksystem->update(elapsedTime);
+    SAFE_RELEASE(_cubeNode);
 }
 
 void SparkDemo::render(float elapsedTime)
@@ -229,6 +272,49 @@ void SparkDemo::render(float elapsedTime)
     _scene->visit(this, &SparkDemo::drawScene);
 
     drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());
+}
+
+void SparkDemo::update(float elapsedTime)
+{
+    // update camera
+    _fpCamera.updateCamera(elapsedTime);   
+
+    // Visit all the nodes in the scene, to update nodes with particles drawable.
+    // TODO: change this to update in another way
+    _scene->visit(this, &SparkDemo::updateEmitters, elapsedTime);
+
+
+    // compute acculumulation time for a linear movement
+    static float accuTime = 0;
+    accuTime += elapsedTime * 0.001f;
+
+    // compute rotation and translation values
+    float speed = 0.85 * accuTime;
+    float radius = 1.0f;
+    Vector3 axis(0.27f, 0.34f, 0.19f);
+    float angle = accuTime;
+
+    // move the small cube around a circle
+    Vector3 scale = _cubeNode->getScale();
+    Quaternion rotate(axis, angle);
+    Vector3 translate(sin(speed) * radius, 1.0f, cos(speed) * radius);
+    _cubeNode->set(scale, rotate, translate);
+}
+
+bool SparkDemo::updateEmitters(Node* node, float elapsedTime)
+{
+    SparkParticleEmitter* spkEmitter = dynamic_cast<SparkParticleEmitter*>(node->getDrawable());
+    if (spkEmitter)
+        spkEmitter->update(elapsedTime);
+    return true;
+}
+
+bool SparkDemo::drawScene(Node* node)
+{
+    Drawable* drawable = node->getDrawable();
+    if (drawable)
+        drawable->draw();
+    return true;
 }
 
 void SparkDemo::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
@@ -249,14 +335,6 @@ void SparkDemo::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int con
     case Touch::TOUCH_MOVE:
         break;
     };
-}
-
-bool SparkDemo::drawScene(Node* node)
-{
-    Drawable* drawable = node->getDrawable();
-    if (drawable)
-        drawable->draw();
-    return true;
 }
 
 void SparkDemo::keyEvent(Keyboard::KeyEvent evt, int key)
