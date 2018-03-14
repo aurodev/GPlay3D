@@ -1,3 +1,11 @@
+## Gplay fork
+
+- Remove OpenGL and use BGFX instead.
+- Adds support for SDL2 and set as default platform.
+- Adds support for SPARK particle engine.
+- Adds new samples.
+
+
 ## v3.0.0
 
 - Adds support for Visual Studio 2015.
