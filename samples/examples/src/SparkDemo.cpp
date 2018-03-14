@@ -260,14 +260,13 @@ void SparkDemo::initialize()
 void SparkDemo::finalize()
 {
     SAFE_RELEASE(_font);
-    SAFE_RELEASE(_scene);
-    SAFE_RELEASE(_cubeNode);
+    SAFE_RELEASE(_scene);    
 }
 
 void SparkDemo::render(float elapsedTime)
 {
     // Clear the color and depth buffers
-    clear(CLEAR_COLOR_DEPTH, 0.7f, 0.7f, 0.7f, 1.0f, 1.0f, 0);
+    clear(CLEAR_COLOR_DEPTH, 0.25f, 0.25f, 0.4f, 1.0f, 1.0f, 0);
 
     // Visit all the nodes in the scene, drawing the models.
     _scene->visit(this, &SparkDemo::drawScene);
