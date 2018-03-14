@@ -1,9 +1,10 @@
 ## Gplay fork
 
-- Remove OpenGL and use BGFX instead.
+- Remove OpenGL and use BGFX api.
 - Adds support for SDL2 and set as default platform.
 - Adds support for SPARK particle engine.
 - Adds new samples.
+- Adds support for ImGui.
 
 
 ## v3.0.0
