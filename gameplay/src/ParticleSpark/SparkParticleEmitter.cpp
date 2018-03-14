@@ -32,25 +32,28 @@ Drawable* SparkParticleEmitter::clone(NodeCloneContext& context)
 
 void SparkParticleEmitter::updateCameraPosition() const
 {
-    Camera* camera = _node->getScene()->getActiveCamera();
-
-    Matrix invTransform;
-    invTransform = camera->getInverseViewMatrix();
-
-    SPK::GP3D::SparkBaseRenderer* renderer = nullptr;
-
-    for (size_t i=0; i<_sparkSystem->getNbGroups(); ++i)
+    if(_node && _node->getScene())
     {
-        // set view matrix for renderer
-        renderer = reinterpret_cast<SPK::GP3D::SparkBaseRenderer*>(_sparkSystem->getGroup(i)->getRenderer().get());
-        GP_ASSERT(renderer);
-        renderer->setViewMatrix(invTransform);
+        Camera* camera = _node->getScene()->getActiveCamera();
 
-        // set spark camera position when group do sorting or distance computation
-        if (_sparkSystem->getGroup(i)->isDistanceComputationEnabled())
+        Matrix invTransform;
+        invTransform = camera->getInverseViewMatrix();
+
+        SPK::GP3D::SparkBaseRenderer* renderer = nullptr;
+
+        for (size_t i=0; i<_sparkSystem->getNbGroups(); ++i)
         {
-            Vector3 pos = camera->getNode()->getTranslationWorld();
-            _sparkSystem->setCameraPosition(SPK::GP3D::gp3d2spk(pos));
+            // set view matrix for renderer
+            renderer = reinterpret_cast<SPK::GP3D::SparkBaseRenderer*>(_sparkSystem->getGroup(i)->getRenderer().get());
+            GP_ASSERT(renderer);
+            renderer->setViewMatrix(invTransform);
+
+            // set spark camera position when group do sorting or distance computation
+            if (_sparkSystem->getGroup(i)->isDistanceComputationEnabled())
+            {
+                Vector3 pos = camera->getNode()->getTranslationWorld();
+                _sparkSystem->setCameraPosition(SPK::GP3D::gp3d2spk(pos));
+            }
         }
     }
 }
