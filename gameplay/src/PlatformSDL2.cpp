@@ -569,6 +569,9 @@ int Platform::enterMessagePump()
 
                 case SDL_MOUSEWHEEL:
                 {
+                    if(ImGui::GetIO().WantCaptureMouse)
+                        continue;
+
                     const SDL_MouseWheelEvent& wheelEvent = evt.wheel;
                     int wheelDelta = wheelEvent.y;
                     gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_WHEEL, 0, 0, wheelDelta);
@@ -577,6 +580,9 @@ int Platform::enterMessagePump()
 
                 case SDL_MOUSEBUTTONDOWN:
                 {
+                    if(ImGui::GetIO().WantCaptureMouse)
+                        continue;
+
                     gameplay::Mouse::MouseEvent mouseEvt;
                     const SDL_MouseButtonEvent& sdlMouseEvent = evt.button;
 
@@ -593,7 +599,6 @@ int Platform::enterMessagePump()
                         break;
                     }
 
-                    if(!ImGui::GetIO().WantCaptureMouse)
                     if (!gameplay::Platform::mouseEventInternal(mouseEvt, sdlMouseEvent.x, sdlMouseEvent.y, 0))
                     {
                         gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_PRESS, sdlMouseEvent.x, sdlMouseEvent.y, 0, true);
@@ -603,6 +608,9 @@ int Platform::enterMessagePump()
 
                 case SDL_MOUSEBUTTONUP:
                 {
+                    if(ImGui::GetIO().WantCaptureMouse)
+                        continue;
+
                     gameplay::Mouse::MouseEvent mouseEvt;
                     const SDL_MouseButtonEvent& sdlMouseEvent = evt.button;
 
@@ -619,7 +627,6 @@ int Platform::enterMessagePump()
                         break;
                     }
 
-                    if(!ImGui::GetIO().WantCaptureMouse)
                     if (!gameplay::Platform::mouseEventInternal(mouseEvt, sdlMouseEvent.x, sdlMouseEvent.y, 0))
                     {
                         gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_RELEASE, sdlMouseEvent.x, sdlMouseEvent.y, 0, true);
@@ -629,6 +636,9 @@ int Platform::enterMessagePump()
 
                 case SDL_MOUSEMOTION:
                 {
+                    if(ImGui::GetIO().WantCaptureMouse)
+                        continue;
+
                     const SDL_MouseMotionEvent& motionEvt = evt.motion;
 
                     int x = motionEvt.x;
@@ -649,7 +659,6 @@ int Platform::enterMessagePump()
                         SDL_WarpMouseInWindow(__window, __mouseCapturePointX, __mouseCapturePointY);
                     }
 
-                    if(!ImGui::GetIO().WantMoveMouse)
                     if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_MOVE, x, y, 0))
                     {
                         //if (evt.xmotion.state & Button1Mask)
