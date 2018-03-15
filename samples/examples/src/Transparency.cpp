@@ -35,7 +35,7 @@ public:
 
         // set fps camera
         Vector3 cameraPosition(0, 1, 5);
-        _fpCamera.initialize(1.0, 10000.0f);
+        _fpCamera.initialize(0.1f, 10000.0f);
         _fpCamera.setPosition(cameraPosition);
         _scene->addNode(_fpCamera.getRootNode());
         _scene->setActiveCamera(_fpCamera.getCamera());
@@ -43,33 +43,101 @@ public:
 
         // load box shape
         Bundle* bundle = Bundle::create("res/common/box.gpb");
-        Node* nodeBox = bundle->loadNode("box");
-        dynamic_cast<Model*>(nodeBox->getDrawable())->setMaterial("res/common/box.material", 0);
+        Mesh* meshBox = bundle->loadMesh("box_Mesh");
         SAFE_RELEASE(bundle);
 
+        // Create a plane.
+        Model* planeModel = Model::create(meshBox);
+        planeModel->setMaterial("res/common/box.material");
+        Node* planeNode = Node::create("plane");
+        planeNode->setDrawable(planeModel);
+        planeNode->setScale(8.0f, 0.001f, 8.0f);
+        _scene->addNode(planeNode);
+
+
+        // Create a base colored material with blending
+        Material* material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag");
+        material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
+        material->getStateBlock()->setCullFace(false);
+        material->getStateBlock()->setDepthTest(true);
+        material->getStateBlock()->setDepthWrite(true);
+        material->getStateBlock()->setBlend(true);
+        material->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
+        material->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
 
 
 
-        // create a plane
-        Node* plane = nodeBox->clone();
-        plane->setScale(8.0f, 0.001f, 8.0f);
-        _scene->addNode(plane);
 
-        // create 3 wide boxes
-        nodeBox->setScale(4.0f, 1.0f, 0.2f);
-        Node* box1 = nodeBox->clone();
-        Node* box2 = nodeBox->clone();
-        Node* box3 = nodeBox->clone();
+        /*int maxDim = 4;
+        float scale = 0.8f;
+        float offset = maxDim / 2.0f * 0.8f;
 
-        box2->rotate(Vector3(0,1,0), MATH_DEG_TO_RAD(30.0f));
-        box3->rotate(Vector3(0,1,0), MATH_DEG_TO_RAD(-30.0f));
+        for(int y=0; y<maxDim; y++)
+            for(int z=0; z<maxDim; z++)
+                for(int x=0; x<maxDim; x++)
+                {
+                        Material* materialClone = material->clone();
+                        materialClone->getParameter("u_diffuseColor")->setValue(Vector4(x/float(maxDim), y/float(maxDim), 1, 0.45));
+                        materialClone->getStateBlock()->setBlend(true);
+                        materialClone->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
+                        materialClone->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
 
-        _scene->addNode(box1);
-        _scene->addNode(box2);
-        _scene->addNode(box3);
+                        Model* model = Model::create(meshBox);
+                        model->setMaterial(materialClone);
+                        Node* node = Node::create("box");
+                        node->setDrawable(model);
+                        node->setScale(scale);
+                        node->setTranslation(-offset+x, maxDim+1.0f-y, -offset+z);
+                        _scene->addNode(node);
+                }*/
 
 
-        SAFE_RELEASE(nodeBox);
+
+
+
+        {
+            Material* materialClone = material->clone();
+            materialClone->getParameter("u_diffuseColor")->setValue(Vector4(1.0f, 0.0f, 0.0, 0.3f));
+
+            Model* model = Model::create(meshBox);
+            model->setMaterial(materialClone);
+            Node* node = Node::create("box");
+            node->setDrawable(model);
+            node->setScale(6.0f, 1.0f, 0.25f);
+            node->setTranslation(0, 0.5, 0);
+            _scene->addNode(node);
+        }
+
+        {
+            Material* materialClone = material->clone();
+            materialClone->getParameter("u_diffuseColor")->setValue(Vector4(0.0f, 1.0f, 0.0, 0.3f));
+
+            Model* model = Model::create(meshBox);
+            model->setMaterial(materialClone);
+            Node* node = Node::create("box");
+            node->setDrawable(model);
+            node->setScale(6.0f, 1.0f, 0.25f);
+            node->setTranslation(0, 0.5, 0);
+            node->rotate(Vector3(0,1,0), MATH_DEG_TO_RAD(40.0f));
+            _scene->addNode(node);
+        }
+
+        {
+            Material* materialClone = material->clone();
+            materialClone->getParameter("u_diffuseColor")->setValue(Vector4(0.0f, 0.0f, 1.0, 0.3f));
+
+            Model* model = Model::create(meshBox);
+            model->setMaterial(materialClone);
+            Node* node = Node::create("box");
+            node->setDrawable(model);
+            node->setScale(6.0f, 1.0f, 0.25f);
+            node->setTranslation(0, 0.5, 0);
+            node->rotate(Vector3(0,1,0), MATH_DEG_TO_RAD(-40.0f));
+            _scene->addNode(node);
+        }
+
+
+        SAFE_RELEASE(material);
     }
 
     void update(float elapsedTime)
