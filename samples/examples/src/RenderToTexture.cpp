@@ -2,7 +2,7 @@
 #include "SamplesGame.h"
 
 #if defined(ADD_SAMPLE)
-    ADD_SAMPLE("Graphics", "Render to Texture", RenderToTexture, 6);
+    ADD_SAMPLE("Graphics", "Render to Texture", RenderToTexture, 5);
 #endif
 
 

@@ -3,7 +3,7 @@
 #include <imgui/imgui.h>
 
 #if defined(ADD_SAMPLE)
-    ADD_SAMPLE("Graphics", "ImGui", ImGuiTest, 7);
+    ADD_SAMPLE("Graphics", "ImGui", ImGuiTest, 6);
 #endif
 
 

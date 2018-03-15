@@ -6,7 +6,7 @@
 #include <imgui/imgui.h>
 
 #if defined(ADD_SAMPLE)
-    ADD_SAMPLE("Graphics", "Spark Demo", SparkDemo, 15);
+    ADD_SAMPLE("Graphics", "Spark Demo", SparkDemo, 7);
 #endif
 
 

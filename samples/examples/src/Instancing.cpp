@@ -2,7 +2,7 @@
 #include "SamplesGame.h"
 
 #if defined(ADD_SAMPLE)
-    ADD_SAMPLE("Graphics", "Instancing", Instancing, 4);
+    ADD_SAMPLE("Graphics", "Instancing", Instancing, 3);
 #endif
 
 #include <bx/math.h>

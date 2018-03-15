@@ -3,7 +3,7 @@
 #include "BGFX/BGFXRenderer.h"
 
 #if defined(ADD_SAMPLE)
-    ADD_SAMPLE("Graphics", "Sponza", Sponza, 5);
+    ADD_SAMPLE("Graphics", "Sponza", Sponza, 4);
 #endif
 
 static const unsigned int MOVE_FORWARD = 1;
