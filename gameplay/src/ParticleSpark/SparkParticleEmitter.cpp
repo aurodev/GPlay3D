@@ -46,6 +46,11 @@ void SparkParticleEmitter::updateCameraPosition() const
             // set view matrix for renderer
             renderer = reinterpret_cast<SPK::GP3D::SparkBaseRenderer*>(_sparkSystem->getGroup(i)->getRenderer().get());
             GP_ASSERT(renderer);
+
+            // bind view projection matrix to shader
+            renderer->getMaterial()->getParameter("u_worldViewProjectionMatrix")->setValue(camera->getViewProjectionMatrix());
+
+            // store inverse view matrix to compute face orientation when rendering particles
             renderer->setViewMatrix(invTransform);
 
             // set spark camera position when group do sorting or distance computation

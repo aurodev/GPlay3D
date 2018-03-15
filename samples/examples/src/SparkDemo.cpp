@@ -148,9 +148,6 @@ void SparkDemo::initialize()
 
     // Create a material for particles
     _materialParticle = Material::create("res/shaders/particle.vert", "res/shaders/particle.frag");
-    //materialParticle->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
-    _materialParticle->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::VIEW_PROJECTION_MATRIX);
-
     Texture::Sampler* sampler2 = _materialParticle->getParameter("u_diffuseTexture")->setValue("res/png/flare.png", true);
     sampler2->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
     _materialParticle->getStateBlock()->setCullFace(true);
@@ -159,13 +156,6 @@ void SparkDemo::initialize()
     _materialParticle->getStateBlock()->setBlend(true);
     _materialParticle->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
     _materialParticle->getStateBlock()->setBlendDst(RenderState::BLEND_ONE);
-
-    // material need to be binded to its node to get working setParameterAutoBinding
-    // this hack is to ensure to bind the material, because it is not currently binded by SparkParticleEmitter.
-    // TODO: bind material and node correctly when using SparkParticleEmitter
-    _materialParticle->setNodeBinding(_scene->getFirstNode());
-
-
 
 
     // Create fountain particle effect using spark library
@@ -243,7 +233,6 @@ void SparkDemo::initialize()
     Node* particleNode = _scene->addNode("sparkFoutain");
     particleNode->setDrawable(foutainEmitter);
     particleNode->setTranslation(0.0f, 0.1f, 0.0f);
-    //materialParticle->setNodeBinding(particleNode);
 
 
     // Create a node and attach trail foutain effect
@@ -251,7 +240,6 @@ void SparkDemo::initialize()
     Node* trailNode = Node::create("sparkTrail");
     trailNode->setDrawable(trailEmitter);
     trailNode->setTranslation(0.0f, 0.8f, 0.0f);
-    //materialParticle->setNodeBinding(trailNode);
 
     // set this last node a child of the cube node to move with the cube.
     _cubeNode->addChild(trailNode);
