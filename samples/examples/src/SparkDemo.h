@@ -1,5 +1,4 @@
-#ifndef R_DYNAMIC_MESH_UPDATE_H_
-#define R_DYNAMIC_MESH_UPDATE_H_
+#pragma once
 
 #include "gameplay.h"
 #include "Example.h"
@@ -33,5 +32,3 @@ private:
     Node* _cubeNode;
     Material* _materialParticle;
 };
-
-#endif

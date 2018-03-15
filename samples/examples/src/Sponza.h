@@ -1,5 +1,4 @@
-#ifndef R_LIGHTS_H_
-#define R_LIGHTS_H_
+#pragma once
 
 #include "gameplay.h"
 #include "Example.h"
@@ -51,5 +50,3 @@ private:
     int _prevY;
     bool _buttonPressed;
 };
-
-#endif
