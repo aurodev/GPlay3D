@@ -209,6 +209,12 @@ Material* Material::clone(NodeCloneContext &context) const
     return material;
 }
 
+Material* Material::clone() const
+{
+    NodeCloneContext context;
+    return clone(context);
+}
+
 bool Material::loadTechnique(Material* material, Properties* techniqueProperties, PassCallback callback, void* cookie)
 {
     GP_ASSERT(material);

@@ -148,6 +148,9 @@ public:
      */
     void setNodeBinding(Node* node);
 
+    //@@ experiment material clone
+    Material* clone() const;
+
 private:
 
     /**
