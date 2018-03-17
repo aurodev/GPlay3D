@@ -46,7 +46,7 @@ FrameBuffer* FrameBuffer::create(const char* id, uint16_t width, uint16_t height
     frameBuffer->_frameBufferHandle = bgfx::createFrameBuffer(width, height, bgfxFormat, textureFlags);
 
     // create a texture to store framebuffer attachment using bgfx texture handle
-    Texture* texture = Texture::create(format, width, height, 0);
+    Texture* texture = Texture::create(format, width, height, 0, false, Texture::TEXTURE_RT);
     texture->_gpuTtexture->_handle = bgfx::getTexture(frameBuffer->_frameBufferHandle);
     frameBuffer->_textures.push_back(texture);
 
