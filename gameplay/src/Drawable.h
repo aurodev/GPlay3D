@@ -42,6 +42,22 @@ public:
      */
     Node* getNode() const;
 
+
+    /**
+     * Assign a bit mask. Can be usefull for conditionnal rendering.
+     *
+     * @param bitmask to set on.
+     */
+    void useMask(unsigned char mask);
+
+    /**
+     * Check if bitmask is used.
+     *
+     * @param bitmask to test.
+     * @return true if bit is set and false if not set.
+     */
+    bool hasMask(unsigned char mask);
+
 protected:
 
     /**
@@ -63,6 +79,12 @@ protected:
      * Node this drawable is attached to.
      */
     Node* _node;
+
+
+    /**
+     * Bit mask.
+     */
+    unsigned char _mask;
 };
 
 }

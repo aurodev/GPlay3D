@@ -8,6 +8,7 @@ namespace gameplay
 
 Drawable::Drawable()
     : _node(NULL)
+    , _mask(0)
 {
 }
 
@@ -23,6 +24,16 @@ Node* Drawable::getNode() const
 void Drawable::setNode(Node* node)
 {
     _node = node;
+}
+
+void Drawable::useMask(unsigned char mask)
+{
+    _mask |= mask;
+}
+
+bool Drawable::hasMask(unsigned char mask)
+{
+    return ((_mask & mask)) ? true : false;
 }
 
 }
