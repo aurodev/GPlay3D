@@ -6,11 +6,21 @@
 
 using namespace gameplay;
 
+/**
+ * Base sample for test about blending and transparency.
+ */
+
+#define FRAMEBUFFER_WIDTH 1024
+#define FRAMEBUFFER_HEIGHT 1024
+
 class Transparency : public Example
 {
     FirstPersonCamera _fpCamera;
     Font* _font;
     Scene* _scene;
+
+    FrameBuffer* _frameBuffer;
+    Model* _quadModel;
 
 public:
 
@@ -35,11 +45,50 @@ public:
 
         // set fps camera
         Vector3 cameraPosition(0, 1, 5);
-        _fpCamera.initialize(0.1f, 10000.0f);
+        _fpCamera.initialize(0.1f, 100.0f);
         _fpCamera.setPosition(cameraPosition);
         _scene->addNode(_fpCamera.getRootNode());
         _scene->setActiveCamera(_fpCamera.getCamera());
         _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
+
+
+        // create views
+        Game * game = Game::getInstance();
+
+        View defaultView;
+        defaultView.clearColor = 0x111122ff;
+        defaultView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
+        defaultView.depth = 1.0f;
+        defaultView.stencil = 0;
+        defaultView.rectangle = Rectangle(game->getWidth(), game->getHeight());
+        game->insertView(0, defaultView);
+
+        View secondView;
+        secondView.clearColor = 0x00000000;
+        secondView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
+        secondView.depth = 1.0f;
+        secondView.stencil = 0;
+        secondView.rectangle = Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
+        game->insertView(1, secondView);
+
+
+        // Create a framebuffer with rgba and depth textures
+        Texture* texColor = Texture::create("targetColor", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::RGBA, Texture::Type::TEXTURE_RT);
+        Texture* texDepth = Texture::create("targetDepth", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::DEPTH, Texture::Type::TEXTURE_RT);
+        std::vector<Texture*> textures;
+        textures.push_back(texColor);
+        textures.push_back(texDepth);
+        _frameBuffer = FrameBuffer::create("MyFrameBuffer", textures);
+
+        // Create a quad for framebuffer preview
+        Mesh* mesh = Mesh::createQuad(0,0,256,256);
+        _quadModel = Model::create(mesh);
+        SAFE_RELEASE(mesh);
+        _quadModel->setMaterial("res/shaders/debug.vert", "res/shaders/debug.frag", "SHOW_TEXTURE");
+        Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
+        _quadModel->getMaterial()->getParameter("u_texture")->setValue(sampler);
+
+
 
         // load box shape
         Bundle* bundle = Bundle::create("res/common/box.gpb");
@@ -55,9 +104,10 @@ public:
         _scene->addNode(planeNode);
 
 
-        // Create a base colored material with blending
+        // Create a base colored material with alpha blending
         Material* material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag");
         material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
+        material->getParameter("u_texture")->setValue(sampler);
         material->getStateBlock()->setCullFace(false);
         material->getStateBlock()->setDepthTest(true);
         material->getStateBlock()->setDepthWrite(true);
@@ -67,8 +117,8 @@ public:
 
 
 
-
-        /*int maxDim = 4;
+        // create cubes
+        int maxDim = 4;
         float scale = 0.8f;
         float offset = maxDim / 2.0f * 0.8f;
 
@@ -89,15 +139,15 @@ public:
                         node->setScale(scale);
                         node->setTranslation(-offset+x, maxDim+1.0f-y, -offset+z);
                         _scene->addNode(node);
-                }*/
+                }
 
 
 
 
-
+        // Create 3 wide boxes
         {
             Material* materialClone = material->clone();
-            materialClone->getParameter("u_diffuseColor")->setValue(Vector4(1.0f, 0.0f, 0.0, 0.3f));
+            materialClone->getParameter("u_diffuseColor")->setValue(Vector4(1.0f, 0.0f, 0.0, 0.3f));            
 
             Model* model = Model::create(meshBox);
             model->setMaterial(materialClone);
@@ -136,7 +186,6 @@ public:
             _scene->addNode(node);
         }
 
-
         SAFE_RELEASE(material);
     }
 
@@ -151,12 +200,16 @@ public:
 
     void render(float elapsedTime)
     {
-        // Clear the color and depth buffers
-        clear(CLEAR_COLOR_DEPTH, 0.1f, 0.1f, 0.2f, 1.0f, 1.0f, 0);
-
-        // Visit all the nodes in the scene, drawing the models.
+        // render scene in the frame buffer
+        Game::getInstance()->bindView(1);
+        _frameBuffer->bind();
         _scene->visit(this, &Transparency::drawScene);
 
+
+        // render scene in main view
+        Game::getInstance()->bindView(0);
+        _scene->visit(this, &Transparency::drawScene);
+        _quadModel->draw();
         drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());
     }
 
@@ -177,21 +230,6 @@ public:
     void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
     {
         _fpCamera.touchEvent(evt, x, y, contactIndex);
-
-        switch (evt)
-        {
-        case Touch::TOUCH_PRESS:
-            if (x < 75 && y < 50)
-            {
-                // Toggle Vsync if the user touches the top left corner
-                setVsync(!isVsync());
-            }
-            break;
-        case Touch::TOUCH_RELEASE:
-            break;
-        case Touch::TOUCH_MOVE:
-            break;
-        };
     }
 
     void keyEvent(Keyboard::KeyEvent evt, int key)
@@ -202,6 +240,6 @@ public:
 };
 
 #if defined(ADD_SAMPLE)
-    ADD_SAMPLE("Graphics", "Transparency", Transparency, 8);
+    ADD_SAMPLE("Graphics", "Transparency", Transparency, 8)
 #endif
 
