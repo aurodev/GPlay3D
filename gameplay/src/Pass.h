@@ -68,6 +68,9 @@ public:
      */
     void unbind();
 
+
+    void setEffect(Effect* effect);
+
 private:
 
     /**

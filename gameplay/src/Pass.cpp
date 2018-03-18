@@ -105,4 +105,16 @@ Pass* Pass::clone(Technique* technique, NodeCloneContext &context) const
     return pass;
 }
 
+
+void Pass::setEffect(Effect* effect)
+{
+    GP_ASSERT(effect);
+
+    if(_effect)
+        SAFE_RELEASE(_effect);
+
+    _effect = effect;
+
+}
+
 }
