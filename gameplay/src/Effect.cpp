@@ -41,10 +41,11 @@ Effect::~Effect()
     }
 }
 
-Effect* Effect::createFromFile(const char* vshPath, const char* fshPath, const char* defines)
+Effect* Effect::createFromFile(const char* vshPath, const char* fshPath, const char* defines, bool useCache)
 {
     GP_ASSERT(vshPath);
     GP_ASSERT(fshPath);
+
 
     // Search the effect cache for an identical effect that is already loaded.
     std::string uniqueId = vshPath;
@@ -55,13 +56,17 @@ Effect* Effect::createFromFile(const char* vshPath, const char* fshPath, const c
     {
         uniqueId += defines;
     }
-    std::map<std::string, Effect*>::const_iterator itr = __effectCache.find(uniqueId);
-    if (itr != __effectCache.end())
+
+    if(useCache)
     {
-        // Found an exiting effect with this id, so increase its ref count and return it.
-        GP_ASSERT(itr->second);
-        itr->second->addRef();
-        return itr->second;
+        std::map<std::string, Effect*>::const_iterator itr = __effectCache.find(uniqueId);
+        if (itr != __effectCache.end())
+        {
+            // Found an exiting effect with this id, so increase its ref count and return it.
+            GP_ASSERT(itr->second);
+            itr->second->addRef();
+            return itr->second;
+        }
     }
 
 

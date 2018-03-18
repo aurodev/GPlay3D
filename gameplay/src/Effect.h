@@ -37,7 +37,7 @@ public:
      * 
      * @return The created effect.
      */
-    static Effect* createFromFile(const char* vshPath, const char* fshPath, const char* defines = NULL);
+    static Effect* createFromFile(const char* vshPath, const char* fshPath, const char* defines = NULL, bool useCache = true);
 
     /**
      * Creates an effect from the given vertex and fragment shader source code.
