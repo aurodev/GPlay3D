@@ -279,6 +279,9 @@ static void ImGui_ImplSdlGL3_NewFrame(SDL_Window* window)
         SDL_ShowCursor(1);
     }
 
+    // fix issue when debugging (mouse was still captured by sdl and we cannot use it in debugger)
+    SDL_CaptureMouse(SDL_FALSE);
+
     // Start the frame. This call will update the io.WantCaptureMouse, io.WantCaptureKeyboard flag that you can use to dispatch inputs (or not) to your application.
     ImGui::NewFrame();
 }
