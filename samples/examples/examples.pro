@@ -33,7 +33,8 @@ SOURCES += \
     src/RenderToTexture.cpp \
     src/ImGuiTest.cpp \
     src/SparkDemo.cpp \
-    src/Transparency.cpp
+    src/Transparency.cpp \
+    src/ShaderReload.cpp
 
 HEADERS += \
     src/SamplesGame.h \
