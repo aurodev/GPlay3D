@@ -3,7 +3,6 @@
 
 #include <brtshaderc/brtshaderc.h>
 
-
 namespace gameplay {
 
 BGFXGpuProgram::BGFXGpuProgram() :
@@ -12,7 +11,6 @@ BGFXGpuProgram::BGFXGpuProgram() :
     , _csh(BGFX_INVALID_HANDLE)
     , _program(BGFX_INVALID_HANDLE)
 {
-
 }
 
 BGFXGpuProgram::~BGFXGpuProgram()
@@ -27,7 +25,7 @@ BGFXGpuProgram::~BGFXGpuProgram()
         bgfx::destroy(_csh);
 }
 
-void BGFXGpuProgram::set(const char* vshPath, const char* fshPath, const char* defines)
+bool BGFXGpuProgram::set(const char* vshPath, const char* fshPath, const char* defines)
 {
     // use custom varying def file if exists or default "varying.def.sc"
     std::string basename = FileSystem::getBaseName(vshPath);
@@ -40,8 +38,17 @@ void BGFXGpuProgram::set(const char* vshPath, const char* fshPath, const char* d
     const bgfx::Memory* memVsh = shaderc::compileShader(shaderc::ST_VERTEX, vshPath, defines, varyingFile.c_str());
     const bgfx::Memory* memFsh = shaderc::compileShader(shaderc::ST_FRAGMENT, fshPath, defines, varyingFile.c_str());
 
-    GP_ASSERT(memVsh);
-    GP_ASSERT(memFsh);
+    if(!memVsh)
+    {
+        GP_WARN("Error while compiling vertex shader %s.", vshPath);
+        return false;
+    }
+
+    if(!memFsh)
+    {
+        GP_WARN("Error while compiling fragment shader %s.", fshPath);
+        return false;
+    }
 
     // Create shaders.
     _vsh = bgfx::createShader(memVsh);
@@ -51,12 +58,16 @@ void BGFXGpuProgram::set(const char* vshPath, const char* fshPath, const char* d
     _program = bgfx::createProgram(_vsh, _fsh, true);
 
     if(!bgfx::isValid(_program))
-        GP_ERROR("Error while creating bgfx program with shaders [%s], [%s], [%s].", vshPath, fshPath, defines);
-    GP_ASSERT(bgfx::isValid(_program));
+    {
+        GP_WARN("Error while creating bgfx program with shaders [%s], [%s], [%s].", vshPath, fshPath, defines);
+        return false;
+    }
 
     // Query uniforms from shaders.
     getUniformsFromShader(_vsh);
     getUniformsFromShader(_fsh);
+
+    return true;
 }
 
 void BGFXGpuProgram::getUniformsFromShader(bgfx::ShaderHandle shaderHandle)

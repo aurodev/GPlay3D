@@ -11,7 +11,7 @@ class BGFXGpuProgram
 public:
     BGFXGpuProgram();
     ~BGFXGpuProgram();
-    void set(const char* vshPath, const char* fshPath, const char* defines);
+    bool set(const char* vshPath, const char* fshPath, const char* defines);
     void bind();
     const bgfx::ProgramHandle getProgram() const;
     const std::vector<UniformInfo> getUniformsInfo() const { return _uniformsInfo; }

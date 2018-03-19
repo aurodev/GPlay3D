@@ -5,12 +5,19 @@
 
 #define OPENGL_ES_DEFINE  "OPENGL_ES"
 
+#define INVALID_VS "res/shaders/invalid.vert"
+#define INVALID_FS "res/shaders/invalid.frag"
+
 namespace gameplay
 {
 
 // Cache of unique effects.
 static std::map<std::string, Effect*> __effectCache;
-static Effect* __currentEffect = NULL;
+static Effect* __currentEffect = nullptr;
+
+// Invalid effect used by default to replace shaders in error.
+Effect* Effect::_invalidEffect = nullptr;
+
 
 Effect::Effect() : _program(0)
 {
@@ -73,7 +80,12 @@ Effect* Effect::createFromFile(const char* vshPath, const char* fshPath, const c
 
     // Create gpu program.
     BGFXGpuProgram * _gpuProgram = new BGFXGpuProgram();
-    _gpuProgram->set(vshPath, fshPath, defines);
+    bool success = _gpuProgram->set(vshPath, fshPath, defines);
+
+    if(!success)
+    {
+        return _invalidEffect;
+    }
 
     // Create and return the new Effect.
     Effect* effect = new Effect();
@@ -725,6 +737,11 @@ Effect* Effect::getCurrentEffect()
     return __currentEffect;
 }
 
-
+void Effect::initialize()
+{
+    // create invalid shader
+    Effect::_invalidEffect = Effect::createFromFile(INVALID_VS, INVALID_FS);
+    GP_ASSERT(Effect::_invalidEffect);
+}
 
 }

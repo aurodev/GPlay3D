@@ -164,6 +164,8 @@ bool Game::startup()
     RenderState::initialize();
     //@@FrameBuffer::initialize();
 
+    Effect::initialize();
+
     _animationController = new AnimationController();
     _animationController->initialize();
 
