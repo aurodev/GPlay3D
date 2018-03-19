@@ -151,6 +151,9 @@ public:
     //@@ experiment material clone
     Material* clone() const;
 
+    bool reload();
+
+
 private:
 
     /**

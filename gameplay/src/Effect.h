@@ -252,6 +252,8 @@ private:
 //@@
 public:
     const BGFXGpuProgram * getGpuProgram() const;
+    BGFXGpuProgram* getGpuProgram();
+
     static void initialize();
     static Effect* GetInvalidEffect();
 

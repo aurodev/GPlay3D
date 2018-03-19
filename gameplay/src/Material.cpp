@@ -498,4 +498,27 @@ void Material::loadRenderState(RenderState* renderState, Properties* properties)
     }
 }
 
+bool Material::reload()
+{
+    bool sucessAll = true;
+    unsigned short index = 0;
+
+    for (std::vector<Technique*>::const_iterator it = _techniques.begin(); it != _techniques.end(); ++it)
+    {
+        Technique* technique = *it;
+        GP_ASSERT(technique);
+        bool success = technique->reload();
+
+        if(!success)
+        {
+            GP_WARN("Failed to reload technique [%d]%s.", index, technique->getId());
+            sucessAll = false;
+        }
+
+        index++;
+    }
+    return sucessAll;
+}
+
+
 }

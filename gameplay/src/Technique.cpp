@@ -79,4 +79,28 @@ Technique* Technique::clone(Material* material, NodeCloneContext &context) const
     return technique;
 }
 
+bool Technique::reload()
+{
+    bool sucessAll = true;
+    unsigned short index = 0;
+
+    for (std::vector<Pass*>::const_iterator it = _passes.begin(); it != _passes.end(); ++it)
+    {
+        Pass* pass = *it;
+        GP_ASSERT(pass);
+        bool success = pass->reload();
+
+        if(!success)
+        {
+            GP_WARN("Failed to reload pass [%d]%s.", index, pass->getId());
+            sucessAll = false;
+        }
+
+        index++;
+    }
+
+    return sucessAll;
+}
+
+
 }

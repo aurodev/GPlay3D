@@ -725,6 +725,11 @@ const BGFXGpuProgram *Effect::getGpuProgram() const
     return _gpuProgram;
 }
 
+BGFXGpuProgram *Effect::getGpuProgram()
+{
+    return _gpuProgram;
+}
+
 void Effect::bind()
 {
    //@@GL_ASSERT( glUseProgram(_program) );

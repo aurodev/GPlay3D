@@ -60,6 +60,9 @@ public:
      */
     void setNodeBinding(Node* node);
 
+
+    bool reload();
+
 private:
 
     /**

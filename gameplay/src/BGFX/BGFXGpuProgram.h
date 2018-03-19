@@ -16,6 +16,8 @@ public:
     const bgfx::ProgramHandle getProgram() const;
     const std::vector<UniformInfo> getUniformsInfo() const { return _uniformsInfo; }
 
+    bool reload();
+
 protected:
     std::vector<UniformInfo> _uniformsInfo;
 
@@ -26,6 +28,11 @@ private:
     bgfx::ShaderHandle _fsh;
     bgfx::ShaderHandle _csh;
     bgfx::ProgramHandle _program;
+
+    // use for hot reloading
+    std::string _vshFile;
+    std::string _fshFile;
+    std::string _defines;
 };
 
 }

@@ -34,6 +34,12 @@ bool BGFXGpuProgram::set(const char* vshPath, const char* fshPath, const char* d
     if(!useCustomVaryingDef)
         varyingFile = FileSystem::getDirectoryName(vshPath) + "varying.def.sc";
 
+    // store files path for hot reloading
+    _vshFile = vshPath;
+    _fshFile = fshPath;
+    if(defines)
+        _defines = defines;
+
     // Compile shaders using brtshaderc library
     const bgfx::Memory* memVsh = shaderc::compileShader(shaderc::ST_VERTEX, vshPath, defines, varyingFile.c_str());
     const bgfx::Memory* memFsh = shaderc::compileShader(shaderc::ST_FRAGMENT, fshPath, defines, varyingFile.c_str());
@@ -113,6 +119,12 @@ const bgfx::ProgramHandle BGFXGpuProgram::getProgram() const
 {
     return _program;
 }
+
+bool BGFXGpuProgram::reload()
+{
+    return set(_vshFile.c_str(), _fshFile.c_str(), _defines.c_str());
+}
+
 
 } // end namespace gameplay
 

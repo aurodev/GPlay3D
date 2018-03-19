@@ -71,6 +71,8 @@ public:
 
     void setEffect(Effect* effect);
 
+    bool reload();
+
 private:
 
     /**

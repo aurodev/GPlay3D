@@ -117,4 +117,11 @@ void Pass::setEffect(Effect* effect)
 
 }
 
+
+bool Pass::reload()
+{
+    return _effect->getGpuProgram()->reload();
+}
+
+
 }
