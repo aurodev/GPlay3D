@@ -18,6 +18,10 @@ public:
 
     bool reload();
 
+
+    const char* getVertexShaderFile() { return _vshFile.c_str(); }
+    const char* getFragmentShaderFile() { return _fshFile.c_str(); }
+
 protected:
     std::vector<UniformInfo> _uniformsInfo;
 
