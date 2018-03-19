@@ -744,4 +744,9 @@ void Effect::initialize()
     GP_ASSERT(Effect::_invalidEffect);
 }
 
+Effect* Effect::GetInvalidEffect()
+{
+    return _invalidEffect;
+}
+
 }
