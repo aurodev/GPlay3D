@@ -1,11 +1,15 @@
 #include "EventParams.h"
 
-bool EventParams::Find(const std::string& szParamName) const
+namespace gameplay {
+
+bool EventParams::find(const std::string& szParamName) const
 {
-    return m_params.find(szParamName) != m_params.end();
+    return _params.find(szParamName) != _params.end();
 }
 
-size_t EventParams::Count() const
+size_t EventParams::count() const
 {
-    return m_params.size();
+    return _params.size();
+}
+
 }

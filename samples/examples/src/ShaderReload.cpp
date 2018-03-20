@@ -37,10 +37,10 @@ public:
         // the shader directory has been modified, to be sure to be up-to-date we reload the material of the cubeModel.
 
         // get event parameters and print log
-        unsigned int action  = args.Get<unsigned int>("Action");
-        std::string dir = args.Get<std::string>("Directory");
-        std::string filename = args.Get<std::string>("Filename");
-        std::string oldFilename = args.Get<std::string>("OldFilename");
+        unsigned int action  = args.get<unsigned int>("Action");
+        std::string dir = args.get<std::string>("Directory");
+        std::string filename = args.get<std::string>("Filename");
+        std::string oldFilename = args.get<std::string>("OldFilename");
         const char* actionLabel[] = { "Unknow", "Added", "Deleted", "Modified", "Moved" };
         print("onDirectoryEvent: type[%s] dir[%s] file[%s]\n", actionLabel[action], dir.c_str(), filename.c_str());
 

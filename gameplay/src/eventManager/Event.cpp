@@ -1,38 +1,42 @@
 #include "Event.h"
 
+namespace gameplay {
+
 Event::~Event()
 {
-    EventHandleVec::iterator it = m_callbackVec.begin();
+    EventHandleVec::iterator it = _callbackVec.begin();
 
-    while (it != m_callbackVec.end()) {
+    while (it != _callbackVec.end()) {
         delete (*it);
         ++it;
     }
 
-    m_callbackVec.clear();
+    _callbackVec.clear();
 }
 
 void Event::operator()(EventParams& args)
 {
-    EventHandleVec::iterator it = m_callbackVec.begin();
+    EventHandleVec::iterator it = _callbackVec.begin();
 
-    while (it != m_callbackVec.end()) {
-        (*it)->Fire(args);
+    while (it != _callbackVec.end()) {
+        (*it)->fire(args);
         ++it;
     }
 }
 
-void Event::RemoveListener(void* pInst)
+void Event::removeListener(void* pInst)
 {
-    EventHandleVec::iterator it = m_callbackVec.begin();
+    EventHandleVec::iterator it = _callbackVec.begin();
 
-    while (it != m_callbackVec.end())
+    while (it != _callbackVec.end())
     {
-        if( (*it)->IsEvent(pInst) ) {
+        if( (*it)->isEvent(pInst) ) {
             delete (*it);
-            it = m_callbackVec.erase(it);
+            it = _callbackVec.erase(it);
         } else {
             ++it;
         }
     }
+}
+
 }

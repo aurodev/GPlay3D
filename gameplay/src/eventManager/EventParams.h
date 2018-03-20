@@ -8,6 +8,7 @@
 
 #include "../Variant.h"
 
+namespace gameplay {
 
 // Define a variant with next possible types used for events.
 typedef nonstd::variant<
@@ -23,14 +24,14 @@ class EventParams
 {
     typedef std::map<std::string, ArgVariant> MappedParams;
     typedef MappedParams::iterator MappedParamsIt;
-    MappedParams m_params;
+    MappedParams _params;
 
 public:
     // Check a specific parameter exists
-    bool Find(const std::string& szParamName) const;
+    bool find(const std::string& szParamName) const;
 
     // Count the number of parameters that exist
-    size_t Count() const;
+    size_t count() const;
 
     // // Set a parameter value
     // template<class T>
@@ -46,41 +47,43 @@ public:
     // }
 
 
-    void Set(const std::string& szParamName, ArgVariant value)
+    void set(const std::string& szParamName, ArgVariant value)
     {
-        m_params[szParamName] = value;
+        _params[szParamName] = value;
     }
 
 
 
     // Remove a parameter if it exists, returning the reference
     template<class T>
-    bool Remove(const std::string& szParamName, T& ptrValue)
+    bool remove(const std::string& szParamName, T& ptrValue)
     {
-        MappedParamsIt it(m_params.find(szParamName));
+        MappedParamsIt it(_params.find(szParamName));
 
-        if( it == m_params.end() ) {
+        if( it == _params.end() ) {
             return false;
         } else {
-            ptrValue = reinterpret_cast<T&>(m_params[szParamName]);
-            m_params.erase(it);
+            ptrValue = reinterpret_cast<T&>(_params[szParamName]);
+            _params.erase(it);
             return true;
         }
     }
 
     // Return the parameter value reference of known type
     template<class T>
-    T& Get(const std::string& szParamName)
+    T& get(const std::string& szParamName)
     {
-        return reinterpret_cast<T&>(m_params[szParamName]);
+        return reinterpret_cast<T&>(_params[szParamName]);
     }
 
     // Return the parameter value as a pointer of known type
     template<class T>
-    T* GetPtr(const std::string& szParamName)
+    T* getPtr(const std::string& szParamName)
     {
-        return reinterpret_cast<T*>(m_params[szParamName]);
+        return reinterpret_cast<T*>(_params[szParamName]);
     }
 };
+
+}
 
 #endif

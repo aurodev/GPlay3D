@@ -79,7 +79,7 @@ void FileWatcherBase::addListener(const char* directory, T* ptr, void (T::*func)
     if(_directories.count(directory) > 0)
     {
         efsw::WatchID watchID = _directories.at(directory);
-        _fileWatcherEventManager->RegisterEvent(watchID, ptr, func);
+        _fileWatcherEventManager->registerEvent(watchID, ptr, func);
     }
     else
     {

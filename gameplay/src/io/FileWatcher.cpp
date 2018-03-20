@@ -52,11 +52,11 @@ void FileWatcherBase::handleFileAction( efsw::WatchID watchid,
 
     // send event
     EventParams args;
-    args.Set("Action", action);
-    args.Set("Directory", dir);
-    args.Set("Filename", filename);
-    args.Set("OldFilename", oldFilename);
-    _fileWatcherEventManager->OnEvent(watchid, args);
+    args.set("Action", action);
+    args.set("Directory", dir);
+    args.set("Filename", filename);
+    args.set("OldFilename", oldFilename);
+    _fileWatcherEventManager->onEvent(watchid, args);
 }
 
 

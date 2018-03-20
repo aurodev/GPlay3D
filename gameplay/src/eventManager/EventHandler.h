@@ -6,44 +6,47 @@
 #include "Event.h"
 #include "EventBase.h"
 
+namespace gameplay {
+
 template <typename T>
-class EventHandler
-        : public EventBase
+class EventHandler : public EventBase
 {
     typedef void (T::*TCallback)(EventParams& args);
 
-    T*        m_pClassInst;
-    TCallback m_pCallbackFunc;
+    T* _pClassInst;
+    TCallback _pCallbackFunc;
 public:
 
     // Constructor which stores a pointer to a class instance, and the callback function
     EventHandler(T* pClassInst, TCallback cbFunction)
-        : m_pClassInst(pClassInst)
-        , m_pCallbackFunc(cbFunction)
+        : _pClassInst(pClassInst)
+        , _pCallbackFunc(cbFunction)
     {
-        assert(m_pClassInst);
+        assert(_pClassInst);
     }
 
     // Destructor
     virtual ~EventHandler()
     {
-        m_pClassInst = nullptr;
-        m_pCallbackFunc = nullptr;
+        _pClassInst = nullptr;
+        _pCallbackFunc = nullptr;
     }
 
     // Search helper to find a specific pointer
-    virtual bool IsEvent(void* pInst) const
+    virtual bool isEvent(void* pInst) const
     {
-        return (T*)pInst == m_pClassInst;
+        return (T*)pInst == _pClassInst;
     }
 
     // Call the callback function
-    virtual void Fire(EventParams& args)
+    virtual void fire(EventParams& args)
     {
-        if (m_pClassInst) {
-            (m_pClassInst->*m_pCallbackFunc)(args);
+        if (_pClassInst) {
+            (_pClassInst->*_pCallbackFunc)(args);
         }
     }
 };
+
+}
 
 #endif
