@@ -5,72 +5,47 @@
 #include <imgui/imgui.h>
 
 
-#include "efsw/efsw.hpp"
-#include <functional>
-#include "Singleton.h"
+#include "eventManager/Event.h"
+#include "io/FileWatcher.h"
+
 
 using namespace gameplay;
-
-class FileWatcherBase : public efsw::FileWatchListener
-{
-
-public:
-
-    FileWatcherBase()
-    {
-        _fileWatcher = new efsw::FileWatcher();
-        _fileWatcher->watch();
-    }
-
-    template <class T>
-    void add(const char* directory, T* ptr, void (T::*handleWatchAction)(), bool recursive);
-
-    void handleFileAction( efsw::WatchID watchid, const std::string& dir, const std::string& filename, efsw::Action action, std::string oldFilename = "" )
-    {
-        // call binded method
-        _list[watchid]();
-    }
-
-private:
-
-    efsw::FileWatcher* _fileWatcher;
-    std::map<efsw::WatchID, std::function<void()>> _list;
-};
-typedef Singleton<FileWatcherBase> FileWatcher;
-
-
-template <class T>
-void FileWatcherBase::add(const char* directory, T* ptr, void (T::*handleWatchAction)(), bool recursive)
-{
-    GP_ASSERT(_fileWatcher);
-
-    //_fileWatcher->watch();
-
-    // add a watch directory
-    efsw::WatchID watchID = _fileWatcher->addWatch(directory, this, recursive);
-
-    // bind watchID to the method to call and record it in map.
-    _list[watchID] = std::bind(&T::handleWatchAction, ptr);
-}
-
-
 
 
 /**
  * Base sample
  */
-class ShaderReload : public Example//, public efsw::FileWatchListener
+class ShaderReload : public Example
 {
     FirstPersonCamera _fpCamera;
     Font* _font;
     Scene* _scene;
     Model* _cubeModel;
 
+
+
 public:
 
     ShaderReload()
         : _font(nullptr), _scene(nullptr)
     {
+    }
+
+    void onShaderDirectoryEvent(EventParams& args)
+    {
+        // this method was registered to the FileWatcher and triggered when file operation occurs on watched directory.
+        // the shader directory has been modified, to be sure to be up-to-date we reload the material of the cubeModel.
+
+        // get event parameters and print log
+        unsigned int action  = args.Get<unsigned int>("Action");
+        std::string dir = args.Get<std::string>("Directory");
+        std::string filename = args.Get<std::string>("Filename");
+        std::string oldFilename = args.Get<std::string>("OldFilename");
+        const char* actionLabel[] = { "Unknow", "Added", "Deleted", "Modified", "Moved" };
+        print("onDirectoryEvent: type[%s] dir[%s] file[%s]\n", actionLabel[action], dir.c_str(), filename.c_str());
+
+        // reload material of cubemodel
+        _cubeModel->getMaterial()->reload();
     }
 
     void finalize()
@@ -83,28 +58,6 @@ public:
     {
         _cubeModel->getMaterial()->reload();
     }
-
-    /*void handleFileAction( efsw::WatchID watchid, const std::string& dir, const std::string& filename, efsw::Action action, std::string oldFilename = "" )
-    {
-        switch( action )
-        {
-        case efsw::Actions::Add:
-            print("DIR[%s] FILE[%s] has event Added.", dir.c_str(), filename.c_str());
-            break;
-        case efsw::Actions::Delete:
-            print("DIR[%s] FILE[%s] has event Delete.", dir.c_str(), filename.c_str());
-            break;
-        case efsw::Actions::Modified:
-            print("DIR[%s] FILE[%s] has event Modified.", dir.c_str(), filename.c_str());
-            _cubeModel->getMaterial()->reload();
-            break;
-        case efsw::Actions::Moved:
-            print("DIR[%s] FILE[%s] has event Moved from [%s].", dir.c_str(), filename.c_str(), oldFilename.c_str());
-            break;
-        default:
-            print("Should never happen.");
-        }
-    }*/
 
 
     void initialize()
@@ -160,35 +113,10 @@ public:
         game->insertView(0, defaultView);
 
 
-        // Add a fileWatcher to the specified directory and the method to call when a watch event happens.
-        FileWatcher::Get()->add("res/shaders", this, &ShaderReload::handleWatchAction, true);
-
-
-
-      /// // Create the file system watcher instance
-      /// // efsw::FileWatcher allow a first boolean parameter that indicates if it should start with
-      /// // the generic file watcher instead of the platform specific backend
-      /// efsw::FileWatcher * fileWatcher = new efsw::FileWatcher();
-      ///
-      /// // Create the instance of your efsw::FileWatcherListener implementation
-      /// //UpdateListener * listener = new UpdateListener();
-      ///
-      /// // Add a folder to watch, and get the efsw::WatchID
-      /// // It will watch the /tmp folder recursively ( the third parameter indicates that is recursive )
-      /// // Reporting the files and directories changes to the instance of the listener
-      /// efsw::WatchID watchID = fileWatcher->addWatch( "res/shaders", this, true );
-      ///
-      /// // Adds another directory to watch. This time as non-recursive.
-      /// //efsw::WatchID watchID2 = fileWatcher->addWatch( "/usr", listener, false );
-      ///
-      /// // Start watching asynchronously the directories
-      /// fileWatcher->watch();
-      ///
-      /// // Remove the second watcher added
-      /// // You can also call removeWatch by passing the watch path
-      /// // ( it must end with an slash or backslash in windows, since that's how internally it's saved )
-      /// //fileWatcher->removeWatch( watchID2 );
-
+        // Add to the fileWatcher a task to monitor the shaders directory.
+        FileWatcher::Get()->addDirectory("res/shaders", true);
+        // Add a listener to call specified metod when a file operation is detected in the shader directory
+        FileWatcher::Get()->addListener("res/shaders", this, &ShaderReload::onShaderDirectoryEvent);
     }
 
     void update(float elapsedTime)
@@ -218,8 +146,18 @@ public:
 
     void showToolbox()
     {
-        ImGui::Begin("Toolbox");
-        ImGui::End();
+        bool p_open = true;
+        const float DISTANCE = 10.0f;
+        static int corner = 0;
+        ImVec2 window_pos = ImVec2((corner & 1) ? ImGui::GetIO().DisplaySize.x - DISTANCE : DISTANCE, (corner & 2) ? ImGui::GetIO().DisplaySize.y - DISTANCE : DISTANCE);
+        ImVec2 window_pos_pivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
+        ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+        ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
+        if (ImGui::Begin("Example: Fixed Overlay", &p_open, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoFocusOnAppearing|ImGuiWindowFlags_NoNav))
+        {
+            ImGui::Text("The shaders directory is curently watched.\nTry to edit res/shaders/colored.frag.\nSaving file will trigger an event that will rebuild the box material.");
+            ImGui::End();
+        }
     }
 
     void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
@@ -235,5 +173,5 @@ public:
 };
 
 #if defined(ADD_SAMPLE)
-    ADD_SAMPLE("Graphics", "ShaderReload", ShaderReload, 9)
+    ADD_SAMPLE("Graphics", "Shader hot reloading", ShaderReload, 9)
 #endif

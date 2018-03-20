@@ -34,7 +34,7 @@ SOURCES += \
     src/ImGuiTest.cpp \
     src/SparkDemo.cpp \
     src/Transparency.cpp \
-    src/ShaderReload.cpp
+    src/ShaderReload.cpp \
 
 HEADERS += \
     src/SamplesGame.h \
@@ -47,7 +47,7 @@ HEADERS += \
     src/FirstPersonCamera.h \
     src/RenderToTexture.h \
     src/ImGuiTest.h \
-    src/SparkDemo.h
+    src/SparkDemo.h \
 
 INCLUDEPATH += ../../gameplay/src
 INCLUDEPATH += ../../external-deps/include
