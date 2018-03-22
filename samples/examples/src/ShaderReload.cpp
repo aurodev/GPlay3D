@@ -5,7 +5,7 @@
 #include <imgui/imgui.h>
 
 
-#include "eventManager/Event.h"
+#include <eventManager/EventManager.h>
 #include "io/FileWatcher.h"
 
 
@@ -31,7 +31,7 @@ public:
     {
     }
 
-    void onShaderDirectoryEvent(EventParams& args)
+    /*void onShaderDirectoryEvent(EventParams& args)
     {
         // this method was registered to the FileWatcher and triggered when file operation occurs on watched directory.
         // the shader directory has been modified, to be sure to be up-to-date we reload the material of the cubeModel.
@@ -46,7 +46,7 @@ public:
 
         // reload material of cubemodel
         _cubeModel->getMaterial()->reload();
-    }
+    }*/
 
     void finalize()
     {
@@ -116,7 +116,7 @@ public:
         // Add to the fileWatcher a task to monitor the shaders directory.
         FileWatcher::Get()->addDirectory("res/shaders", true);
         // Add a listener to call specified metod when a file operation is detected in the shader directory
-        FileWatcher::Get()->addListener("res/shaders", this, &ShaderReload::onShaderDirectoryEvent);
+        ///FileWatcher::Get()->addListener("res/shaders", this, &ShaderReload::onShaderDirectoryEvent);
     }
 
     void update(float elapsedTime)

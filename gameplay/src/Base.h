@@ -126,6 +126,14 @@ extern int strcmpnocase(const char* s1, const char* s2);
         gameplay::Logger::log(gameplay::Logger::LEVEL_WARN, "\n"); \
     } while (0)
 
+// Info macro.
+#define GP_INFO(...) do \
+    { \
+        gameplay::Logger::log(gameplay::Logger::LEVEL_INFO, "%s -- ", __current__func__); \
+        gameplay::Logger::log(gameplay::Logger::LEVEL_INFO, __VA_ARGS__); \
+        gameplay::Logger::log(gameplay::Logger::LEVEL_INFO, "\n"); \
+    } while (0)
+
 #if defined(WIN32)
     #pragma warning( disable : 4005 )
     #pragma warning( disable : 4172 )

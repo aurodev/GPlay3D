@@ -14,6 +14,7 @@
 #include "Rectangle.h"
 #include "Vector4.h"
 #include "TimeListener.h"
+#include "eventManager/EventManager.h"
 
 namespace gameplay
 {
@@ -790,8 +791,9 @@ private:
     AIController* _aiController;                // Controls AI simulation.
     AudioListener* _audioListener;              // The audio listener in 3D space.
     std::priority_queue<TimeEvent, std::vector<TimeEvent>, std::less<TimeEvent> >* _timeEvents;     // Contains the scheduled time events.
-    ScriptController* _scriptController;            // Controls the scripting engine.
+    ScriptController* _scriptController;        // Controls the scripting engine.
     ScriptTarget* _scriptTarget;                // Script target for the game
+    EventManagerRef _eventManager;              // Event manager
 
     // Note: Do not add STL object member variables on the stack; this will cause false memory leaks to be reported.
 

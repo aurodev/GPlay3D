@@ -55,8 +55,8 @@ public:
      * @param ptr: listener instance
      * @param func: listener's method to call
      */
-    template <class T>
-    void addListener(const char* directory, T* ptr, void (T::*func)(EventParams& args));
+    //template <class T>
+    //void addListener(const char* directory, T* ptr, void (T::*func)(EventParams& args));
 
 private:
 
@@ -66,14 +66,14 @@ private:
 
     efsw::FileWatcher* _fileWatcher;                        // file watcher core implementation
     std::map<std::string, efsw::WatchID> _directories;      // list of all watched directories
-    EventManager<efsw::WatchID>* _fileWatcherEventManager;  // own event manager
+    //EventManager<efsw::WatchID>* _fileWatcherEventManager;  // own event manager
 };
 
 /// define a singleton version of FileWatcherBase.
 typedef Singleton<FileWatcherBase> FileWatcher;
 
 
-template <class T>
+/*template <class T>
 void FileWatcherBase::addListener(const char* directory, T* ptr, void (T::*func)(EventParams& args))
 {
     if(_directories.count(directory) > 0)
@@ -85,6 +85,6 @@ void FileWatcherBase::addListener(const char* directory, T* ptr, void (T::*func)
     {
         GP_WARN("Directory %s is not currently watched.", directory);
     }
-}
+}*/
 
 }

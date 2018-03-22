@@ -166,6 +166,8 @@ bool Game::startup()
 
     Effect::initialize();
 
+    _eventManager = EventManager::create("Global", true);
+
     _animationController = new AnimationController();
     _animationController->initialize();
 
@@ -272,6 +274,8 @@ void Game::shutdown()
         _aiController->finalize();
         SAFE_DELETE(_aiController);
         
+        _eventManager.reset();
+
         ControlFactory::finalize();
 
         Theme::finalize();
@@ -385,6 +389,9 @@ void Game::frame()
         // Update Time.
         float elapsedTime = (frameTime - lastFrameTime);
         lastFrameTime = frameTime;
+
+        // Update events.
+        _eventManager->update();
 
         // Update the scheduled and running animations.
         _animationController->update(elapsedTime);

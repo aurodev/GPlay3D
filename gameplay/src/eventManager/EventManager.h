@@ -1,82 +1,52 @@
-#ifndef EVENTMANAGER_H
-#define EVENTMANAGER_H
+#pragma once
 
-#include <cassert>
-
-#include <string>
+#include <deque>
 #include <map>
-#include <vector>
-#include <memory>
+#include <array>
+#include <list>
+#include <atomic>
+#include <mutex>
 
-#include "EventParams.h"
-#include "Event.h"
-#include "EventHandler.h"
+#include "EventManagerBase.h"
 
-namespace gameplay {
+const uint32_t NUM_QUEUES = 2u;
+using EventManagerRef = std::shared_ptr<class EventManager>;
 
-// An EventManager can store event keys in a specific type
-template<class KeyType>
-class EventManager
+
+class EventManager : public EventManagerBase
 {
-    typedef typename std::map<KeyType, Event> MappedEvents;
-    typedef typename MappedEvents::iterator MappedEventsIt;
-    MappedEvents _events;
+    using EventListenerList = std::list<EventListenerDelegate>;
+    using EventListenerMap	= std::map<EventType, EventListenerList>;
+    using EventQueue		= std::deque<EventDataRef>;
 
 public:
-    // Check that there is an event of this type registered
-    bool hasEvent(const KeyType& rEventKey) const
-    {
-        return _events.find(rEventKey) != _events.end();
-    }
 
-    // Trigger an event determined by the key (no params)
-    void onEvent(const KeyType& rEventKey)
-    {
-        EventParams no_params;
-        onEvent(rEventKey, no_params);
-    }
+    static EventManagerRef create( const std::string &name, bool setAsGlobal );
 
-    // Triggers an event determined by the key
-    void onEvent(const KeyType& rEventKey, EventParams& args)
-    {
-        MappedEventsIt itResult(_events.find(rEventKey));
+    virtual ~EventManager();
 
-        // Checking the event exists as an early-out condition
-        if (itResult != _events.end()) {
-            (*itResult).second(args);
-        }
-    }
+    virtual bool addListener( const EventListenerDelegate &eventDelegate, const EventType &type ) override;
+    virtual bool removeListener( const EventListenerDelegate &eventDelegate, const EventType &type ) override;
 
-    // Register a new listener based on a class instance (static or dynamic)
-    template <class EventT>
-    void registerEvent(const KeyType& rEventKey, EventT* spInst, void (EventT::*func)(EventParams& args))
-    {
-        assert(spInst);
+    virtual bool triggerEvent( const EventDataRef &event ) override;
+    virtual bool queueEvent( const EventDataRef &event ) override;
+    virtual bool abortEvent( const EventType &type, bool allOfType = false ) override;
 
-        // Our map will automatically add a non-existent key
-        _events[rEventKey].template addListener<EventT>(spInst, func);
-    }
+    virtual bool addThreadedListener( const EventListenerDelegate &eventDelegate, const EventType &type ) override;
+    virtual bool removeThreadedListener( const EventListenerDelegate &eventDelegate, const EventType &type ) override;
+    virtual void removeAllThreadedListeners() override;
+    virtual bool triggerThreadedEvent( const EventDataRef &event ) override;
 
-    // Unregister a listener from all registered callbacks (optionally clear empty events)
-    template <class EventT>
-    void unregisterInstance(EventT* pInst, bool bClearOldEvents = true)
-    {
-        MappedEventsIt it(_events.begin());
+    virtual bool update( uint64_t maxMillis = kINFINITE ) override;
 
-        while( it != _events.end() ) {
-            (*it).second.RemoveListener(pInst);
+private:
+    explicit EventManager( const std::string &name, bool setAsGlobal );
 
-            // If there are no callbacks registered, clear the event
-            if( bClearOldEvents && (*it).second.Count() == 0 ) {
-                it = _events.erase(it);
-            } else {
-                ++it;
-            }
-        }
-    }
+    std::mutex mThreadedEventListenerMutex;
+    EventListenerMap mThreadedEventListeners;
+
+    EventListenerMap mEventListeners;
+    std::array<EventQueue, NUM_QUEUES> mQueues;
+    uint32_t mActiveQueue;
 
 };
-
-}
-
-#endif

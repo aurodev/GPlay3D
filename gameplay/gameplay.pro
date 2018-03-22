@@ -162,9 +162,9 @@ SOURCES += src/AbsoluteLayout.cpp \
     src/ParticleSpark/SparkParticleEmitter.cpp \
     src/ParticleSpark/SparkQuadRenderer.cpp \
     src/ParticleSpark/SparkUtility.cpp \
-    src/eventManager/Event.cpp \
-    src/eventManager/EventParams.cpp \
-    src/io/FileWatcher.cpp
+    src/io/FileWatcher.cpp \
+    src/eventManager/EventManager.cpp \
+    src/eventManager/EventManagerBase.cpp
 
 HEADERS += src/AbsoluteLayout.h \
     src/AIAgent.h \
@@ -296,12 +296,12 @@ HEADERS += src/AbsoluteLayout.h \
     src/ParticleSpark/SparkParticleEmitter.h \
     src/ParticleSpark/SparkQuadRenderer.h \
     src/ParticleSpark/SparkUtility.h \
-    src/eventManager/Event.h \
-    src/eventManager/EventBase.h \
-    src/eventManager/EventHandler.h \
+    src/io/FileWatcher.h \
+    src/eventManager/BaseEventData.h \
     src/eventManager/EventManager.h \
-    src/eventManager/EventParams.h \
-    src/io/FileWatcher.h
+    src/eventManager/EventManagerBase.h \
+    src/eventManager/FastDelegate.h \
+    src/eventManager/FastDelegateBind.h
 
 
 #DEFINES += COMPIL_WITH_LUA

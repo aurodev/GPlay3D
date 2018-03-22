@@ -61,6 +61,13 @@ public:
      */
     static void swapBuffers();
 
+    /**
+     * Gets the absolute platform time starting from when the message pump was started.
+     *
+     * @return The absolute platform time. (in milliseconds)
+     */
+    static double getAbsoluteTime();
+
 private:
 
     /**
@@ -91,13 +98,6 @@ private:
      * @return The display height.
      */
     static unsigned int getDisplayHeight();
-
-    /**
-     * Gets the absolute platform time starting from when the message pump was started.
-     *
-     * @return The absolute platform time. (in milliseconds)
-     */
-    static double getAbsoluteTime();
 
     /**
      * Sets the absolute platform time since the start of the message pump.
