@@ -4,221 +4,142 @@
 #include "FirstPersonCamera.h"
 #include <imgui/imgui.h>
 
-//#include "eventManager/EventManager.h"
-
-
-
 #include "eventManager/EventManager.h"
-
-
+#include "eventManager/BaseEventData.h"
 
 using namespace gameplay;
 
 
-enum EventList
-{
-    EVENT_ACTOR_CREATE,
-    EVENT_ACTOR_CREATED,
-    EVENT_ACTOR_KILLED,
-};
+/**
+ * Declare a new custom event using the EventData base class.
+ *
+ * This event can be triggered by a mouse button.
+ */
 
+using MyEventDataRef = std::shared_ptr<class MyMouseEvent>;
 
-
-
-
-
-
-
-#include <cstdint>
-
-namespace detail
-{
-    // FNV-1a 32bit hashing algorithm.
-    constexpr std::uint32_t fnv1a_32(char const* s, std::size_t count)
-    {
-        return ((count ? fnv1a_32(s, count - 1) : 2166136261u) ^ s[count]) * 16777619u;
-    }
-}    // namespace detail
-
-constexpr std::uint32_t operator"" _hash(char const* s, std::size_t count)
-{
-    return detail::fnv1a_32(s, count);
-}
-
-constexpr std::uint32_t check = "0123456789ABCDEF"_hash;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#include "eventManager/BaseEventData.h"
-
-using MyEventDataRef = std::shared_ptr<class MyEventData>;
-
-
-class MyEventData : public EventData
+class MyMouseEvent : public EventData
 {
 public:
 
-    static MyEventDataRef create()
+    static EventType E_MOUSE_EXAMPLE;
+
+    static MyEventDataRef create(Vector2 mousePos)
     {
-        print("Actor::create.\n");
-        return MyEventDataRef(new MyEventData());
+        print("MyMouseEvent::create\n");
+        return MyEventDataRef(new MyMouseEvent(mousePos));
     }
 
     EventDataRef copy()
     {
-
+        print("MyMouseEvent::copy\n");
     }
 
     const char* getName() const
     {
-
+        print("MyMouseEvent::getName\n");
     }
 
-    static EventType TYPE;
     EventType getEventType() const
     {
-        return TYPE;
+        print("MyMouseEvent::getEventType\n");
+        return E_MOUSE_EXAMPLE;
     }
 
-    void onEventCreateNewActor()
-    {}
+    ~MyMouseEvent()
+    {
+        print("MyMouseEvent::Destructor.\n");
+    }
 
 private:
 
-    explicit MyEventData() :
+    explicit MyMouseEvent(Vector2 mousePos) :
         EventData(Platform::getAbsoluteTime())
+      , _mousePos(mousePos)
     {
-
+        print("MyMouseEvent::Constructor\n");
     }
+
+public:
+    Vector2 _mousePos;  // store a mouse position.
 };
 
-EventType MyEventData::TYPE = "MyEventData"_hash;
+// declare Mouse UUID
+EventType MyMouseEvent::E_MOUSE_EXAMPLE = "91c01443-1d41-4bbe-84f4-55cee3d39445"_hash;
 
 
 
 
 
-///EventManager<EventList> _myEventManager;
-//EventManagerRef mEventManager;
-
-class Actor
+/**
+ * An actor that wants to be notified by event.
+ */
+class DummyActor
 {
 public:
 
-    Actor()
+    DummyActor()
     {
-
+        _pos = Vector2(0,0);
     }
 
-    void create()
+    void onEventMouseClicked(EventDataRef eventData)
     {
-        print("Actor::create.\n");
-        //@@_myEventManager.onEvent(EVENT_ACTOR_CREATED);
+        // this method was declared in initialisation as a listener for the MyMouseEvent event.
+
+        // MyMouseEvent have been queued or triggered.
+        // dynamic_cast the shared_ptr to get access to MyMouseEvent data.
+        auto mouseEvent = std::dynamic_pointer_cast<MyMouseEvent>(eventData);
+
+        print("DummyActor: oh the mouse was clicked at (%.0f,%.0f) !!!\n", mouseEvent->_mousePos.x, mouseEvent->_mousePos.y);
+
+        // Do something usefull with that.
+
+        _pos = mouseEvent->_mousePos;
     }
 
-    void destroy()
+    void update()
     {
-        print("Actor::destroy.\n");
-        //@@_myEventManager.onEvent(EVENT_ACTOR_KILLED);
+        ImGui::SetNextWindowPos(ImVec2(_pos.x, _pos.y));
+        ImGui::Begin("", nullptr, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoFocusOnAppearing|ImGuiWindowFlags_NoNav);
+        ImGui::Text("Hello cube, I'm DummyActor");
+        ImGui::End();
     }
 
+private:
 
-    void wouchEvent(EventDataRef eventData)
-    {
-        print("wouchEvent\n");
-    }
+    Vector2 _pos;
 
 };
 
-using fastdelegate::MakeDelegate;
 
 
 
 
+
+/**
+ * Sample to demonstrate events communication system.
+ */
 class EventSample : public Example
 {
     FirstPersonCamera _fpCamera;
     Font* _font;
     Scene* _scene;
-    Actor _actor;
-
+    Node* _originalBox;
+    DummyActor _dummyActor;
 
 public:
 
     EventSample()
         : _font(nullptr), _scene(nullptr)
     {
-
-        //mEventManager = EventManager::create( "Global", true );
-
-
-
-
-
-        EventListenerDelegate delegateFunc = MakeDelegate(this, &EventSample::onEventCreateNewActor);
-        auto thisListenerDelegate = fastdelegate::MakeDelegate( this, &EventSample::onEventCreateNewActor );
-        EventManager::get()->addListener( delegateFunc, MyEventData::TYPE );
-
-        //EventManagerBase* pGlobalEventManager = EventManagerBase::get();
-        const EventType sktype = "MyEventData"_hash;
-        EventManager::get()->addListener(MakeDelegate(&_actor, &Actor::wouchEvent), sktype);
-
-
-        //@@_myEventManager.registerEvent(EVENT_ACTOR_CREATE, this, &EventSample::onEventCreateNewActor);
-        //@@_myEventManager.registerEvent(EVENT_ACTOR_CREATED, this, &EventSample::onEventActorCreated);
-
-    }
-
-
-
-    void onEventCreateNewActor(EventDataRef eventData)
-    {
-        //auto mouseEvent = std::dynamic_pointer_cast<MousePositionEvent>( eventData );
-
-        auto mouseEvent = std::dynamic_pointer_cast<MyEventData>( eventData );
-
-
-
-
-
-        print("sample => Create a new actor.\n");
-        _actor.create();
-    }
-
-
-    /// void onEventCreateNewActor(EventParams& args)
-    /// {
-    ///     print("sample => Create a new actor.\n");
-    ///
-    ///     _actor.create();
-    /// }
-    ///
-    ///
-    /// void onEventActorCreated(EventParams& args)
-    /// {
-    ///     print("sample => an actor was created.\n");
-    ///
-    ///     _actor.destroy();
-    /// }
+    }    
 
     void finalize()
     {
         SAFE_RELEASE(_font);
         SAFE_RELEASE(_scene);
+        SAFE_RELEASE(_originalBox);
     }
 
     void initialize()
@@ -237,27 +158,80 @@ public:
         _scene->setActiveCamera(_fpCamera.getCamera());
         _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
 
-        // Load box shape
-        Bundle* bundle = Bundle::create("res/common/box.gpb");
-        Node* nodeBox = bundle->loadNode("box");
-        dynamic_cast<Model*>(nodeBox->getDrawable())->setMaterial("res/common/box.material", 0);
+
+        // Load a box shape and create the original box node but don't add it to scene.
+        // It will be used as base node for creating clones.
+        Bundle * bundle = Bundle::create("res/common/box.gpb");
+        _originalBox = bundle->loadNode("box");
+        dynamic_cast<Model*>(_originalBox->getDrawable())->setMaterial("res/common/box.material", 0);
         SAFE_RELEASE(bundle);
 
-        _scene->addNode(nodeBox);
+        // Add some listeners for the event MyMouseEvent.
+        // This event is triggered in touchEvent() when a button is clicked.
+        // Any object that wants to be notified of this event can add a listener.
+        EventManager::get()->addListener(GP_EVENT_LISTENER(this, EventSample::onEventCreateNewActor), MyMouseEvent::E_MOUSE_EXAMPLE);
+        EventManager::get()->addListener(GP_EVENT_LISTENER(&_dummyActor, DummyActor::onEventMouseClicked), MyMouseEvent::E_MOUSE_EXAMPLE);
+    }
+
+
+    Vector3 screenToWorld(float x, float y, float z, Rectangle viewport)
+    {
+        Vector3 p = Vector3(x, y, z);
+
+        // get the world-space position at the near clip plane.
+        Vector3 p0;
+        _scene->getActiveCamera()->unproject(viewport, x, y, 0.0f, &p0);
+
+        // get the world-space position at the far clip plane.
+        Vector3 p1;
+        _scene->getActiveCamera()->unproject(viewport, x, y, 1.0f, &p1);
+
+        // find (x, y) coordinates
+        float t = (z - p0.z) / (p1.z - p0.z);
+        p.x = (p0.x + t * (p1.x - p0.x));
+        p.y = (p0.y + t * (p1.y - p0.y));
+        p.z = z;
+
+        return p;
+    }
+
+    void onEventCreateNewActor(EventDataRef eventData)
+    {
+        // this method was declared in initialisation as a listener for the MyMouseEvent event.
+
+        // MyMouseEvent have been queued or triggered.
+        // dynamic_cast the shared_ptr to get access to MyMouseEvent data.
+        auto mouseEvent = std::dynamic_pointer_cast<MyMouseEvent>(eventData);
+
+        if(!mouseEvent)
+            return;
+
+        // convert 2D mouse coordinates to 3D world position, with z set as 0.0f;
+        Vector3 pos3D = screenToWorld(mouseEvent->_mousePos.x,
+                                      mouseEvent->_mousePos.y,
+                                      0.0f,
+                                      getViewport()
+                                      );
+
+        // clone the box and add it to scene.
+        Node* newBox = _originalBox->clone();
+        newBox->setTranslation(pos3D);
+        _scene->addNode(newBox);
+
+        print("onEventCreateNewActor => Create a new actor at mousePos(%.0fx%.0f) : 3DPos(%f,%f,%f)\n",
+              mouseEvent->_mousePos.x,
+              mouseEvent->_mousePos.y,
+              pos3D.x,
+              pos3D.y,
+              pos3D.z);
     }
 
     void update(float elapsedTime)
     {
-        // in my update I'll first update the event manager which if an event is queued
-            // it will trigger for all listeners
-        //mEventManager->update();
-
-
         // show toolbox
         showToolbox();
 
-
-        //print("%f\n", Platform::getElapsedTime());
+        _dummyActor.update();
 
         // update camera
         _fpCamera.updateCamera(elapsedTime);
@@ -300,13 +274,9 @@ public:
                 // Toggle Vsync if the user touches the top left corner
                 setVsync(!isVsync());
             }
-            ///_myEventManager.onEvent(EVENT_ACTOR_CREATE);
-            ///
-            ///
 
-            EventManager::get()->queueEvent(MyEventData::create());
-            //mEventManager->triggerThreadedEvent(MyEventData::create());
-
+            // Send event that mouse was clicked, don't care about if someone is waiting this event or not.
+            EventManager::get()->queueEvent(MyMouseEvent::create(Vector2(x,y)));
 
             break;
         case Touch::TOUCH_RELEASE:
