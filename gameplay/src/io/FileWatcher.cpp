@@ -2,10 +2,9 @@
 
 namespace gameplay {
 
+
 FileWatcherBase::FileWatcherBase()
 {
-    ///_fileWatcherEventManager = new EventManager<efsw::WatchID>();
-
     // create instance of FileWatcher and start watching.
     _fileWatcher = new efsw::FileWatcher();
     _fileWatcher->watch();
@@ -13,7 +12,7 @@ FileWatcherBase::FileWatcherBase()
 
 FileWatcherBase::~FileWatcherBase()
 {
-    ///SAFE_DELETE(_fileWatcherEventManager);
+    SAFE_DELETE(_fileWatcher);
 }
 
 void FileWatcherBase::addDirectory(const char* directory, bool recursive)
@@ -22,9 +21,6 @@ void FileWatcherBase::addDirectory(const char* directory, bool recursive)
 
     // add a watch directory task
     efsw::WatchID watchID = _fileWatcher->addWatch(directory, this, recursive);
-
-    // record watched directory
-    _directories[directory] = watchID;
 }
 
 void FileWatcherBase::handleFileAction( efsw::WatchID watchid,
@@ -51,12 +47,12 @@ void FileWatcherBase::handleFileAction( efsw::WatchID watchid,
     }
 
     // send event
-    /*EventParams args;
-    args.set("Action", action);
-    args.set("Directory", dir);
-    args.set("Filename", filename);
-    args.set("OldFilename", oldFilename);
-    _fileWatcherEventManager->onEvent(watchid, args);*/
+    FileWatcherEvent::WatchData args;
+    args.action = action;
+    args.directory = dir;
+    args.filename = filename;
+    args.oldFilename = oldFilename;
+    EventManager::get()->queueEvent(FileWatcherEvent::create(args));
 }
 
 

@@ -3,14 +3,11 @@
 #include "SamplesGame.h"
 #include "FirstPersonCamera.h"
 #include <imgui/imgui.h>
-
-
 #include <eventManager/EventManager.h>
-#include "io/FileWatcher.h"
+#include <io/FileWatcher.h>
 
 
 using namespace gameplay;
-
 
 /**
  * Base sample
@@ -29,24 +26,7 @@ public:
     ShaderReload()
         : _font(nullptr), _scene(nullptr)
     {
-    }
-
-    /*void onShaderDirectoryEvent(EventParams& args)
-    {
-        // this method was registered to the FileWatcher and triggered when file operation occurs on watched directory.
-        // the shader directory has been modified, to be sure to be up-to-date we reload the material of the cubeModel.
-
-        // get event parameters and print log
-        unsigned int action  = args.get<unsigned int>("Action");
-        std::string dir = args.get<std::string>("Directory");
-        std::string filename = args.get<std::string>("Filename");
-        std::string oldFilename = args.get<std::string>("OldFilename");
-        const char* actionLabel[] = { "Unknow", "Added", "Deleted", "Modified", "Moved" };
-        print("onDirectoryEvent: type[%s] dir[%s] file[%s]\n", actionLabel[action], dir.c_str(), filename.c_str());
-
-        // reload material of cubemodel
-        _cubeModel->getMaterial()->reload();
-    }*/
+    }    
 
     void finalize()
     {
@@ -54,11 +34,29 @@ public:
         SAFE_RELEASE(_scene);
     }
 
-    void handleWatchAction()
+    void onShaderDirectoryEvent(EventDataRef eventData)
     {
-        _cubeModel->getMaterial()->reload();
-    }
+        auto watchFileEvent = std::dynamic_pointer_cast<FileWatcherEvent>(eventData);
 
+        if(watchFileEvent)
+        {
+
+            // get event parameters and print log
+            unsigned int action = watchFileEvent->_data.action;
+            std::string dir = watchFileEvent->_data.directory;
+            std::string filename = watchFileEvent->_data.filename;
+            std::string oldFilename = watchFileEvent->_data.oldFilename;
+            const char* actionLabel[] = { "Unknow", "Added", "Deleted", "Modified", "Moved" };
+            print("onDirectoryEvent: type[%s] dir[%s] file[%s]\n", actionLabel[action], dir.c_str(), filename.c_str());
+
+            // if event occurs in shader directory, reload cube material
+            if(dir == "res/shaders")
+            {
+                // reload material of cubemodel
+                _cubeModel->getMaterial()->reload();
+            }
+        }
+    }
 
     void initialize()
     {
@@ -115,8 +113,11 @@ public:
 
         // Add to the fileWatcher a task to monitor the shaders directory.
         FileWatcher::Get()->addDirectory("res/shaders", true);
+
         // Add a listener to call specified metod when a file operation is detected in the shader directory
-        ///FileWatcher::Get()->addListener("res/shaders", this, &ShaderReload::onShaderDirectoryEvent);
+        EventManager::get()->addListener(GP_EVENT_LISTENER(this, ShaderReload::onShaderDirectoryEvent),
+                                         FileWatcherEvent::E_FILEWATCHER);
+
     }
 
     void update(float elapsedTime)

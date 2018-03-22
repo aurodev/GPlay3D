@@ -1,14 +1,57 @@
 #pragma once
 
 #include <efsw/efsw.hpp>
-#include "eventManager/EventManager.h"
 #include "../Singleton.h"
 #include "../Base.h"
+#include "eventManager/EventManager.h"
+#include "eventManager/BaseEventData.h"
+#include "../Platform.h"
 
 namespace gameplay {
 
 /**
- * Listens to files and directories and dispatches events to notify the listener of files and directories changes.
+ * FileWatcher event.
+ */
+
+using FileWatcherEventRef = std::shared_ptr<class FileWatcherEvent>;
+
+class FileWatcherEvent : public EventData
+{
+public:
+
+    static EventType E_FILEWATCHER;
+
+    struct WatchData
+    {
+        unsigned int action;
+        std::string directory;
+        std::string filename;
+        std::string oldFilename;
+    };
+    WatchData _data;
+
+    static FileWatcherEventRef create(WatchData data)
+    {
+        return FileWatcherEventRef(new FileWatcherEvent(data));
+    }
+
+    EventDataRef copy() {}
+    const char* getName() const {}
+    EventType getEventType() const { return E_FILEWATCHER; }
+    virtual ~FileWatcherEvent() {}
+
+private:
+
+    explicit FileWatcherEvent(WatchData data) :
+        EventData(Platform::getAbsoluteTime())
+      , _data(data)
+    {
+    }
+};
+
+
+/**
+ * Listens to files and directories and dispatch event to notify listeners that files and directories were changed.
  *
  * Note : Don't use this class directly but use the FileWatcher singleton version.
  *
@@ -17,10 +60,6 @@ namespace gameplay {
  * 2. Delete, sent when a file is deleted or renamed.
  * 3. Modified, sent when a file is deleted or renamed.
  * 4. Moved, sent when a file is moved.
- *
- * How to use :
- * - First, use addDirectory to add a directory to watch.
- * - Secondly, add some listeners where to dispatches events.
  *
  */
 class FileWatcherBase : public efsw::FileWatchListener
@@ -40,23 +79,14 @@ public:
 
     /**
      * @brief Add a directory to watch.
-     * When a directory is watched, files operation in this directory (add, delete, modify, move) will generates
-     * events emitted to registered listeners (see addListener).
+     * When a directory is watched, files operation in this directory (add, delete, modify, move)
+     * will generates a FileWatcherEvent event.
      *
      * @param directory: path to directory
      * @param recursive: recursive watch
      */
     void addDirectory(const char* directory, bool recursive);
 
-    /**
-     * @brief Add a listener when file operation occurs in the specified directory.
-     * @param directory where file events occurs (directory must be previously added to FileWatcher see addDirectory)
-     *
-     * @param ptr: listener instance
-     * @param func: listener's method to call
-     */
-    //template <class T>
-    //void addListener(const char* directory, T* ptr, void (T::*func)(EventParams& args));
 
 private:
 
@@ -64,27 +94,10 @@ private:
                            efsw::Action action, std::string oldFilename = "" );
 
 
-    efsw::FileWatcher* _fileWatcher;                        // file watcher core implementation
-    std::map<std::string, efsw::WatchID> _directories;      // list of all watched directories
-    //EventManager<efsw::WatchID>* _fileWatcherEventManager;  // own event manager
+    efsw::FileWatcher* _fileWatcher; // file watcher core implementation
 };
 
 /// define a singleton version of FileWatcherBase.
 typedef Singleton<FileWatcherBase> FileWatcher;
-
-
-/*template <class T>
-void FileWatcherBase::addListener(const char* directory, T* ptr, void (T::*func)(EventParams& args))
-{
-    if(_directories.count(directory) > 0)
-    {
-        efsw::WatchID watchID = _directories.at(directory);
-        _fileWatcherEventManager->registerEvent(watchID, ptr, func);
-    }
-    else
-    {
-        GP_WARN("Directory %s is not currently watched.", directory);
-    }
-}*/
 
 }

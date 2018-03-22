@@ -5,7 +5,8 @@
 using EventDataRef = std::shared_ptr<class EventData>;
 using EventType = uint64_t;
 
-class EventData {
+class EventData
+{
 public:
     explicit EventData( float timestamp = 0.0f ) : mTimeStamp( timestamp ), mIsHandled( false ) {}
     virtual ~EventData() {}

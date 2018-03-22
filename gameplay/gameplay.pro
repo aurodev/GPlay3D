@@ -164,7 +164,8 @@ SOURCES += src/AbsoluteLayout.cpp \
     src/ParticleSpark/SparkUtility.cpp \
     src/io/FileWatcher.cpp \
     src/eventManager/EventManager.cpp \
-    src/eventManager/EventManagerBase.cpp
+    src/eventManager/EventManagerBase.cpp \
+    src/GlobalEvents.cpp
 
 HEADERS += src/AbsoluteLayout.h \
     src/AIAgent.h \
