@@ -112,54 +112,6 @@ Texture* Texture::create(Image* image, bool generateMipmaps)
 
 
 
-int Texture::getFormatInternal(Format format)
-{
-    switch (format)
-    {
-        case Texture::RGB888:
-        case Texture::RGB565:
-            return GL_RGB;
-        case Texture::RGBA8888:
-        case Texture::RGBA4444:
-        case Texture::RGBA5551:
-            return GL_RGBA;
-        case Texture::ALPHA:
-            return GL_RED;
-        case Texture::DEPTH:
-#if !defined(OPENGL_ES) || defined(GL_ES_VERSION_3_0)
-            return GL_DEPTH_COMPONENT32F;
-#else
-            return GL_DEPTH_COMPONENT;
-#endif
-        default:
-            return 0;
-    }
-}
-
-GLenum Texture::getFormatTexel(Format format)
-{
-    switch (format)
-    {
-        case Texture::RGB888:
-        case Texture::RGBA8888:
-        case Texture::ALPHA:
-            return GL_UNSIGNED_BYTE;
-        case Texture::RGB565:
-            return GL_UNSIGNED_SHORT_5_6_5;
-        case Texture::RGBA4444:
-            return GL_UNSIGNED_SHORT_4_4_4_4;
-        case Texture::RGBA5551:
-            return GL_UNSIGNED_SHORT_5_5_5_1;
-        case Texture::DEPTH:
-#if !defined(OPENGL_ES) || defined(GL_ES_VERSION_3_0)
-            return GL_FLOAT;
-#else
-            return GL_UNSIGNED_INT;
-#endif
-        default:
-            return 0;
-    }
-}
 
 size_t Texture::getFormatBPP(Format format)
 {
@@ -371,8 +323,8 @@ Texture* Texture::create(BGFXTexture *handle, int width, int height, Format form
     texture->_format = format;
     texture->_width = width;
     texture->_height = height;
-    texture->_internalFormat = getFormatInternal(format);
-    texture->_texelType = getFormatTexel(format);
+    //texture->_internalFormat = getFormatInternal(format);
+    //texture->_texelType = getFormatTexel(format);
     texture->_bpp = getFormatBPP(format);
 
     return texture;
