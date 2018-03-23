@@ -9,8 +9,7 @@
 #include "Texture.h"
 #include "Renderer.h"
 
-namespace gameplay
-{
+namespace gameplay {
 
 class Uniform;
 
@@ -38,17 +37,6 @@ public:
      * @return The created effect.
      */
     static Effect* createFromFile(const char* vshPath, const char* fshPath, const char* defines = NULL, bool useCache = true);
-
-    /**
-     * Creates an effect from the given vertex and fragment shader source code.
-     *
-     * @param vshSource The vertex shader source code.
-     * @param fshSource The fragment shader source code.
-     * @param defines A new-line delimited list of preprocessor defines. May be NULL.
-     * 
-     * @return The created effect.
-     */
-    static Effect* createFromSource(const char* vshSource, const char* fshSource, const char* defines = NULL);
 
     /**
      * Returns the unique string identifier for the effect, which is a concatenation of
@@ -80,128 +68,7 @@ public:
      * @return The number of active uniforms.
      */
     unsigned int getUniformCount() const;
-#if 0
-    /**
-     * Sets a float uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The float value to set.
-     */
-    void setValue(Uniform* uniform, float value);
 
-    /**
-     * Sets a float array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
-     */
-    void setValue(Uniform* uniform, const float* values, unsigned int count = 1);
-
-    /**
-     * Sets an integer uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The value to set.
-     */
-    void setValue(Uniform* uniform, int value);
-
-    /**
-     * Sets an integer array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
-     */
-    void setValue(Uniform* uniform, const int* values, unsigned int count = 1);
-
-    /**
-     * Sets a matrix uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The value to set.
-     */
-    void setValue(Uniform* uniform, const Matrix& value);
-
-    /**
-     * Sets a matrix array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
-     */
-    void setValue(Uniform* uniform, const Matrix* values, unsigned int count = 1);
-
-    /**
-     * Sets a vector uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The value to set.
-     */
-    void setValue(Uniform* uniform, const Vector2& value);
-
-    /**
-     * Sets a vector array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
-     */
-    void setValue(Uniform* uniform, const Vector2* values, unsigned int count = 1);
-
-    /**
-     * Sets a vector uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The value to set.
-     */
-    void setValue(Uniform* uniform, const Vector3& value);
-
-    /**
-     * Sets a vector array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
-     */
-    void setValue(Uniform* uniform, const Vector3* values, unsigned int count = 1);
-
-    /**
-     * Sets a vector uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The value to set.
-     */
-    void setValue(Uniform* uniform, const Vector4& value);
-
-    /**
-     * Sets a vector array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
-     */
-    void setValue(Uniform* uniform, const Vector4* values, unsigned int count = 1);
-
-    /**
-     * Sets a sampler uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param sampler The sampler to set.
-     */
-    void setValue(Uniform* uniform, const Texture::Sampler* sampler);
-
-    /**
-     * Sets a sampler array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The sampler array to set.
-     * @param count The number of elements in the array.
-     *
-     * @script{ignore}
-     */
-    void setValue(Uniform* uniform, const Texture::Sampler** values, unsigned int count);
-#endif
     /**
      * Binds this effect to make it the currently active effect for the rendering system.
      */
@@ -231,18 +98,15 @@ private:
      */
     Effect& operator=(const Effect&);
 
-    static Effect* createFromSource(const char* vshPath, const char* vshSource, const char* fshPath, const char* fshSource, const char* defines = NULL);
 
     std::string _id;
     mutable std::map<std::string, Uniform*> _uniforms;
-    static Uniform _emptyUniform;
 
 
 //@@
 public:
     const BGFXGpuProgram * getGpuProgram() const;
     BGFXGpuProgram* getGpuProgram();
-
     static void initialize();
     static Effect* GetInvalidEffect();
 

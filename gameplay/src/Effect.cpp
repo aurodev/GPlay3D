@@ -8,8 +8,7 @@
 #define INVALID_VS "res/shaders/invalid.vert"
 #define INVALID_FS "res/shaders/invalid.frag"
 
-namespace gameplay
-{
+namespace gameplay {
 
 // Cache of unique effects.
 static std::map<std::string, Effect*> __effectCache;
@@ -48,7 +47,6 @@ Effect* Effect::createFromFile(const char* vshPath, const char* fshPath, const c
     GP_ASSERT(vshPath);
     GP_ASSERT(fshPath);
 
-
     // Search the effect cache for an identical effect that is already loaded.
     std::string uniqueId = vshPath;
     uniqueId += ';';
@@ -72,7 +70,6 @@ Effect* Effect::createFromFile(const char* vshPath, const char* fshPath, const c
     }
 
 
-
     // Create gpu program.
     BGFXGpuProgram * _gpuProgram = new BGFXGpuProgram();
     bool success = _gpuProgram->set(vshPath, fshPath, defines);
@@ -85,7 +82,6 @@ Effect* Effect::createFromFile(const char* vshPath, const char* fshPath, const c
     // Create and return the new Effect.
     Effect* effect = new Effect();
     effect->_gpuProgram = _gpuProgram;
-
 
     // Query and store uniforms from the program.
     unsigned int activeUniforms = _gpuProgram->getUniformsInfo().size();
@@ -116,57 +112,11 @@ Effect* Effect::createFromFile(const char* vshPath, const char* fshPath, const c
     }
 
 
-
     // Store this effect in the cache.
     effect->_id = uniqueId;
     __effectCache[uniqueId] = effect;
 
     return effect;
-
-
-    //@@------------------------------
-    /*
-
-    // Read source from file.
-    char* vshSource = FileSystem::readAll(vshPath);
-    if (vshSource == NULL)
-    {
-        GP_ERROR("Failed to read vertex shader from file '%s'.", vshPath);
-        return NULL;
-    }
-    char* fshSource = FileSystem::readAll(fshPath);
-    if (fshSource == NULL)
-    {
-        GP_ERROR("Failed to read fragment shader from file '%s'.", fshPath);
-        SAFE_DELETE_ARRAY(vshSource);
-        return NULL;
-    }
-
-    Effect* effect = createFromSource(vshPath, vshSource, fshPath, fshSource, defines);
-    
-    SAFE_DELETE_ARRAY(vshSource);
-    SAFE_DELETE_ARRAY(fshSource);
-
-    if (effect == NULL)
-    {
-        GP_ERROR("Failed to create effect from shaders '%s', '%s'.", vshPath, fshPath);
-    }
-    else
-    {
-        // Store this effect in the cache.
-        effect->_id = uniqueId;
-        __effectCache[uniqueId] = effect;
-    }
-
-    return effect;
-
-    */
-    //@@------------------------------
-}
-
-Effect* Effect::createFromSource(const char* vshSource, const char* fshSource, const char* defines)
-{
-    return createFromSource(NULL, vshSource, NULL, fshSource, defines);
 }
 
 static void replaceDefines(const char* defines, std::string& out)
@@ -292,242 +242,6 @@ static void writeShaderToErrorFile(const char* filePath, const char* source)
     }
 }
 
-Effect* Effect::createFromSource(const char* vshPath, const char* vshSource, const char* fshPath, const char* fshSource, const char* defines)
-{
-#if 0//@@
-    GP_ASSERT(vshSource);
-    GP_ASSERT(fshSource);
-
-    const unsigned int SHADER_SOURCE_LENGTH = 3;
-    const GLchar* shaderSource[SHADER_SOURCE_LENGTH];
-    char* infoLog = NULL;
-    GLuint vertexShader;
-    GLuint fragmentShader;
-    GLuint program;
-    GLint length;
-    GLint success;
-
-    // Replace all comma separated definitions with #define prefix and \n suffix
-    std::string definesStr = "";
-    replaceDefines(defines, definesStr);
-    
-    shaderSource[0] = definesStr.c_str();
-    shaderSource[1] = "\n";
-    std::string vshSourceStr = "";
-    if (vshPath)
-    {
-        // Replace the #include "xxxxx.xxx" with the sources that come from file paths
-        replaceIncludes(vshPath, vshSource, vshSourceStr);
-        if (vshSource && strlen(vshSource) != 0)
-            vshSourceStr += "\n";
-    }
-    shaderSource[2] = vshPath ? vshSourceStr.c_str() :  vshSource;
-    GL_ASSERT( vertexShader = glCreateShader(GL_VERTEX_SHADER) );
-    GL_ASSERT( glShaderSource(vertexShader, SHADER_SOURCE_LENGTH, shaderSource, NULL) );
-    GL_ASSERT( glCompileShader(vertexShader) );
-    GL_ASSERT( glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success) );
-    if (success != GL_TRUE)
-    {
-        GL_ASSERT( glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &length) );
-        if (length == 0)
-        {
-            length = 4096;
-        }
-        if (length > 0)
-        {
-            infoLog = new char[length];
-            GL_ASSERT( glGetShaderInfoLog(vertexShader, length, NULL, infoLog) );
-            infoLog[length-1] = '\0';
-        }
-
-        // Write out the expanded shader file.
-        if (vshPath)
-            writeShaderToErrorFile(vshPath, shaderSource[2]);
-
-        GP_ERROR("Compile failed for vertex shader '%s' with error '%s'.", vshPath == NULL ? vshSource : vshPath, infoLog == NULL ? "" : infoLog);
-        SAFE_DELETE_ARRAY(infoLog);
-
-        // Clean up.
-        GL_ASSERT( glDeleteShader(vertexShader) );
-
-        return NULL;
-    }
-
-    // Compile the fragment shader.
-    std::string fshSourceStr;
-    if (fshPath)
-    {
-        // Replace the #include "xxxxx.xxx" with the sources that come from file paths
-        replaceIncludes(fshPath, fshSource, fshSourceStr);
-        if (fshSource && strlen(fshSource) != 0)
-            fshSourceStr += "\n";
-    }
-    shaderSource[2] = fshPath ? fshSourceStr.c_str() : fshSource;
-    GL_ASSERT( fragmentShader = glCreateShader(GL_FRAGMENT_SHADER) );
-    GL_ASSERT( glShaderSource(fragmentShader, SHADER_SOURCE_LENGTH, shaderSource, NULL) );
-    GL_ASSERT( glCompileShader(fragmentShader) );
-    GL_ASSERT( glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success) );
-    if (success != GL_TRUE)
-    {
-        GL_ASSERT( glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &length) );
-        if (length == 0)
-        {
-            length = 4096;
-        }
-        if (length > 0)
-        {
-            infoLog = new char[length];
-            GL_ASSERT( glGetShaderInfoLog(fragmentShader, length, NULL, infoLog) );
-            infoLog[length-1] = '\0';
-        }
-        
-        // Write out the expanded shader file.
-        if (fshPath)
-            writeShaderToErrorFile(fshPath, shaderSource[2]);
-
-        GP_ERROR("Compile failed for fragment shader (%s): %s", fshPath == NULL ? fshSource : fshPath, infoLog == NULL ? "" : infoLog);
-        SAFE_DELETE_ARRAY(infoLog);
-
-        // Clean up.
-        GL_ASSERT( glDeleteShader(vertexShader) );
-        GL_ASSERT( glDeleteShader(fragmentShader) );
-
-        return NULL;
-    }
-
-    // Link program.
-    GL_ASSERT( program = glCreateProgram() );
-    GL_ASSERT( glAttachShader(program, vertexShader) );
-    GL_ASSERT( glAttachShader(program, fragmentShader) );
-    GL_ASSERT( glLinkProgram(program) );
-    GL_ASSERT( glGetProgramiv(program, GL_LINK_STATUS, &success) );
-
-    // Delete shaders after linking.
-    GL_ASSERT( glDeleteShader(vertexShader) );
-    GL_ASSERT( glDeleteShader(fragmentShader) );
-
-    // Check link status.
-    if (success != GL_TRUE)
-    {
-        GL_ASSERT( glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length) );
-        if (length == 0)
-        {
-            length = 4096;
-        }
-        if (length > 0)
-        {
-            infoLog = new char[length];
-            GL_ASSERT( glGetProgramInfoLog(program, length, NULL, infoLog) );
-            infoLog[length-1] = '\0';
-        }
-        GP_ERROR("Linking program failed (%s,%s): %s", vshPath == NULL ? "NULL" : vshPath, fshPath == NULL ? "NULL" : fshPath, infoLog == NULL ? "" : infoLog);
-        SAFE_DELETE_ARRAY(infoLog);
-
-        // Clean up.
-        GL_ASSERT( glDeleteProgram(program) );
-
-        return NULL;
-    }
-
-    // Create and return the new Effect.
-    Effect* effect = new Effect();
-    effect->_program = program;
-
-    // Query and store vertex attribute meta-data from the program.
-    // NOTE: Rather than using glBindAttribLocation to explicitly specify our own
-    // preferred attribute locations, we're going to query the locations that were
-    // automatically bound by the GPU. While it can sometimes be convenient to use
-    // glBindAttribLocation, some vendors actually reserve certain attribute indices
-    // and therefore using this function can create compatibility issues between
-    // different hardware vendors.
-    GLint activeAttributes;
-    GL_ASSERT( glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &activeAttributes) );
-    if (activeAttributes > 0)
-    {
-        GL_ASSERT( glGetProgramiv(program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &length) );
-        if (length > 0)
-        {
-            GLchar* attribName = new GLchar[length + 1];
-            GLint attribSize;
-            GLenum attribType;
-            GLint attribLocation;
-            for (int i = 0; i < activeAttributes; ++i)
-            {
-                // Query attribute info.
-                GL_ASSERT( glGetActiveAttrib(program, i, length, NULL, &attribSize, &attribType, attribName) );
-                attribName[length] = '\0';
-
-                // Query the pre-assigned attribute location.
-                GL_ASSERT( attribLocation = glGetAttribLocation(program, attribName) );
-
-                // Assign the vertex attribute mapping for the effect.
-                effect->_vertexAttributes[attribName] = attribLocation;
-            }
-            SAFE_DELETE_ARRAY(attribName);
-        }
-    }
-
-    // Query and store uniforms from the program.
-    GLint activeUniforms;
-    GL_ASSERT( glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &activeUniforms) );
-    if (activeUniforms > 0)
-    {
-        GL_ASSERT( glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &length) );
-        if (length > 0)
-        {
-            GLchar* uniformName = new GLchar[length + 1];
-            GLint uniformSize;
-            GLenum uniformType;
-            GLint uniformLocation;
-            unsigned int samplerIndex = 0;
-            for (int i = 0; i < activeUniforms; ++i)
-            {
-                // Query uniform info.
-                GL_ASSERT( glGetActiveUniform(program, i, length, NULL, &uniformSize, &uniformType, uniformName) );
-                uniformName[length] = '\0';  // null terminate
-                if (length > 3)
-                {
-                    // If this is an array uniform, strip array indexers off it since GL does not
-                    // seem to be consistent across different drivers/implementations in how it returns
-                    // array uniforms. On some systems it will return "u_matrixArray", while on others
-                    // it will return "u_matrixArray[0]".
-                    char* c = strrchr(uniformName, '[');
-                    if (c)
-                    {
-                        *c = '\0';
-                    }
-                }
-
-                // Query the pre-assigned uniform location.
-                GL_ASSERT( uniformLocation = glGetUniformLocation(program, uniformName) );
-
-                Uniform* uniform = new Uniform();
-                uniform->_effect = effect;
-                uniform->_name = uniformName;
-                uniform->_location = uniformLocation;
-                uniform->_type = uniformType;
-                if (uniformType == GL_SAMPLER_2D || uniformType == GL_SAMPLER_CUBE)
-                {
-                    uniform->_index = samplerIndex;
-                    samplerIndex += uniformSize;
-                }
-                else
-                {
-                    uniform->_index = 0;
-                }
-
-                effect->_uniforms[uniformName] = uniform;
-            }
-            SAFE_DELETE_ARRAY(uniformName);
-        }
-    }
-
-    return effect;
-
-#endif//@@
-    return 0;
-}
-
 const char* Effect::getId() const
 {
     return _id.c_str();
@@ -537,37 +251,11 @@ Uniform* Effect::getUniform(const char* name) const
 {
     std::map<std::string, Uniform*>::const_iterator itr = _uniforms.find(name);
 
-	if (itr != _uniforms.end()) {
+    if (itr != _uniforms.end())
+    {
 		// Return cached uniform variable
 		return itr->second;
-	}
-
-    //@@GLint uniformLocation;
-    //@@GL_ASSERT( uniformLocation = glGetUniformLocation(_program, name) );
-    //@@if (uniformLocation > -1)
-    //@@{
-    //@@	// Check for array uniforms ("u_directionalLightColor[0]" -> "u_directionalLightColor")
-    //@@	char* parentname = new char[strlen(name)+1];
-    //@@	strcpy(parentname, name);
-    //@@	if (strtok(parentname, "[") != NULL) {
-    //@@		std::map<std::string, Uniform*>::const_iterator itr = _uniforms.find(parentname);
-    //@@		if (itr != _uniforms.end()) {
-    //@@			Uniform* puniform = itr->second;
-    //@@
-    //@@			Uniform* uniform = new Uniform();
-    //@@			uniform->_effect = const_cast<Effect*>(this);
-    //@@			uniform->_name = name;
-    //@@			uniform->_location = uniformLocation;
-    //@@			uniform->_index = 0;
-    //@@			uniform->_type = puniform->getType();
-    //@@			_uniforms[name] = uniform;
-    //@@
-    //@@			SAFE_DELETE_ARRAY(parentname);
-    //@@			return uniform;
-    //@@		}
-    //@@	}
-    //@@	SAFE_DELETE_ARRAY(parentname);
-    //@@}
+    }
 
 	// No uniform variable found - return NULL
 	return NULL;
@@ -590,125 +278,7 @@ unsigned int Effect::getUniformCount() const
 {
     return (unsigned int)_uniforms.size();
 }
-#if 0
-void Effect::setValue(Uniform* uniform, float value)
-{
-    GP_ASSERT(uniform);
-    GL_ASSERT( glUniform1f(uniform->_location, value) );
-}
 
-void Effect::setValue(Uniform* uniform, const float* values, unsigned int count)
-{
-    GP_ASSERT(uniform);
-    GP_ASSERT(values);
-    GL_ASSERT( glUniform1fv(uniform->_location, count, values) );
-}
-
-void Effect::setValue(Uniform* uniform, int value)
-{
-    GP_ASSERT(uniform);
-    GL_ASSERT( glUniform1i(uniform->_location, value) );
-}
-
-void Effect::setValue(Uniform* uniform, const int* values, unsigned int count)
-{
-    GP_ASSERT(uniform);
-    GP_ASSERT(values);
-    GL_ASSERT( glUniform1iv(uniform->_location, count, values) );
-}
-
-void Effect::setValue(Uniform* uniform, const Matrix& value)
-{
-    GP_ASSERT(uniform);
-    GL_ASSERT( glUniformMatrix4fv(uniform->_location, 1, GL_FALSE, value.m) );
-}
-
-void Effect::setValue(Uniform* uniform, const Matrix* values, unsigned int count)
-{
-    GP_ASSERT(uniform);
-    GP_ASSERT(values);
-    GL_ASSERT( glUniformMatrix4fv(uniform->_location, count, GL_FALSE, (GLfloat*)values) );
-}
-
-void Effect::setValue(Uniform* uniform, const Vector2& value)
-{
-    GP_ASSERT(uniform);
-    GL_ASSERT( glUniform2f(uniform->_location, value.x, value.y) );
-}
-
-void Effect::setValue(Uniform* uniform, const Vector2* values, unsigned int count)
-{
-    GP_ASSERT(uniform);
-    GP_ASSERT(values);
-    GL_ASSERT( glUniform2fv(uniform->_location, count, (GLfloat*)values) );
-}
-
-void Effect::setValue(Uniform* uniform, const Vector3& value)
-{
-    GP_ASSERT(uniform);
-    GL_ASSERT( glUniform3f(uniform->_location, value.x, value.y, value.z) );
-}
-
-void Effect::setValue(Uniform* uniform, const Vector3* values, unsigned int count)
-{
-    GP_ASSERT(uniform);
-    GP_ASSERT(values);
-    GL_ASSERT( glUniform3fv(uniform->_location, count, (GLfloat*)values) );
-}
-
-void Effect::setValue(Uniform* uniform, const Vector4& value)
-{
-    GP_ASSERT(uniform);
-    GL_ASSERT( glUniform4f(uniform->_location, value.x, value.y, value.z, value.w) );
-}
-
-void Effect::setValue(Uniform* uniform, const Vector4* values, unsigned int count)
-{
-    GP_ASSERT(uniform);
-    GP_ASSERT(values);
-    GL_ASSERT( glUniform4fv(uniform->_location, count, (GLfloat*)values) );
-}
-
-void Effect::setValue(Uniform* uniform, const Texture::Sampler* sampler)
-{
-    GP_ASSERT(uniform);
-    GP_ASSERT(uniform->_type == GL_SAMPLER_2D || uniform->_type == GL_SAMPLER_CUBE);
-    GP_ASSERT(sampler);
-    GP_ASSERT((sampler->getTexture()->getType() == Texture::TEXTURE_2D && uniform->_type == GL_SAMPLER_2D) || 
-        (sampler->getTexture()->getType() == Texture::TEXTURE_CUBE && uniform->_type == GL_SAMPLER_CUBE));
-
-    GL_ASSERT( glActiveTexture(GL_TEXTURE0 + uniform->_index) );
-
-    // Bind the sampler - this binds the texture and applies sampler state
-    const_cast<Texture::Sampler*>(sampler)->bind();
-
-    GL_ASSERT( glUniform1i(uniform->_location, uniform->_index) );
-}
-
-void Effect::setValue(Uniform* uniform, const Texture::Sampler** values, unsigned int count)
-{
-    GP_ASSERT(uniform);
-    GP_ASSERT(uniform->_type == GL_SAMPLER_2D || uniform->_type == GL_SAMPLER_CUBE);
-    GP_ASSERT(values);
-
-    // Set samplers as active and load texture unit array
-    GLint units[32];
-    for (unsigned int i = 0; i < count; ++i)
-    {
-        GP_ASSERT((const_cast<Texture::Sampler*>(values[i])->getTexture()->getType() == Texture::TEXTURE_2D && uniform->_type == GL_SAMPLER_2D) || 
-            (const_cast<Texture::Sampler*>(values[i])->getTexture()->getType() == Texture::TEXTURE_CUBE && uniform->_type == GL_SAMPLER_CUBE));
-        GL_ASSERT( glActiveTexture(GL_TEXTURE0 + uniform->_index + i) );
-
-        // Bind the sampler - this binds the texture and applies sampler state
-        const_cast<Texture::Sampler*>(values[i])->bind();
-
-        units[i] = uniform->_index + i;
-    }
-
-    // Pass texture unit array to GL
-    GL_ASSERT( glUniform1iv(uniform->_location, count, units) );
-}
-#endif
 const BGFXGpuProgram *Effect::getGpuProgram() const
 {
     return _gpuProgram;
@@ -721,8 +291,6 @@ BGFXGpuProgram *Effect::getGpuProgram()
 
 void Effect::bind()
 {
-   //@@GL_ASSERT( glUseProgram(_program) );
-
     __currentEffect = this;
 }
 
