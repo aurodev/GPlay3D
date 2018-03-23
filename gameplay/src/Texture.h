@@ -266,7 +266,7 @@ public:
      *   to TEXTURE_CUBE, then data is expected to be each face stored back contiguously within the
      *   array.
      */
-    void setData(const unsigned char* data);
+    //@@void setData(const unsigned char* data);
 
     /**
      * Returns the path that the texture was originally loaded from (if applicable).

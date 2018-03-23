@@ -10,7 +10,7 @@ namespace gameplay
 
 static std::vector<Texture*> __textureCache;
 //@@static TextureHandle __currentTextureId = 0;
-static Texture::Type __currentTextureType = Texture::TEXTURE_2D;
+//@@static Texture::Type __currentTextureType = Texture::TEXTURE_2D;
 
 Texture::Texture() :
     _gpuTtexture(nullptr),
@@ -330,6 +330,7 @@ Texture* Texture::create(BGFXTexture *handle, int width, int height, Format form
     return texture;
 }
 
+#if 0//@@
 void Texture::setData(const unsigned char* data)
 {
     // Don't work with any compressed or cached textures
@@ -363,6 +364,7 @@ void Texture::setData(const unsigned char* data)
     // Restore the texture id
     GL_ASSERT( glBindTexture((GLenum)__currentTextureType, __currentTextureId) );
 }
+#endif//@@
 
 Texture::Format Texture::getFormat() const
 {

@@ -9,8 +9,7 @@
 #include "Theme.h"
 #include "Form.h"
 
-/** @script{ignore} */
-int __gl_error_code = 0;
+
 /** @script{ignore} */
 ALenum __al_error_code = AL_NO_ERROR;
 

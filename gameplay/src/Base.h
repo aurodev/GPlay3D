@@ -255,9 +255,6 @@ using std::va_list;
         #define GP_USE_VAO
         #include <bgfx/bgfx.h>
 #elif __linux__
-        //#define GLEW_STATIC
-        //#include <GL/glew.h>
-        #define GP_USE_VAO
         #include <bgfx/bgfx.h>
 #elif __APPLE__
     #include "TargetConditionals.h"
@@ -288,23 +285,9 @@ using std::va_list;
     #endif
 #endif
 
-// Graphics (GLSL)
-#define VERTEX_ATTRIBUTE_POSITION_NAME              "a_position"
-#define VERTEX_ATTRIBUTE_NORMAL_NAME                "a_normal"
-#define VERTEX_ATTRIBUTE_COLOR_NAME                 "a_color"
-#define VERTEX_ATTRIBUTE_TANGENT_NAME               "a_tangent"
-#define VERTEX_ATTRIBUTE_BINORMAL_NAME              "a_binormal"
-#define VERTEX_ATTRIBUTE_BLENDWEIGHTS_NAME          "a_blendWeights"
-#define VERTEX_ATTRIBUTE_BLENDINDICES_NAME          "a_blendIndices"
-#define VERTEX_ATTRIBUTE_TEXCOORD_PREFIX_NAME       "a_texCoord"
-
 // Hardware buffer
 namespace gameplay
 {
-
-#define GL_FLOAT 0x1406
-#define GL_UNSIGNED_INT 0x1405
-
 
 /** Gamepad handle */
 #ifdef __ANDROID__
@@ -314,29 +297,6 @@ typedef unsigned long GamepadHandle;
 #endif
 }
 
-/**
- * GL assertion that can be used for any OpenGL function call.
- *
- * This macro will assert if an error is detected when executing
- * the specified GL code. This macro will do nothing in release
- * mode and is therefore safe to use for realtime/per-frame GL
- * function calls.
- */
-#if defined(NDEBUG) || (defined(__APPLE__) && !defined(DEBUG))
-#define GL_ASSERT( gl_code ) gl_code
-#else
-//@@#define GL_ASSERT( gl_code ) do \
-//@@    { \
-//@@        gl_code; \
-//@@        __gl_error_code = glGetError(); \
-//@@        GP_ASSERT(__gl_error_code == GL_NO_ERROR); \
-//@@    } while(0)
-#define GL_ASSERT( gl_code ) GP_ASSERT(0)
-#endif
-
-/** Global variable to hold GL errors
- * @script{ignore} */
-extern int __gl_error_code;
 
 /**
  * Executes the specified AL code and checks the AL error afterwards

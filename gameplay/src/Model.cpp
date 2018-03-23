@@ -226,8 +226,13 @@ void Model::setNode(Node* node)
     }
 }
 
+
 static bool drawWireframe(Mesh* mesh)
 {
+    GP_ASSERT(0);
+
+    /*
+
     switch (mesh->getPrimitiveType())
     {
     case Mesh::TRIANGLES:
@@ -253,11 +258,17 @@ static bool drawWireframe(Mesh* mesh)
     default:
         // not supported
         return false;
-    }
+    }*/
 }
+
+
 
 static bool drawWireframe(MeshPart* part)
 {
+    GP_ASSERT(0);
+
+
+    /*
     unsigned int indexCount = part->getIndexCount();
     unsigned int indexSize = 0;
     switch (part->getIndexFormat())
@@ -299,8 +310,9 @@ static bool drawWireframe(MeshPart* part)
     default:
         // not supported
         return false;
-    }
+    }*/
 }
+
 
 unsigned int Model::draw(bool wireframe)
 {
