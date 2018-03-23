@@ -2,8 +2,8 @@
 #include <Platform.h>
 #include "EventManager.h"
 
-//#define LOG_EVENT( stream )	GP_INFO( stream )
-#define LOG_EVENT( stream )	((void)0)
+//#define LOG_EVENT GP_INFO
+#define LOG_EVENT
 
 EventManager::EventManager( const std::string &name, bool setAsGlobal )
     : EventManagerBase( name, setAsGlobal ), mActiveQueue( 0 )
@@ -30,7 +30,7 @@ EventManager::~EventManager()
 
 bool EventManager::addListener( const EventListenerDelegate &eventDelegate, const EventID &type )
 {
-    LOG_EVENT( "Attempting to add delegate function for event type: " + to_string( type ) );
+    LOG_EVENT( "Attempting to add delegate function for event type: 0x%x", type);
 
     auto & eventDelegateList = mEventListeners[type];
     auto listenIt = eventDelegateList.begin();
@@ -45,13 +45,13 @@ bool EventManager::addListener( const EventListenerDelegate &eventDelegate, cons
         ++listenIt;
     }
     eventDelegateList.push_back(eventDelegate);
-    GP_INFO("Successfully added delegate for event type: %s", std::to_string( type ) );
+    GP_INFO("Successfully added delegate for event type: 0x%x", type);
     return true;
 }
 
 bool EventManager::removeListener( const EventListenerDelegate &eventDelegate, const EventID &type )
 {
-    LOG_EVENT("Attempting to remove delegate function from event type: " + to_string( type ) );
+    LOG_EVENT("Attempting to remove delegate function from event type: 0x%x", type);
     bool success = false;
 
     auto found = mEventListeners.find(type);
@@ -63,7 +63,7 @@ bool EventManager::removeListener( const EventListenerDelegate &eventDelegate, c
             if( eventDelegate == (*listIt) )
             {
                 listeners.erase(listIt);
-                LOG_EVENT("Successfully removed delegate function from event type: ");
+                LOG_EVENT("Successfully removed delegate function from event type: 0x%x", type);
                 success = true;
                 break;
             }
@@ -74,7 +74,7 @@ bool EventManager::removeListener( const EventListenerDelegate &eventDelegate, c
 
 bool EventManager::triggerEvent( const EventDataRef &event )
 {
-    //LOG_EVENT("Attempting to trigger event: " + std::string( event->getName() ) );
+    LOG_EVENT("Attempting to trigger event: %s", event->getName());
     bool processed = false;
 
     auto found = mEventListeners.find(event->getEventID());
@@ -84,7 +84,7 @@ bool EventManager::triggerEvent( const EventDataRef &event )
         for( auto listIt = eventListenerList.begin(); listIt != eventListenerList.end(); ++listIt )
         {
             auto& listener = (*listIt);
-            //LOG_EVENT("Sending event " + std::string( event->getName() ) + " to delegate.");
+            LOG_EVENT("Sending event %s to delegate.", event->getName());
             listener( event );
             processed = true;
         }
@@ -103,13 +103,13 @@ bool EventManager::queueEvent( const EventDataRef &event )
         GP_ERROR("Invalid event in queueEvent");
     }
 
-    //	GP_INFO("Attempting to queue event: " + std::string( event->getName() ) );
+    LOG_EVENT("Attempting to queue event: %s", event->getName());
 
     auto found = mEventListeners.find( event->getEventID() );
     if( found != mEventListeners.end() )
     {
         mQueues[mActiveQueue].push_back(event);
-        LOG_EVENT("Successfully queued event: " + std::string( event->getName() ) );
+        LOG_EVENT("Successfully queued event: %s", event->getName());
         return true;
     }
     else
@@ -117,7 +117,7 @@ bool EventManager::queueEvent( const EventDataRef &event )
         static bool processNotify = false;
         if( !processNotify )
         {
-            LOG_EVENT( "Skipping event since there are no delegates to receive it: " + std::string( event->getName() ) );
+            LOG_EVENT( "Skipping event since there are no delegates to receive it: %s", event->getName());
             processNotify = true;
         }
         return false;
@@ -166,7 +166,7 @@ bool EventManager::addThreadedListener( const EventListenerDelegate &eventDelega
         }
     }
     eventDelegateList.push_back(eventDelegate);
-    GP_INFO("Successfully added delegate for event type: %s", std::to_string( type ) );
+    GP_INFO("Successfully added delegate for event type: %d", type);
     return true;
 }
 
@@ -183,7 +183,7 @@ bool EventManager::removeThreadedListener( const EventListenerDelegate &eventDel
             if( eventDelegate == (*listIt) )
             {
                 listeners.erase(listIt);
-                LOG_EVENT("Successfully removed delegate function from event type: " << to_string( type ) );
+                LOG_EVENT("Successfully removed delegate function from event type: %d", type);
                 return true;
             }
         }
@@ -221,7 +221,6 @@ bool EventManager::triggerThreadedEvent( const EventDataRef &event )
 
 bool EventManager::update( uint64_t maxMillis )
 {
-    //@@uint64_t currMs = app::App::get()->getElapsedSeconds() * 1000;
     uint64_t currMs = gameplay::Platform::getAbsoluteTime();
     uint64_t maxMs = (( maxMillis == EventManager::kINFINITE ) ? (EventManager::kINFINITE) : (currMs + maxMillis) );
 
@@ -232,7 +231,8 @@ bool EventManager::update( uint64_t maxMillis )
     static bool processNotify = false;
     if( ! processNotify )
     {
-        LOG_EVENT("Processing Event Queue " + to_string(queueToProcess) + "; " + to_string(mQueues[queueToProcess].size()) + " events to process");
+        LOG_EVENT("Processing Event Queue %d:%d events to process", queueToProcess, mQueues[queueToProcess].size());
+
         processNotify = true;
     }
 
@@ -240,7 +240,7 @@ bool EventManager::update( uint64_t maxMillis )
     {
         auto event = mQueues[queueToProcess].front();
         mQueues[queueToProcess].pop_front();
-        LOG_EVENT("\t\tProcessing Event " + std::string(event->getName()));
+        LOG_EVENT("\t\tProcessing Event %s", event->getName());
 
         const auto & eventType = event->getEventID();
 
@@ -248,20 +248,19 @@ bool EventManager::update( uint64_t maxMillis )
         if (found != mEventListeners.end())
         {
             const auto & eventListeners = found->second;
-            LOG_EVENT("\t\tFound " + to_string(eventListeners.size()) + " delegates");
+            LOG_EVENT("\t\tFound %d delegates", eventListeners.size());
 
             auto listIt = eventListeners.begin();
             auto end = eventListeners.end();
             while (listIt != end)
             {
                 auto listener = (*listIt);
-                LOG_EVENT("\t\tSending Event " + std::string(event->getName()) + " to delegate");
+                LOG_EVENT("\t\tSending Event %s to delegate", event->getName());
                 listener(event);
                 listIt++;
             }
         }
 
-        //@@currMs = app::App::get()->getElapsedSeconds() * 1000;//Engine::getTickCount();
         currMs = gameplay::Platform::getAbsoluteTime();
         if( maxMillis != EventManager::kINFINITE && currMs >= maxMs )
         {
