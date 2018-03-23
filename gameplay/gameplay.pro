@@ -50,7 +50,6 @@ SOURCES += src/AbsoluteLayout.cpp \
     src/Control.cpp \
     src/ControlFactory.cpp \
     src/Curve.cpp \
-    src/DepthStencilTarget.cpp \
     src/Drawable.cpp \
     src/Effect.cpp \
     src/FileSystem.cpp \
@@ -191,7 +190,6 @@ HEADERS += src/AbsoluteLayout.h \
     src/Control.h \
     src/ControlFactory.h \
     src/Curve.h \
-    src/DepthStencilTarget.h \
     src/Drawable.h \
     src/Effect.h \
     src/FileSystem.h \
@@ -336,7 +334,6 @@ HEADERS += \
     src/lua/lua_Control.h \
     src/lua/lua_ControlListener.h \
     src/lua/lua_Curve.h \
-    src/lua/lua_DepthStencilTarget.h \
     src/lua/lua_Drawable.h \
     src/lua/lua_Effect.h \
     src/lua/lua_FileSystem.h \
@@ -472,7 +469,6 @@ SOURCES += \
     src/lua/lua_Control.cpp \
     src/lua/lua_ControlListener.cpp \
     src/lua/lua_Curve.cpp \
-    src/lua/lua_DepthStencilTarget.cpp \
     src/lua/lua_Drawable.cpp \
     src/lua/lua_Effect.cpp \
     src/lua/lua_FileSystem.cpp \

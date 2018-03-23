@@ -51,7 +51,6 @@
 #include "ParticleEmitter.h"
 #include "FrameBuffer.h"
 #include "RenderTarget.h"
-#include "DepthStencilTarget.h"
 #include "ScreenDisplayer.h"
 #include "HeightField.h"
 #include "Terrain.h"

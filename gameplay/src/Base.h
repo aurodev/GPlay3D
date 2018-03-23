@@ -321,11 +321,6 @@ typedef size_t GLsizei;
 #define GL_UNSIGNED_INT 0x1405
 
 
-/** Frame buffer handle. */
-typedef GLuint FrameBufferHandle;
-/** Render buffer handle. */
-typedef GLuint RenderBufferHandle;
-
 /** Gamepad handle */
 #ifdef __ANDROID__
 typedef unsigned int GamepadHandle;
