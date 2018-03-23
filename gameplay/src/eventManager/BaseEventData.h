@@ -3,26 +3,23 @@
 #include <memory>
 
 using EventDataRef = std::shared_ptr<class EventData>;
-using EventType = uint64_t;
+using EventID = uint64_t;
 
 class EventData
 {
 public:
-    explicit EventData( float timestamp = 0.0f ) : mTimeStamp( timestamp ), mIsHandled( false ) {}
+    explicit EventData() {}
     virtual ~EventData() {}
-
-    virtual EventDataRef copy() = 0;
-    virtual const char* getName() const = 0;
-    virtual EventType getEventType() const = 0;
-    float getTimeStamp() { return mTimeStamp; }
-
-    bool isHandled() { return mIsHandled; }
-    void setIsHandled( bool handled = true ) { mIsHandled = handled; }
-
-    //virtual void serialize( Buffer &streamOut ) = 0;
-    //virtual void deSerialize( const Buffer &streamIn ) = 0;
-
-private:
-    const float mTimeStamp;
-    bool mIsHandled;
+    typedef EventID id_t;
+    virtual id_t getEventID() const = 0;
+    virtual const char* getName() const = 0;    // used only for debug
 };
+
+
+//! macro for automatic overriding needed methods in derived classes
+#define GP_DECLARE_EVENT(type) \
+    static EventData::id_t ID() { return reinterpret_cast<EventData::id_t>(&ID); } \
+    EventData::id_t getEventID() const override { return ID(); } \
+    const char* getName() const override { return #type; } \
+
+

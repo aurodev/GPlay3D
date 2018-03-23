@@ -30,6 +30,7 @@ public:
 
     void finalize()
     {
+        EventManager::get()->removeListener(GP_EVENT_LISTENER(this, ShaderReload::onShaderDirectoryEvent), FileWatcherEvent::ID());
         SAFE_RELEASE(_font);
         SAFE_RELEASE(_scene);
     }
@@ -49,8 +50,8 @@ public:
             const char* actionLabel[] = { "Unknow", "Added", "Deleted", "Modified", "Moved" };
             print("onDirectoryEvent: type[%s] dir[%s] file[%s]\n", actionLabel[action], dir.c_str(), filename.c_str());
 
-            // if event occurs in shader directory, reload cube material
-            if(dir == "res/shaders")
+            // if event occurs in the shader directory, reload cube material
+            if(dir == "res/shaders/")
             {
                 // reload material of cubemodel
                 _cubeModel->getMaterial()->reload();
@@ -115,8 +116,7 @@ public:
         FileWatcher::Get()->addDirectory("res/shaders", true);
 
         // Add a listener to call specified metod when a file operation is detected in the shader directory
-        EventManager::get()->addListener(GP_EVENT_LISTENER(this, ShaderReload::onShaderDirectoryEvent),
-                                         FileWatcherEvent::E_FILEWATCHER);
+        EventManager::get()->addListener(GP_EVENT_LISTENER(this, ShaderReload::onShaderDirectoryEvent), FileWatcherEvent::ID());
 
     }
 

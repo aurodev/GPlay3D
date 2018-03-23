@@ -28,7 +28,7 @@ EventManager::~EventManager()
     GP_INFO( "Removed ALL EVENT LISTENERS" );
 }
 
-bool EventManager::addListener( const EventListenerDelegate &eventDelegate, const EventType &type )
+bool EventManager::addListener( const EventListenerDelegate &eventDelegate, const EventID &type )
 {
     LOG_EVENT( "Attempting to add delegate function for event type: " + to_string( type ) );
 
@@ -49,7 +49,7 @@ bool EventManager::addListener( const EventListenerDelegate &eventDelegate, cons
     return true;
 }
 
-bool EventManager::removeListener( const EventListenerDelegate &eventDelegate, const EventType &type )
+bool EventManager::removeListener( const EventListenerDelegate &eventDelegate, const EventID &type )
 {
     LOG_EVENT("Attempting to remove delegate function from event type: " + to_string( type ) );
     bool success = false;
@@ -77,7 +77,7 @@ bool EventManager::triggerEvent( const EventDataRef &event )
     //LOG_EVENT("Attempting to trigger event: " + std::string( event->getName() ) );
     bool processed = false;
 
-    auto found = mEventListeners.find(event->getEventType());
+    auto found = mEventListeners.find(event->getEventID());
     if( found != mEventListeners.end() )
     {
         const auto & eventListenerList = found->second;
@@ -105,7 +105,7 @@ bool EventManager::queueEvent( const EventDataRef &event )
 
     //	GP_INFO("Attempting to queue event: " + std::string( event->getName() ) );
 
-    auto found = mEventListeners.find( event->getEventType() );
+    auto found = mEventListeners.find( event->getEventID() );
     if( found != mEventListeners.end() )
     {
         mQueues[mActiveQueue].push_back(event);
@@ -124,7 +124,7 @@ bool EventManager::queueEvent( const EventDataRef &event )
     }
 }
 
-bool EventManager::abortEvent( const EventType &type, bool allOfType )
+bool EventManager::abortEvent( const EventID &type, bool allOfType )
 {
     GP_ASSERT(mActiveQueue >= 0);
     GP_ASSERT(mActiveQueue > NUM_QUEUES);
@@ -139,7 +139,7 @@ bool EventManager::abortEvent( const EventType &type, bool allOfType )
         auto end = eventQueue.end();
         while( eventIt != end )
         {
-            if( (*eventIt)->getEventType() == type )
+            if( (*eventIt)->getEventID() == type )
             {
                 eventIt = eventQueue.erase(eventIt);
                 success = true;
@@ -152,7 +152,7 @@ bool EventManager::abortEvent( const EventType &type, bool allOfType )
     return success;
 }
 
-bool EventManager::addThreadedListener( const EventListenerDelegate &eventDelegate, const EventType &type )
+bool EventManager::addThreadedListener( const EventListenerDelegate &eventDelegate, const EventID &type )
 {
     std::lock_guard<std::mutex> lock( mThreadedEventListenerMutex );
 
@@ -170,7 +170,7 @@ bool EventManager::addThreadedListener( const EventListenerDelegate &eventDelega
     return true;
 }
 
-bool EventManager::removeThreadedListener( const EventListenerDelegate &eventDelegate, const EventType &type )
+bool EventManager::removeThreadedListener( const EventListenerDelegate &eventDelegate, const EventID &type )
 {
     std::lock_guard<std::mutex> lock( mThreadedEventListenerMutex );
 
@@ -202,7 +202,7 @@ bool EventManager::triggerThreadedEvent( const EventDataRef &event )
     std::lock_guard<std::mutex> lock( mThreadedEventListenerMutex );
 
     bool processed = false;
-    auto found = mThreadedEventListeners.find(event->getEventType());
+    auto found = mThreadedEventListeners.find(event->getEventID());
     if( found != mThreadedEventListeners.end() )
     {
         const auto & eventListenerList = found->second;
@@ -242,7 +242,7 @@ bool EventManager::update( uint64_t maxMillis )
         mQueues[queueToProcess].pop_front();
         LOG_EVENT("\t\tProcessing Event " + std::string(event->getName()));
 
-        const auto & eventType = event->getEventType();
+        const auto & eventType = event->getEventID();
 
         auto found = mEventListeners.find(eventType);
         if (found != mEventListeners.end())

@@ -164,8 +164,7 @@ SOURCES += src/AbsoluteLayout.cpp \
     src/ParticleSpark/SparkUtility.cpp \
     src/io/FileWatcher.cpp \
     src/eventManager/EventManager.cpp \
-    src/eventManager/EventManagerBase.cpp \
-    src/GlobalEvents.cpp
+    src/eventManager/EventManagerBase.cpp
 
 HEADERS += src/AbsoluteLayout.h \
     src/AIAgent.h \
@@ -302,7 +301,8 @@ HEADERS += src/AbsoluteLayout.h \
     src/eventManager/EventManager.h \
     src/eventManager/EventManagerBase.h \
     src/eventManager/FastDelegate.h \
-    src/eventManager/FastDelegateBind.h
+    src/eventManager/FastDelegateBind.h \
+    src/StringHash.h
 
 
 #DEFINES += COMPIL_WITH_LUA

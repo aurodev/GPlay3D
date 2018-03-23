@@ -12,14 +12,12 @@ namespace gameplay {
 /**
  * FileWatcher event.
  */
-
 using FileWatcherEventRef = std::shared_ptr<class FileWatcherEvent>;
-
 class FileWatcherEvent : public EventData
 {
 public:
 
-    static EventType E_FILEWATCHER;
+    GP_DECLARE_EVENT(FileWatcherEvent)
 
     struct WatchData
     {
@@ -35,15 +33,10 @@ public:
         return FileWatcherEventRef(new FileWatcherEvent(data));
     }
 
-    EventDataRef copy() {}
-    const char* getName() const {}
-    EventType getEventType() const { return E_FILEWATCHER; }
-    virtual ~FileWatcherEvent() {}
-
 private:
 
     explicit FileWatcherEvent(WatchData data) :
-        EventData(Platform::getAbsoluteTime())
+        EventData()
       , _data(data)
     {
     }

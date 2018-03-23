@@ -10,40 +10,26 @@
 using namespace gameplay;
 
 
+
 /**
- * Declare a new custom event using the EventData base class.
+ * Declare an event.
  *
- * This event can be triggered by a mouse button.
+ * This event store a Vector2 for mouse position.
+ * And is intended to be triggered when mouse is clicked.
  */
-
-using MyEventDataRef = std::shared_ptr<class MyMouseEvent>;
-
+using MyMouseEventRef = std::shared_ptr<class MyMouseEvent>;
 class MyMouseEvent : public EventData
 {
 public:
 
-    static EventType E_MOUSE_EXAMPLE;
+    GP_DECLARE_EVENT(MyMouseEvent)
 
-    static MyEventDataRef create(Vector2 mousePos)
+    Vector2 _mousePos;
+
+    static MyMouseEventRef create(Vector2 mousePos)
     {
         print("MyMouseEvent::create\n");
-        return MyEventDataRef(new MyMouseEvent(mousePos));
-    }
-
-    EventDataRef copy()
-    {
-        print("MyMouseEvent::copy\n");
-    }
-
-    const char* getName() const
-    {
-        print("MyMouseEvent::getName\n");
-    }
-
-    EventType getEventType() const
-    {
-        print("MyMouseEvent::getEventType\n");
-        return E_MOUSE_EXAMPLE;
+        return MyMouseEventRef(new MyMouseEvent(mousePos));
     }
 
     ~MyMouseEvent()
@@ -54,19 +40,12 @@ public:
 private:
 
     explicit MyMouseEvent(Vector2 mousePos) :
-        EventData(Platform::getAbsoluteTime())
+        EventData()
       , _mousePos(mousePos)
     {
         print("MyMouseEvent::Constructor\n");
     }
-
-public:
-    Vector2 _mousePos;  // store a mouse position.
 };
-
-// declare Mouse UUID
-EventType MyMouseEvent::E_MOUSE_EXAMPLE = "91c01443-1d41-4bbe-84f4-55cee3d39445"_hash;
-
 
 
 
@@ -138,8 +117,8 @@ public:
     void finalize()
     {
         // Remove the delegates from the event manager
-        EventManager::get()->removeListener(GP_EVENT_LISTENER(this, EventSample::onEventCreateNewActor), MyMouseEvent::E_MOUSE_EXAMPLE);
-        EventManager::get()->removeListener(GP_EVENT_LISTENER(&_dummyActor, DummyActor::onEventMouseClicked), MyMouseEvent::E_MOUSE_EXAMPLE);
+        EventManager::get()->removeListener(GP_EVENT_LISTENER(this, EventSample::onEventCreateNewActor), MyMouseEvent::ID());
+        EventManager::get()->removeListener(GP_EVENT_LISTENER(&_dummyActor, DummyActor::onEventMouseClicked), MyMouseEvent::ID());
 
         SAFE_RELEASE(_font);
         SAFE_RELEASE(_scene);
@@ -173,8 +152,8 @@ public:
         // Add some listeners for the event MyMouseEvent.
         // This event is triggered in touchEvent() when a button is clicked.
         // Any object that wants to be notified of this event can add a listener.
-        EventManager::get()->addListener(GP_EVENT_LISTENER(this, EventSample::onEventCreateNewActor), MyMouseEvent::E_MOUSE_EXAMPLE);
-        EventManager::get()->addListener(GP_EVENT_LISTENER(&_dummyActor, DummyActor::onEventMouseClicked), MyMouseEvent::E_MOUSE_EXAMPLE);
+        EventManager::get()->addListener(GP_EVENT_LISTENER(this, EventSample::onEventCreateNewActor), MyMouseEvent::ID());
+        EventManager::get()->addListener(GP_EVENT_LISTENER(&_dummyActor, DummyActor::onEventMouseClicked), MyMouseEvent::ID());
     }
 
 
