@@ -19,7 +19,7 @@ static Effect* __currentEffect = nullptr;
 Effect* Effect::_invalidEffect = nullptr;
 
 
-Effect::Effect() : _program(0)
+Effect::Effect() : _gpuProgram(0)
 {
 }
 
@@ -34,17 +34,12 @@ Effect::~Effect()
         SAFE_DELETE(itr->second);
     }
 
-    if (_program)
+    if (_gpuProgram)
     {
         // If our program object is currently bound, unbind it before we're destroyed.
         if (__currentEffect == this)
-        {
-            GL_ASSERT( glUseProgram(0) );
-            __currentEffect = NULL;
-        }
-
-        GL_ASSERT( glDeleteProgram(_program) );
-        _program = 0;
+            __currentEffect = nullptr;
+        SAFE_DELETE(_gpuProgram);
     }
 }
 

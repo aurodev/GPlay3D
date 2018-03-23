@@ -302,8 +302,6 @@ using std::va_list;
 namespace gameplay
 {
 
-typedef int GLint;
-typedef unsigned int GLuint;
 typedef unsigned int GLenum;
 typedef int GLboolean;
 typedef size_t GLsizei;

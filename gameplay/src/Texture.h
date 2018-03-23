@@ -350,7 +350,7 @@ private:
     Texture& operator=(const Texture&);
 
 
-    static GLint getFormatInternal(Format format);
+    static int getFormatInternal(Format format);
     static GLenum getFormatTexel(Format format);
     static size_t getFormatBPP(Format format);
 
@@ -369,7 +369,7 @@ private:
     Filter _minFilter;
     Filter _magFilter;
 
-    GLint _internalFormat;
+    int _internalFormat;
     GLenum _texelType;
     size_t _bpp;
 };

@@ -233,7 +233,6 @@ private:
 
     static Effect* createFromSource(const char* vshPath, const char* vshSource, const char* fshPath, const char* fshSource, const char* defines = NULL);
 
-    GLuint _program;
     std::string _id;
     mutable std::map<std::string, Uniform*> _uniforms;
     static Uniform _emptyUniform;
