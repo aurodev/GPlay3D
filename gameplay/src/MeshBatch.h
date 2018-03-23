@@ -177,8 +177,6 @@ private:
     unsigned short* _indices;
     unsigned short* _indicesPtr;
     bool _started;
-
-
     bgfx::VertexDecl _vertexDecl;
 };
 

@@ -356,7 +356,6 @@ private:
     std::string _url;
     VertexFormat _vertexFormat;
     unsigned int _vertexCount;
-    //@@VertexBufferHandle _vertexBuffer;
     PrimitiveType _primitiveType;
     unsigned int _partCount;
     MeshPart** _parts;

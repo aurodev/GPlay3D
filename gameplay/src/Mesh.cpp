@@ -26,11 +26,6 @@ Mesh::~Mesh()
         SAFE_DELETE_ARRAY(_parts);
     }
 
-    //@@if (_vertexBuffer)
-    //@@{
-    //@@    glDeleteBuffers(1, &_vertexBuffer);
-    //@@    _vertexBuffer = 0;
-    //@@}
     SAFE_DELETE(_vertexBuffer);
 }
 
@@ -51,23 +46,12 @@ bool Mesh::setDrawRange(uint32_t vertexStart, uint32_t vertexCount)
 
 Mesh* Mesh::createMesh(const VertexFormat& vertexFormat, unsigned int vertexCount, bool dynamic)
 {
-    //@@GLuint vbo;
-    //@@GL_ASSERT( glGenBuffers(1, &vbo) );
-    //@@GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, vbo) );
-    //@@GL_ASSERT( glBufferData(GL_ARRAY_BUFFER, vertexFormat.getVertexSize() * vertexCount, NULL, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW) );
-
-
     GP_ASSERT(vertexCount > 0);
 
-    Mesh* mesh = new Mesh(vertexFormat);    
-    //@@mesh->_vertexCount = vertexCount;
-    //@@mesh->_vertexBuffer = vbo;
-    //@@mesh->_dynamic = dynamic;
+    Mesh* mesh = new Mesh(vertexFormat);
     mesh->set(vertexFormat, vertexCount, dynamic);
-
     return mesh;
 }
-
 
 Mesh* Mesh::createQuad(float x, float y, float width, float height, float s1, float t1, float s2, float t2)
 {
@@ -284,39 +268,17 @@ void Mesh::setPrimitiveType(PrimitiveType type)
 
 void* Mesh::mapVertexBuffer()
 {
-    //@@GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer) );
-
-    //@@ return (void*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-
     return _vertexBuffer->lock(0, _vertexCount);
 }
 
 bool Mesh::unmapVertexBuffer()
 {
-    //@@ return glUnmapBuffer(GL_ARRAY_BUFFER);
-
     _vertexBuffer->unLock();
     return true;
 }
 
 void Mesh::setVertexData(const void* vertexData, unsigned int vertexStart, unsigned int vertexCount)
 {
-    //@@GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer) );
-    //@@
-    //@@if (vertexStart == 0 && vertexCount == 0)
-    //@@{
-    //@@    GL_ASSERT( glBufferData(GL_ARRAY_BUFFER, _vertexFormat.getVertexSize() * _vertexCount, vertexData, _dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW) );
-    //@@}
-    //@@else
-    //@@{
-    //@@    if (vertexCount == 0)
-    //@@    {
-    //@@        vertexCount = _vertexCount - vertexStart;
-    //@@    }
-    //@@
-    //@@    GL_ASSERT( glBufferSubData(GL_ARRAY_BUFFER, vertexStart * _vertexFormat.getVertexSize(), vertexCount * _vertexFormat.getVertexSize(), vertexData) );
-    //@@}
-
     _vertexBuffer->set(vertexData, vertexCount, vertexStart);
 }
 
@@ -376,7 +338,7 @@ void Mesh::setBoundingSphere(const BoundingSphere& sphere)
 
 void Mesh::draw()
 {
-    //@@GL_ASSERT( glDrawArrays(getPrimitiveType(), 0, getVertexCount()) );
+
 }
 
 }

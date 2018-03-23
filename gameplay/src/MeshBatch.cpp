@@ -3,8 +3,7 @@
 #include "Material.h"
 #include "BGFX/BGFXVertexBuffer.h"
 
-namespace gameplay
-{
+namespace gameplay {
 
 MeshBatch::MeshBatch(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, Material* material, bool indexed, unsigned int initialCapacity, unsigned int growSize)
     : _vertexFormat(vertexFormat), _primitiveType(primitiveType), _material(material), _indexed(indexed), _capacity(0), _growSize(growSize),
@@ -226,11 +225,7 @@ void MeshBatch::draw()
     if (_vertexCount == 0 || (_indexed && _indexCount == 0))
         return; // nothing to draw
 
-    // Not using VBOs, so unbind the element array buffer.
-    // ARRAY_BUFFER will be unbound automatically during pass->bind().
-    //@@GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0 ) );
-
-    // using transiant buffers
+    // using bgfx transient buffers
 
     bgfx::TransientVertexBuffer tvb;
     bgfx::allocTransientVertexBuffer(&tvb, _vertexCount, _vertexDecl);
@@ -254,50 +249,10 @@ void MeshBatch::draw()
         Pass* pass = technique->getPassByIndex(i);
         GP_ASSERT(pass);
         pass->bind(_primitiveType);
-
-        /*if (_indexed)
-        {
-            //GL_ASSERT( glDrawElements(_primitiveType, _indexCount, GL_UNSIGNED_SHORT, (GLvoid*)_indices) );
-        }
-        else
-        {
-            //GL_ASSERT( glDrawArrays(_primitiveType, 0, _vertexCount) );
-        }*/
-
         pass->unbind();
     }
 
     return;
-
-#if 0//@@
-
-    GP_ASSERT(_material);
-    if (_indexed)
-        GP_ASSERT(_indices);
-
-    // Bind the material.
-    Technique* technique = _material->getTechnique();
-    GP_ASSERT(technique);
-    unsigned int passCount = technique->getPassCount();
-    for (unsigned int i = 0; i < passCount; ++i)
-    {
-        Pass* pass = technique->getPassByIndex(i);
-        GP_ASSERT(pass);
-        pass->bind();
-
-        if (_indexed)
-        {
-            GL_ASSERT( glDrawElements(_primitiveType, _indexCount, GL_UNSIGNED_SHORT, (GLvoid*)_indices) );
-        }
-        else
-        {
-            GL_ASSERT( glDrawArrays(_primitiveType, 0, _vertexCount) );
-        }
-
-        pass->unbind();
-    }
-#endif//@@
-}
-    
+}    
 
 }

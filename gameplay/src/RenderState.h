@@ -168,19 +168,19 @@ public:
      */
     enum Blend
     {
-        BLEND_ZERO,                     //@@ = GL_ZERO,
-        BLEND_ONE,                      //@@ = GL_ONE,
-        BLEND_SRC_COLOR,                //@@ = GL_SRC_COLOR,
-        BLEND_ONE_MINUS_SRC_COLOR,      //@@ = GL_ONE_MINUS_SRC_COLOR,
-        BLEND_DST_COLOR,                //@@ = GL_DST_COLOR,
-        BLEND_ONE_MINUS_DST_COLOR,      //@@ = GL_ONE_MINUS_DST_COLOR,
-        BLEND_SRC_ALPHA,                //@@ = GL_SRC_ALPHA,
-        BLEND_ONE_MINUS_SRC_ALPHA,      //@@ = GL_ONE_MINUS_SRC_ALPHA,
-        BLEND_DST_ALPHA,                //@@ = GL_DST_ALPHA,
-        BLEND_ONE_MINUS_DST_ALPHA,      //@@ = GL_ONE_MINUS_DST_ALPHA,
-        BLEND_CONSTANT_ALPHA,           //@@ = GL_CONSTANT_ALPHA,
-        BLEND_ONE_MINUS_CONSTANT_ALPHA, //@@ = GL_ONE_MINUS_CONSTANT_ALPHA,
-        BLEND_SRC_ALPHA_SATURATE,       //@@ = GL_SRC_ALPHA_SATURATE
+        BLEND_ZERO,
+        BLEND_ONE,
+        BLEND_SRC_COLOR,
+        BLEND_ONE_MINUS_SRC_COLOR,
+        BLEND_DST_COLOR,
+        BLEND_ONE_MINUS_DST_COLOR,
+        BLEND_SRC_ALPHA,
+        BLEND_ONE_MINUS_SRC_ALPHA,
+        BLEND_DST_ALPHA,
+        BLEND_ONE_MINUS_DST_ALPHA,
+        BLEND_CONSTANT_ALPHA,
+        BLEND_ONE_MINUS_CONSTANT_ALPHA,
+        BLEND_SRC_ALPHA_SATURATE,
     };
 
     /**
@@ -194,14 +194,14 @@ public:
      */
     enum DepthFunction
     {
-        DEPTH_NEVER,        //@@ = GL_NEVER,
-        DEPTH_LESS,         //@@ = GL_LESS,
-        DEPTH_EQUAL,        //@@ = GL_EQUAL,
-        DEPTH_LEQUAL,       //@@ = GL_LEQUAL,
-        DEPTH_GREATER,      //@@ = GL_GREATER,
-        DEPTH_NOTEQUAL,     //@@ = GL_NOTEQUAL,
-        DEPTH_GEQUAL,       //@@ = GL_GEQUAL,
-        DEPTH_ALWAYS,       //@@ = GL_ALWAYS
+        DEPTH_NEVER,
+        DEPTH_LESS,
+        DEPTH_EQUAL,
+        DEPTH_LEQUAL,
+        DEPTH_GREATER,
+        DEPTH_NOTEQUAL,
+        DEPTH_GEQUAL,
+        DEPTH_ALWAYS,
     };
 
     /**
@@ -210,9 +210,9 @@ public:
      */
     enum CullFaceSide
     {
-        CULL_FACE_SIDE_BACK,            //@@ = GL_BACK,
-        CULL_FACE_SIDE_FRONT,           //@@ = GL_FRONT,
-        CULL_FACE_SIDE_FRONT_AND_BACK   //@@ = GL_FRONT_AND_BACK
+        CULL_FACE_SIDE_BACK,
+        CULL_FACE_SIDE_FRONT,
+        CULL_FACE_SIDE_FRONT_AND_BACK
     };
 
     /**
@@ -222,8 +222,8 @@ public:
      */
     enum FrontFace
     {
-        FRONT_FACE_CW,  //@@ = GL_CW,
-        FRONT_FACE_CCW  //@@ = GL_CCW
+        FRONT_FACE_CW,
+        FRONT_FACE_CCW
     };
 
 	/**
@@ -235,14 +235,14 @@ public:
      */
     enum StencilFunction
     {
-        STENCIL_NEVER,      //@@ = GL_NEVER,
-        STENCIL_ALWAYS,     //@@ = GL_ALWAYS,
-        STENCIL_LESS,       //@@ = GL_LESS,
-        STENCIL_LEQUAL,     //@@ = GL_LEQUAL,
-        STENCIL_EQUAL,      //@@ = GL_EQUAL,
-        STENCIL_GREATER,    //@@ = GL_GREATER,
-        STENCIL_GEQUAL,     //@@ = GL_GEQUAL,
-        STENCIL_NOTEQUAL,   //@@ = GL_NOTEQUAL
+        STENCIL_NEVER,
+        STENCIL_ALWAYS,
+        STENCIL_LESS,
+        STENCIL_LEQUAL,
+        STENCIL_EQUAL,
+        STENCIL_GREATER,
+        STENCIL_GEQUAL,
+        STENCIL_NOTEQUAL,
     };
 
 	/**
@@ -255,14 +255,14 @@ public:
      */
     enum StencilOperation
     {
-        STENCIL_OP_KEEP,        //@@ = GL_KEEP,
-        STENCIL_OP_ZERO,        //@@ = GL_ZERO,
-        STENCIL_OP_REPLACE,     //@@ = GL_REPLACE,
-        STENCIL_OP_INCR,        //@@ = GL_INCR,
-        STENCIL_OP_DECR,        //@@ = GL_DECR,
-        STENCIL_OP_INVERT,      //@@ = GL_INVERT,
-        STENCIL_OP_INCR_WRAP,   //@@ = GL_INCR_WRAP,
-        STENCIL_OP_DECR_WRAP    //@@ = GL_DECR_WRAP
+        STENCIL_OP_KEEP,
+        STENCIL_OP_ZERO,
+        STENCIL_OP_REPLACE,
+        STENCIL_OP_INCR,
+        STENCIL_OP_DECR,
+        STENCIL_OP_INVERT,
+        STENCIL_OP_INCR_WRAP,
+        STENCIL_OP_DECR_WRAP
     };
 
     /**

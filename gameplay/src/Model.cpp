@@ -6,8 +6,7 @@
 #include "Pass.h"
 #include "Node.h"
 
-namespace gameplay
-{
+namespace gameplay {
 
 Model::Model() : Drawable(),
     _mesh(NULL), _material(NULL), _partCount(0), _partMaterials(NULL), _skin(NULL)
@@ -333,14 +332,11 @@ unsigned int Model::draw(bool wireframe)
                 GP_ASSERT(pass);
                 pass->bind(_mesh->getPrimitiveType());
 
-                //@@GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
                 _mesh->_vertexBuffer->bind();
 
                 if (!wireframe || !drawWireframe(_mesh))
                 {
-                    //@@GL_ASSERT( glDrawArrays(_mesh->getPrimitiveType(), 0, _mesh->getVertexCount()) );
                     _mesh->draw();
-
                 }
                 pass->unbind();
             }
@@ -364,16 +360,13 @@ unsigned int Model::draw(bool wireframe)
                 {
                     Pass* pass = technique->getPassByIndex(j);
                     GP_ASSERT(pass);
-                    pass->bind(part->getPrimitiveType());
-
-                    //@@GL_ASSERT( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, part->_indexBuffer->getHandle()) );
+                    pass->bind(part->getPrimitiveType());                  
 
                     _mesh->_vertexBuffer->bind();
                     part->_indexBuffer->bind();
 
                     if (!wireframe || !drawWireframe(part))
                     {
-                        //@@GL_ASSERT( glDrawElements(part->getPrimitiveType(), part->getIndexCount(), part->getIndexFormat(), 0) );
                         part->draw();
                     }
                     pass->unbind();

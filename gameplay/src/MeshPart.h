@@ -141,7 +141,6 @@ private:
     Mesh::PrimitiveType _primitiveType;
     Mesh::IndexFormat _indexFormat;
     unsigned int _indexCount;
-    //@@IndexBufferHandle _indexBuffer;
     bool _dynamic;
 
 private:

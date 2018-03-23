@@ -591,9 +591,6 @@ void RenderState::StateBlock::bind()
 }
 
 
-
-
-
 uint64_t TAB_BLEND[] = {
     BGFX_STATE_BLEND_ZERO,              // BLEND_ZERO = GL_ZERO,
     BGFX_STATE_BLEND_ONE,               // BLEND_ONE = GL_ONE,
@@ -610,7 +607,6 @@ uint64_t TAB_BLEND[] = {
     BGFX_STATE_BLEND_SRC_ALPHA_SAT      // BLEND_SRC_ALPHA_SATURATE = GL_SRC_ALPHA_SATURATE
 };
 
-
 uint64_t TAB_DEPTH_FUNC[] = {
     BGFX_STATE_DEPTH_TEST_NEVER,        // DEPTH_NEVER = GL_NEVER,
     BGFX_STATE_DEPTH_TEST_LESS,         // DEPTH_LESS = GL_LESS,
@@ -621,8 +617,6 @@ uint64_t TAB_DEPTH_FUNC[] = {
     BGFX_STATE_DEPTH_TEST_GEQUAL,       // DEPTH_GEQUAL = GL_GEQUAL,
     BGFX_STATE_DEPTH_TEST_ALWAYS        // DEPTH_ALWAYS = GL_ALWAYS
 };
-
-
 
 
 void RenderState::StateBlock::bindNoRestore()
@@ -719,19 +713,7 @@ void RenderState::StateBlock::apply(Mesh::PrimitiveType primitiveType)
 {
     GP_ASSERT(_defaultState);
 
-
-
     uint64_t bgfxBits = 0L;
-
-    /*
-     * | BGFX_STATE_RGB_WRITE       \
-            | BGFX_STATE_ALPHA_WRITE     \
-            | BGFX_STATE_DEPTH_TEST_LESS \
-            | BGFX_STATE_DEPTH_WRITE     \
-            | BGFX_STATE_CULL_CW         \
-            | BGFX_STATE_MSAA            \
-            */
-
 
     bgfxBits |= BGFX_STATE_WRITE_RGB;
     bgfxBits |= BGFX_STATE_WRITE_A;
@@ -768,7 +750,6 @@ void RenderState::StateBlock::apply(Mesh::PrimitiveType primitiveType)
         }
     }
 
-
     switch(primitiveType)
     {
     case Mesh::PrimitiveType::TRIANGLES:
@@ -790,16 +771,9 @@ void RenderState::StateBlock::apply(Mesh::PrimitiveType primitiveType)
         GP_ERROR("Primitive type undefined");
     }
 
-
     bgfxBits |= BGFX_STATE_MSAA;
 
-
     bgfx::setState(bgfxBits);
-
-
-
-
-
 }
 
 void RenderState::StateBlock::restore(long stateOverrideBits)

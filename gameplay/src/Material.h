@@ -5,8 +5,7 @@
 #include "Technique.h"
 #include "Properties.h"
 
-namespace gameplay
-{
+namespace gameplay {
 
 class NodeCloneContext;
 
@@ -148,9 +147,18 @@ public:
      */
     void setNodeBinding(Node* node);
 
-    //@@ experiment material clone
+    /**
+     * Clone a material
+     *
+     * @return the cloned material.
+     */
     Material* clone() const;
 
+    /**
+     * Reload a material by reloading shaders.
+     *
+     * @return true if success.
+     */
     bool reload();
 
 

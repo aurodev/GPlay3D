@@ -259,15 +259,6 @@ public:
     static Texture* create(BGFXTexture *handle, int width, int height, Format format = UNKNOWN);
 
     /**
-     * Set texture data to replace current texture image.
-     *
-     * @param data Raw texture data (expected to be tightly packed). If the type parameter is set
-     *   to TEXTURE_CUBE, then data is expected to be each face stored back contiguously within the
-     *   array.
-     */
-    //@@void setData(const unsigned char* data);
-
-    /**
      * Returns the path that the texture was originally loaded from (if applicable).
      *
      * @return The texture path, or an empty string if the texture was not loaded from file.

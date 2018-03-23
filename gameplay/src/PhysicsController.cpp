@@ -1333,32 +1333,6 @@ PhysicsController::DebugDrawer::DebugDrawer()
     : _mode(btIDebugDraw::DBG_DrawAabb | btIDebugDraw::DBG_DrawConstraintLimits | btIDebugDraw::DBG_DrawConstraints | 
        btIDebugDraw::DBG_DrawContactPoints | btIDebugDraw::DBG_DrawWireframe), _meshBatch(NULL), _lineCount(0)
 {
-    // Vertex shader for drawing colored lines.
-    //@@const char* vs_str =
-    //@@{
-    //@@    "uniform mat4 u_viewProjectionMatrix;\n"
-    //@@    "attribute vec4 a_position;\n"
-    //@@    "attribute vec4 a_color;\n"
-    //@@    "varying vec4 v_color;\n"
-    //@@    "void main(void) {\n"
-    //@@    "    v_color = a_color;\n"
-    //@@    "    gl_Position = u_viewProjectionMatrix * a_position;\n"
-    //@@    "}"
-    //@@};
-    //@@
-    //@@// Fragment shader for drawing colored lines.
-    //@@const char* fs_str =
-    //@@{
-    //@@#ifdef OPENGL_ES
-    //@@    "precision highp float;\n"
-    //@@#endif
-    //@@    "varying vec4 v_color;\n"
-    //@@    "void main(void) {\n"
-    //@@    "   gl_FragColor = v_color;\n"
-    //@@    "}"
-    //@@};
-
-    //@@Effect* effect = Effect::createFromSource(vs_str, fs_str);
     Effect* effect = Effect::createFromFile("res/shaders/physics.vert", "res/shaders/physics.frag");
 
     Material* material = Material::create(effect);

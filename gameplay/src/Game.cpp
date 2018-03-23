@@ -161,7 +161,6 @@ bool Game::startup()
 
     setViewport(Rectangle(0.0f, 0.0f, (float)_width, (float)_height));
     RenderState::initialize();
-    //@@FrameBuffer::initialize();
 
     Effect::initialize();
 
@@ -284,7 +283,6 @@ void Game::shutdown()
 
         SAFE_DELETE(_audioListener);
 
-        //@@FrameBuffer::finalize();
         RenderState::finalize();
 
         SAFE_DELETE(_properties);
@@ -488,7 +486,6 @@ void Game::updateOnce()
 void Game::setViewport(const Rectangle& viewport)
 {
     _viewport = viewport;
-    //@@glViewport((GLuint)viewport.x, (GLuint)viewport.y, (GLuint)viewport.width, (GLuint)viewport.height);
     bgfx::setViewRect(_curentViewId, viewport.x, viewport.y, viewport.width, viewport.height);
 }
 
@@ -502,8 +499,6 @@ void Game::clear(ClearFlags flags, const Vector4& clearColor, float clearDepth, 
             clearColor.z != _clearColor.z ||
             clearColor.w != _clearColor.w )
         {
-
-            //@@glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
             _clearColor.set(clearColor);
         }
         bits |= BGFX_CLEAR_COLOR;
@@ -513,7 +508,6 @@ void Game::clear(ClearFlags flags, const Vector4& clearColor, float clearDepth, 
     {
         if (clearDepth != _clearDepth)
         {
-            //@@glClearDepth(clearDepth);
             _clearDepth = clearDepth;
         }
         bits |= BGFX_CLEAR_DEPTH;
@@ -528,12 +522,11 @@ void Game::clear(ClearFlags flags, const Vector4& clearColor, float clearDepth, 
     {
         if (clearStencil != _clearStencil)
         {
-            //@@glClearStencil(clearStencil);
             _clearStencil = clearStencil;
         }
         bits |= BGFX_CLEAR_STENCIL;
     }
-    //@@glClear(bits);
+
     bgfx::setViewClear(_curentViewId, bits, _clearColor.toUInt(), _clearDepth, _clearStencil);
 }
 
