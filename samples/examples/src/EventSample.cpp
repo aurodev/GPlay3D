@@ -137,6 +137,10 @@ public:
 
     void finalize()
     {
+        // Remove the delegates from the event manager
+        EventManager::get()->removeListener(GP_EVENT_LISTENER(this, EventSample::onEventCreateNewActor), MyMouseEvent::E_MOUSE_EXAMPLE);
+        EventManager::get()->removeListener(GP_EVENT_LISTENER(&_dummyActor, DummyActor::onEventMouseClicked), MyMouseEvent::E_MOUSE_EXAMPLE);
+
         SAFE_RELEASE(_font);
         SAFE_RELEASE(_scene);
         SAFE_RELEASE(_originalBox);
