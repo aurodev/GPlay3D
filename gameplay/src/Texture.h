@@ -4,8 +4,7 @@
 #include "Ref.h"
 #include "Stream.h"
 
-namespace gameplay
-{
+namespace gameplay {
 
 class Image;
 class Uniform;
@@ -45,12 +44,12 @@ public:
      */
     enum Filter
     {
-        NEAREST,                //@@= GL_NEAREST,
-        LINEAR,                 //@@= GL_LINEAR,
-        NEAREST_MIPMAP_NEAREST, //@@= GL_NEAREST_MIPMAP_NEAREST,
-        LINEAR_MIPMAP_NEAREST,  //@@= GL_LINEAR_MIPMAP_NEAREST,
-        NEAREST_MIPMAP_LINEAR,  //@@= GL_NEAREST_MIPMAP_LINEAR,
-        LINEAR_MIPMAP_LINEAR    //@@= GL_LINEAR_MIPMAP_LINEAR
+        NEAREST,
+        LINEAR,
+        NEAREST_MIPMAP_NEAREST,
+        LINEAR_MIPMAP_NEAREST,
+        NEAREST_MIPMAP_LINEAR,
+        LINEAR_MIPMAP_LINEAR
     };
 
     /**
@@ -58,10 +57,10 @@ public:
      */
     enum Wrap
     {
-        REPEAT,                 //@@= GL_REPEAT,
-        CLAMP,                  //@@= GL_CLAMP_TO_EDGE
-        MIRROR,                 //@@ new bgfx
-        BORDER,                 //@@ new bgfx
+        REPEAT,
+        CLAMP,
+        MIRROR,
+        BORDER,
     };
 
     /**
@@ -69,8 +68,8 @@ public:
      */
     enum Type
     {
-        TEXTURE_2D,             //@@ = GL_TEXTURE_2D,
-        TEXTURE_CUBE,           //@@ = GL_TEXTURE_CUBE_MAP,
+        TEXTURE_2D,
+        TEXTURE_CUBE,
         TEXTURE_RT
     };
 

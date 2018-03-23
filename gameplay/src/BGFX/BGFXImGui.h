@@ -6,7 +6,6 @@
 
 namespace gameplay {
 
-
 class BGFXImGui
 {
 public:

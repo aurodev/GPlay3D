@@ -1,7 +1,10 @@
 #include "../BGFX/MemoryBuffer.h"
 
-namespace gameplay
-{
+namespace gameplay {
+
+//---------------------------------------------------------
+// IBuffer
+//---------------------------------------------------------
 
 IBuffer::IBuffer()
 {
@@ -47,6 +50,7 @@ void IBuffer::unmap()
 }
 
 //---------------------------------------------------------
+// MemoryBuffer
 //---------------------------------------------------------
 
 MemoryBuffer::MemoryBuffer() :

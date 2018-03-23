@@ -90,14 +90,14 @@ Effect* Effect::createFromFile(const char* vshPath, const char* fshPath, const c
         unsigned int samplerIndex = 0;
         for (int i = 0; i < activeUniforms; ++i)
         {
-            UniformInfo info = _gpuProgram->getUniformsInfo()[i];
+            Uniform::UniformInfo info = _gpuProgram->getUniformsInfo()[i];
 
             BGFXUniform* uniform = new BGFXUniform(info.name.c_str(), info.type, info.num);
             uniform->_effect = effect;
             uniform->_name = info.name;
             //uniform->_location = info.uniformLocation;
             uniform->_type = info.type;
-            if (info.type == UniformType::UT_SAMPLER)
+            if (info.type == Uniform::UniformType::UT_SAMPLER)
             {
                 uniform->_index = samplerIndex++;
                 //samplerIndex += info.uniformSize;

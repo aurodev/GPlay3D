@@ -4,12 +4,12 @@
 #include "../Base.h"
 #include "../Texture.h"
 
-namespace gameplay
-{
+namespace gameplay {
 
 class BGFXTexture
 {
     friend class FrameBuffer;
+
 public:
     ~BGFXTexture();
 

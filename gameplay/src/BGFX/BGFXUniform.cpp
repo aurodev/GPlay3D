@@ -26,7 +26,7 @@ const char* Uniform::getName() const
     return _name.c_str();
 }
 
-const UniformType Uniform::getType() const
+const Uniform::UniformType Uniform::getType() const
 {
     return _type;
 }
@@ -35,10 +35,6 @@ const unsigned int Uniform::getIndex() const
 {
     return _index;
 }
-
-
-
-
 
 
 BGFXUniform::BGFXUniform(const char * name, UniformType type, uint16_t num) :
@@ -75,7 +71,6 @@ BGFXUniform::~BGFXUniform()
          bgfx::destroy(_handle);
     }
 }
-
 
 void BGFXUniform::setValue(float value)
 {

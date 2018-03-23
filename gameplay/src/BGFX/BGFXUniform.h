@@ -4,33 +4,7 @@
 #include "../Base.h"
 #include "../Texture.h"
 
-namespace gameplay
-{
-
-
-
-//------------------------------------------------------------------------------
-// Uniforms
-//------------------------------------------------------------------------------
-
-enum UniformType
-{
-    UT_SAMPLER,             /// Int, used for samplers only.
-    UT_VECTOR4,             /// 4 floats vector.
-    UT_MATRIX3,             /// 3x3 matrix.
-    UT_MATRIX4,             /// 4x4 matrix.
-    UT_UNDEFINED
-};
-
-struct UniformInfo
-{
-    std::string name;       /// Uniform name.
-    UniformType type;       /// Uniform type.
-    unsigned short num;     /// Number of elements in array.
-};
-
-
-
+namespace gameplay {
 
 class Vector2;
 class Vector3;
@@ -38,22 +12,31 @@ class Vector4;
 class Matrix;
 class Effect;
 
-
-
-
-
-
-
 /**
  * Represents a uniform variable within an effect.
  */
 class Uniform
 {
-
-
     friend class Effect;
 
 public:
+
+    enum UniformType
+    {
+        UT_SAMPLER,             /// Int, used for samplers only.
+        UT_VECTOR4,             /// 4 floats vector.
+        UT_MATRIX3,             /// 3x3 matrix.
+        UT_MATRIX4,             /// 4x4 matrix.
+        UT_UNDEFINED
+    };
+
+    struct UniformInfo
+    {
+        std::string name;       /// Uniform name.
+        UniformType type;       /// Uniform type.
+        unsigned short num;     /// Number of elements in array.
+    };
+
 
     /**
      * Returns the name of this uniform.
@@ -63,9 +46,9 @@ public:
     const char* getName() const;
 
     /**
-     * Returns the OpenGL uniform type.
+     * Returns the uniform type.
      *
-     * @return The OpenGL uniform type.
+     * @return The uniform type.
      */
     const UniformType getType() const;
 
@@ -76,11 +59,12 @@ public:
      */
     Effect* getEffect() const;
 
-
-
+    /**
+     * Returns the sampler index for this uniform (only available for sampler uniform)
+     *
+     * @return The sampler index.
+     */
     const unsigned int getIndex() const;
-
-
 
     /**
      * Sets a float uniform value.
@@ -88,7 +72,7 @@ public:
      * @param uniform The uniform to set.
      * @param value The float value to set.
      */
-    virtual void setValue(float value) {}
+    virtual void setValue(float value) = 0;
 
     /**
      * Sets a float array uniform value.
@@ -97,7 +81,7 @@ public:
      * @param values The array to set.
      * @param count The number of elements in the array.
      */
-    virtual void setValue(const float* values, unsigned int count = 1)  {}
+    virtual void setValue(const float* values, unsigned int count = 1) = 0;
 
     /**
      * Sets an integer uniform value.
@@ -105,7 +89,7 @@ public:
      * @param uniform The uniform to set.
      * @param value The value to set.
      */
-    virtual void setValue(int value)  {}
+    virtual void setValue(int value) = 0;
 
     /**
      * Sets an integer array uniform value.
@@ -114,7 +98,7 @@ public:
      * @param values The array to set.
      * @param count The number of elements in the array.
      */
-    virtual void setValue(const int* values, unsigned int count = 1)  {}
+    virtual void setValue(const int* values, unsigned int count = 1) = 0;
 
     /**
      * Sets a matrix uniform value.
@@ -122,7 +106,7 @@ public:
      * @param uniform The uniform to set.
      * @param value The value to set.
      */
-    virtual void setValue(const Matrix& value)  {}
+    virtual void setValue(const Matrix& value) = 0;
 
     /**
      * Sets a matrix array uniform value.
@@ -131,7 +115,7 @@ public:
      * @param values The array to set.
      * @param count The number of elements in the array.
      */
-    virtual void setValue(const Matrix* values, unsigned int count = 1) {}
+    virtual void setValue(const Matrix* values, unsigned int count = 1) = 0;
 
     /**
      * Sets a vector uniform value.
@@ -139,7 +123,7 @@ public:
      * @param uniform The uniform to set.
      * @param value The value to set.
      */
-    virtual void setValue(const Vector2& value) {}
+    virtual void setValue(const Vector2& value) = 0;
 
     /**
      * Sets a vector array uniform value.
@@ -148,7 +132,7 @@ public:
      * @param values The array to set.
      * @param count The number of elements in the array.
      */
-    virtual void setValue(const Vector2* values, unsigned int count = 1) {}
+    virtual void setValue(const Vector2* values, unsigned int count = 1) = 0;
 
     /**
      * Sets a vector uniform value.
@@ -156,7 +140,7 @@ public:
      * @param uniform The uniform to set.
      * @param value The value to set.
      */
-    virtual void setValue(const Vector3& value) {}
+    virtual void setValue(const Vector3& value) = 0;
 
     /**
      * Sets a vector array uniform value.
@@ -165,7 +149,7 @@ public:
      * @param values The array to set.
      * @param count The number of elements in the array.
      */
-    virtual void setValue(const Vector3* values, unsigned int count = 1) {}
+    virtual void setValue(const Vector3* values, unsigned int count = 1) = 0;
 
     /**
      * Sets a vector uniform value.
@@ -173,7 +157,7 @@ public:
      * @param uniform The uniform to set.
      * @param value The value to set.
      */
-    virtual void setValue(const Vector4& value) {}
+    virtual void setValue(const Vector4& value) = 0;
 
     /**
      * Sets a vector array uniform value.
@@ -182,7 +166,7 @@ public:
      * @param values The array to set.
      * @param count The number of elements in the array.
      */
-    virtual void setValue(const Vector4* values, unsigned int count = 1) {}
+    virtual void setValue(const Vector4* values, unsigned int count = 1) = 0;
 
     /**
      * Sets a sampler uniform value.
@@ -190,7 +174,7 @@ public:
      * @param uniform The uniform to set.
      * @param sampler The sampler to set.
      */
-    virtual void setValue(const Texture::Sampler* sampler) {}
+    virtual void setValue(const Texture::Sampler* sampler) = 0;
 
     /**
      * Sets a sampler array uniform value.
@@ -201,13 +185,7 @@ public:
      *
      * @script{ignore}
      */
-    virtual void setValue(const Texture::Sampler** values, unsigned int count) {}
-
-
-
-
-
-
+    virtual void setValue(const Texture::Sampler** values, unsigned int count) = 0;
 
     /**
      * Constructor.
@@ -232,7 +210,6 @@ public:
 private:
 
     std::string _name;
-    //@@GLint _location;
     UniformType _type;
     unsigned int _index;
     Effect* _effect;
@@ -240,22 +217,9 @@ private:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**
+ * Unniform class specialized for bgfx.
+ */
 class BGFXUniform : public Uniform
 {
 public:

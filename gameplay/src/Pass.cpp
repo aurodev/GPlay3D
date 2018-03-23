@@ -8,7 +8,7 @@ namespace gameplay
 {
 
 Pass::Pass(const char* id, Technique* technique) :
-    _id(id ? id : ""), _technique(technique), _effect(NULL)//@@, _vaBinding(NULL)
+    _id(id ? id : ""), _technique(technique), _effect(NULL)
 {
     RenderState::_parent = _technique;
 }
@@ -16,7 +16,6 @@ Pass::Pass(const char* id, Technique* technique) :
 Pass::~Pass()
 {
     SAFE_RELEASE(_effect);
-    //@@SAFE_RELEASE(_vaBinding);
 }
 
 bool Pass::initialize(const char* vshPath, const char* fshPath, const char* defines)
@@ -25,7 +24,6 @@ bool Pass::initialize(const char* vshPath, const char* fshPath, const char* defi
     GP_ASSERT(fshPath);
 
     SAFE_RELEASE(_effect);
-    //@@SAFE_RELEASE(_vaBinding);
 
     // Attempt to create/load the effect.
     _effect = Effect::createFromFile(vshPath, fshPath, defines);
@@ -57,22 +55,10 @@ void Pass::bind(Mesh::PrimitiveType primitiveType)
 
     // Bind our render state
     RenderState::bind(this, primitiveType);
-
-    // If we have a vertex attribute binding, bind it
-    //@@if (_vaBinding)
-    //@@{
-    //@@    _vaBinding->bind();
-    //@@}
 }
 
 void Pass::unbind()
 {
-    // If we have a vertex attribute binding, unbind it
-    //@@if (_vaBinding)
-    //@@{
-    //@@    _vaBinding->unbind();
-    //@@}
-
     BGFXRenderer::getInstance().submit(_effect->getGpuProgram());
 }
 
@@ -89,7 +75,6 @@ Pass* Pass::clone(Technique* technique, NodeCloneContext &context) const
     return pass;
 }
 
-
 void Pass::setEffect(Effect* effect)
 {
     GP_ASSERT(effect);
@@ -98,14 +83,11 @@ void Pass::setEffect(Effect* effect)
         SAFE_RELEASE(_effect);
 
     _effect = effect;
-
 }
-
 
 bool Pass::reload()
 {
     return _effect->getGpuProgram()->reload();
 }
-
 
 }

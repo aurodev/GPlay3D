@@ -86,22 +86,22 @@ void BGFXGpuProgram::getUniformsFromShader(bgfx::ShaderHandle shaderHandle)
         bgfx::UniformInfo info;
         bgfx::getUniformInfo(uniforms[i], info);
 
-        gameplay::UniformInfo uinfo;
+        Uniform::UniformInfo uinfo;
         uinfo.name = info.name;
         uinfo.num = info.num;
         switch(info.type)
         {
             case bgfx::UniformType::Int1: // Int, used for samplers only.
-                uinfo.type = UniformType::UT_SAMPLER;
+                uinfo.type = Uniform::UT_SAMPLER;
                 break;
             case bgfx::UniformType::Vec4: // 4 floats vector.
-                uinfo.type = UniformType::UT_VECTOR4;
+                uinfo.type = Uniform::UT_VECTOR4;
                 break;
             case bgfx::UniformType::Mat3: // 3x3 matrix.
-                uinfo.type = UniformType::UT_MATRIX3;
+                uinfo.type = Uniform::UT_MATRIX3;
                 break;
             case bgfx::UniformType::Mat4: // 4x4 matrix.
-                uinfo.type = UniformType::UT_MATRIX4;
+                uinfo.type = Uniform::UT_MATRIX4;
                 break;
             default:
                 GP_ERROR("Uniform type is unknown.");

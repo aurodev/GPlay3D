@@ -14,16 +14,15 @@ public:
     bool set(const char* vshPath, const char* fshPath, const char* defines);
     void bind();
     const bgfx::ProgramHandle getProgram() const;
-    const std::vector<UniformInfo> getUniformsInfo() const { return _uniformsInfo; }
+    const std::vector<Uniform::UniformInfo> getUniformsInfo() const { return _uniformsInfo; }
 
     bool reload();
-
 
     const char* getVertexShaderFile() { return _vshFile.c_str(); }
     const char* getFragmentShaderFile() { return _fshFile.c_str(); }
 
 protected:
-    std::vector<UniformInfo> _uniformsInfo;
+    std::vector<Uniform::UniformInfo> _uniformsInfo;
 
 private:
     void getUniformsFromShader(bgfx::ShaderHandle shaderHandle);

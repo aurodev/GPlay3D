@@ -119,24 +119,11 @@ uint32_t WRAP_R[] =
 
 
 
-
-
-
 bx::AllocatorI* getDefaultAllocator()
 {
     static bx::DefaultAllocator s_allocator;
     return &s_allocator;
 }
-
-/*static void imageReleaseCb(void* _ptr, void* _userData)
-{
-    BX_UNUSED(_ptr);
-    bimg::ImageContainer* imageContainer = (bimg::ImageContainer*)_userData;
-    bimg::imageFree(imageContainer);
-}*/
-
-
-
 
 bgfx::TextureHandle createTexture(bimg::ImageContainer* imageContainer, uint32_t flags, bgfx::TextureInfo* info = NULL)
 {
@@ -274,7 +261,6 @@ Texture * BGFXTexture::createFromFile(const char * path)
 Texture* BGFXTexture::createFromData(const unsigned char* data, Texture::GPTextureInfo info)
 {
     BGFXTexture * bgfxTexture = new BGFXTexture();
-
 
     unsigned int width = info.width;
     unsigned int height = info.height;
