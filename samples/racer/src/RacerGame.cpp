@@ -209,7 +209,7 @@ void RacerGame::update(float elapsedTime)
                 {
                     _steering = -direction.x;
                 }
-                _steering = max(-1.0f, min(_steering, 1.0f));
+                _steering = std::max(-1.0f, std::min(_steering, 1.0f));
 
                 if (_gamepad->getTriggerCount() > 1)
                 {
@@ -227,7 +227,7 @@ void RacerGame::update(float elapsedTime)
                     _engineSound->setGain(0.8f);
                 }
                 float s = _carVehicle->getSpeedSmoothKph() / 100.0f;
-                _engineSound->setPitch(max(0.2f, min(s, 2.0f)));
+                _engineSound->setPitch(std::max(0.2f, std::min(s, 2.0f)));
 
                 // Reverse only below a reasonable speed
                 bool isReverseCommanded = (_keyFlags & REVERSE) ||
