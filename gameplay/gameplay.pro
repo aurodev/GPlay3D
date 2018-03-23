@@ -146,7 +146,6 @@ SOURCES += src/AbsoluteLayout.cpp \
     src/Vector3.inl \
     src/Vector4.cpp \
     src/Vector4.inl \
-    src/VertexAttributeBinding.cpp \
     src/VertexFormat.cpp \
     src/VerticalLayout.cpp \
     src/BGFX/BGFXRenderer.cpp \
@@ -277,7 +276,6 @@ HEADERS += src/AbsoluteLayout.h \
     src/Vector2.h \
     src/Vector3.h \
     src/Vector4.h \
-    src/VertexAttributeBinding.h \
     src/VertexFormat.h \
     src/VerticalLayout.h \
     src/BGFX/BGFXRenderer.h \
@@ -439,7 +437,6 @@ HEADERS += \
     src/lua/lua_Vector2.h \
     src/lua/lua_Vector3.h \
     src/lua/lua_Vector4.h \
-    src/lua/lua_VertexAttributeBinding.h \
     src/lua/lua_VertexFormat.h \
     src/lua/lua_VertexFormatElement.h \
     src/lua/lua_VerticalLayout.h
@@ -574,7 +571,6 @@ SOURCES += \
     src/lua/lua_Vector2.cpp \
     src/lua/lua_Vector3.cpp \
     src/lua/lua_Vector4.cpp \
-    src/lua/lua_VertexAttributeBinding.cpp \
     src/lua/lua_VertexFormat.cpp \
     src/lua/lua_VertexFormatElement.cpp \
     src/lua/lua_VerticalLayout.cpp

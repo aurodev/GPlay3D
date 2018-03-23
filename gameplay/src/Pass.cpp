@@ -48,22 +48,6 @@ Effect* Pass::getEffect() const
     return _effect;
 }
 
-//@@void Pass::setVertexAttributeBinding(VertexAttributeBinding* binding)
-//@@{
-//@@    SAFE_RELEASE(_vaBinding);
-//@@
-//@@    if (binding)
-//@@    {
-//@@        _vaBinding = binding;
-//@@        binding->addRef();
-//@@    }
-//@@}
-
-//@@VertexAttributeBinding* Pass::getVertexAttributeBinding() const
-//@@{
-//@@    return _vaBinding;
-//@@}
-
 void Pass::bind(Mesh::PrimitiveType primitiveType)
 {
     GP_ASSERT(_effect);

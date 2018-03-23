@@ -321,14 +321,6 @@ typedef size_t GLsizei;
 #define GL_UNSIGNED_INT 0x1405
 
 
-/** Vertex attribute. */
-typedef GLint VertexAttribute;
-/** Vertex buffer handle. */
-//@@typedef GLuint VertexBufferHandle;
-/** Index buffer handle. */
-//@@typedef GLuint IndexBufferHandle;
-/** Texture handle. */
-//@@typedef GLuint TextureHandle;
 /** Frame buffer handle. */
 typedef GLuint FrameBufferHandle;
 /** Render buffer handle. */

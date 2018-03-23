@@ -57,15 +57,6 @@ public:
     const char* getId() const;
 
     /**
-     * Returns the vertex attribute handle for the vertex attribute with the specified name.
-     *
-     * @param name The name of the vertex attribute to return.
-     * 
-     * @return The vertex attribute, or -1 if no such vertex attribute exists.
-     */
-    VertexAttribute getVertexAttribute(const char* name) const;
-
-    /**
      * Returns the uniform handle for the uniform with the specified name.
      *
      * @param name The name of the uniform to return.
@@ -244,7 +235,6 @@ private:
 
     GLuint _program;
     std::string _id;
-    std::map<std::string, VertexAttribute> _vertexAttributes;
     mutable std::map<std::string, Uniform*> _uniforms;
     static Uniform _emptyUniform;
 

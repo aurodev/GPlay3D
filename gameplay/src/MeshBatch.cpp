@@ -106,26 +106,6 @@ void MeshBatch::add(const void* vertices, size_t size, unsigned int vertexCount,
     _vertexCount = newVertexCount;
 }
 
-//@@void MeshBatch::updateVertexAttributeBinding()
-//@@{
-//@@    GP_ASSERT(_material);
-//@@
-//@@    // Update our vertex attribute bindings.
-//@@    for (unsigned int i = 0, techniqueCount = _material->getTechniqueCount(); i < techniqueCount; ++i)
-//@@    {
-//@@        Technique* t = _material->getTechniqueByIndex(i);
-//@@        GP_ASSERT(t);
-//@@        for (unsigned int j = 0, passCount = t->getPassCount(); j < passCount; ++j)
-//@@        {
-//@@            Pass* p = t->getPassByIndex(j);
-//@@            GP_ASSERT(p);
-//@@            VertexAttributeBinding* b = VertexAttributeBinding::create(_vertexFormat, _vertices, p->getEffect());
-//@@            p->setVertexAttributeBinding(b);
-//@@            SAFE_RELEASE(b);
-//@@        }
-//@@    }
-//@@}
-
 unsigned int MeshBatch::getCapacity() const
 {
     return _capacity;
@@ -213,9 +193,6 @@ bool MeshBatch::resize(unsigned int capacity)
     _capacity = capacity;
     _vertexCapacity = vertexCapacity;
     _indexCapacity = indexCapacity;
-
-    // Update our vertex attribute bindings now that our client array pointers have changed
-    //@@updateVertexAttributeBinding();
 
     return true;
 }

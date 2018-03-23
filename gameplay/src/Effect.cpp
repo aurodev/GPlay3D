@@ -538,12 +538,6 @@ const char* Effect::getId() const
     return _id.c_str();
 }
 
-VertexAttribute Effect::getVertexAttribute(const char* name) const
-{
-    std::map<std::string, VertexAttribute>::const_iterator itr = _vertexAttributes.find(name);
-    return (itr == _vertexAttributes.end() ? -1 : itr->second);
-}
-
 Uniform* Effect::getUniform(const char* name) const
 {
     std::map<std::string, Uniform*>::const_iterator itr = _uniforms.find(name);
