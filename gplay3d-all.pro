@@ -5,7 +5,7 @@ TEMPLATE = subdirs
 CONFIG = ordered
 
 SUBDIRS += \
-    gameplay/gameplay.pro \
+    gplay3d/gplay3d.pro \
     samples/browser/sample-browser.pro \
     samples/examples/examples.pro \
     samples/character/sample-character.pro \

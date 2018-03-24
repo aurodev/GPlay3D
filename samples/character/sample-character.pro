@@ -26,7 +26,7 @@ SOURCES += src/CharacterGame.cpp
 
 HEADERS += src/CharacterGame.h 
 
-INCLUDEPATH += $$PWD/../../gameplay/src
+INCLUDEPATH += $$PWD/../../gplay3d/src
 INCLUDEPATH += $$PWD/../../external-deps/include
 DEFINES += GP_USE_GAMEPAD
 
@@ -45,20 +45,20 @@ linux: INCLUDEPATH += /usr/lib/x86_64-linux-gnu/glib-2.0/include
 linux: INCLUDEPATH += /usr/include/pixman-1
 linux: INCLUDEPATH += /usr/include/libpng12
 linux: INCLUDEPATH += /usr/include/harfbuzz
-linux: PRE_TARGETDEPS += $$DESTDIR/../libgameplay.a
-linux: LIBS += -L$$DESTDIR/../ -lgameplay
-linux: LIBS += -L$$PWD/../../external-deps/lib/linux/x86_64/ -lgameplay-deps
+linux: PRE_TARGETDEPS += $$DESTDIR/../libgplay3d.a
+linux: LIBS += -L$$DESTDIR/../ -lgplay3d
+linux: LIBS += -L$$PWD/../../external-deps/lib/linux/x86_64/ -lgplay3d-deps
 linux: LIBS += -lm -lGL -lrt -ldl -lX11 -lpthread -lgtk-x11-2.0 -lglib-2.0 -lgobject-2.0 -lsndio
 linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/res $$DESTDIR$$escape_expand(\n\t))
 linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/game.dds.config $$DESTDIR/game.config$$escape_expand(\n\t))
-linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../../gameplay/res/shaders $$DESTDIR/res$$escape_expand(\n\t))
-linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../../gameplay/res/ui $$DESTDIR/res$$escape_expand(\n\t))
-linux: QMAKE_POST_LINK += $$quote(cp -rf $$PWD/../../gameplay/res/logo_powered_white.png $$DESTDIR/res$$escape_expand(\n\t))
+linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../../gplay3d/res/shaders $$DESTDIR/res$$escape_expand(\n\t))
+linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../../gplay3d/res/ui $$DESTDIR/res$$escape_expand(\n\t))
+linux: QMAKE_POST_LINK += $$quote(cp -rf $$PWD/../../gplay3d/res/logo_powered_white.png $$DESTDIR/res$$escape_expand(\n\t))
 
 
 macx: QMAKE_CXXFLAGS += -x c++  -x objective-c++ -stdlib=libc++ -w -arch x86_64
-macx: LIBS += -L$$PWD/../../gameplay/Debug/ -lgameplay
-macx: LIBS += -L$$PWD/../../external-deps/lib/macosx/x86_64/ -lgameplay-deps
+macx: LIBS += -L$$PWD/../../gplay3d/Debug/ -lgplay3d
+macx: LIBS += -L$$PWD/../../external-deps/lib/macosx/x86_64/ -lgplay3d-deps
 macx: LIBS += -F/System/Library/Frameworks -framework GameKit
 macx: LIBS += -F/System/Library/Frameworks -framework IOKit
 macx: LIBS += -F/System/Library/Frameworks -framework QuartzCore
@@ -66,9 +66,9 @@ macx: LIBS += -F/System/Library/Frameworks -framework OpenAL
 macx: LIBS += -F/System/Library/Frameworks -framework OpenGL
 macx: LIBS += -F/System/Library/Frameworks -framework Cocoa
 macx: LIBS += -F/System/Library/Frameworks -framework Foundation
-macx: QMAKE_POST_LINK  += $$quote(rsync -rau $$PWD/../../gameplay/res/shaders ../res$$escape_expand(\n\t))
-macx: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../../gameplay/res/ui ../res$$escape_expand(\n\t))
-macx: QMAKE_POST_LINK += $$quote(cp -rf $$PWD/../../gameplay/res/logo_powered_white.png ../res$$escape_expand(\n\t))
+macx: QMAKE_POST_LINK  += $$quote(rsync -rau $$PWD/../../gplay3d/res/shaders ../res$$escape_expand(\n\t))
+macx: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../../gplay3d/res/ui ../res$$escape_expand(\n\t))
+macx: QMAKE_POST_LINK += $$quote(cp -rf $$PWD/../../gplay3d/res/logo_powered_white.png ../res$$escape_expand(\n\t))
 macx
 {
     icon.files = icon.png
@@ -84,12 +84,12 @@ macx
     QMAKE_BUNDLE_DATA += res
 }
 
-win32: CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../external-deps/lib/windows/x86_64/Debug/gameplay-deps.lib
-win32: CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../external-deps/lib/windows/x86_64/Release/gameplay-deps.lib
+win32: CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../external-deps/lib/windows/x86_64/Debug/gplay3d-deps.lib
+win32: CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../external-deps/lib/windows/x86_64/Release/gplay3d-deps.lib
 win32: DEFINES += WIN32 _WINDOWS _UNICODE UNICODE
-win32: LIBS += -L$$DESTDIR\..\ -lgameplay
-win32: CONFIG(debug, debug|release): LIBS += -L$$PWD/../../external-deps/lib/windows/x86_64/Debug/ -lgameplay-deps
-win32: CONFIG(release, debug|release): LIBS += -L$$PWD/../../external-deps/lib/windows/x86_64/Release/ -lgameplay-deps
+win32: LIBS += -L$$DESTDIR\..\ -lgplay3d
+win32: CONFIG(debug, debug|release): LIBS += -L$$PWD/../../external-deps/lib/windows/x86_64/Debug/ -lgplay3d-deps
+win32: CONFIG(release, debug|release): LIBS += -L$$PWD/../../external-deps/lib/windows/x86_64/Release/ -lgplay3d-deps
 win32: LIBS += -lopengl32 -lkernel32 -luser32 -lwinmm -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -limm32 -lole32 -loleaut32 -luuid -lversion -lodbc32 -lodbccp32
 #win32: LIBS += -L$$(DXSDK_DIR)Lib\x64 -lXInput
 win32: INCLUDEPATH += $$(DXSDK_DIR)Include
@@ -101,8 +101,8 @@ PWD_WIN = $${PWD}
 PWD_WIN ~= s,/,\\,g
 PWD_DEST_WIN = $$DESTDIR
 PWD_DEST_WIN ~= s,/,\\,g
-win32: QMAKE_POST_LINK += $$quote(xcopy ..\..\..\gameplay\res\shaders $$PWD_DEST_WIN\res\shaders\* /s /y /d$$escape_expand(\n\t))
-win32: QMAKE_POST_LINK += $$quote(xcopy ..\..\..\gameplay\res\ui $$PWD_DEST_WIN\res\ui\* /s /y /d$$escape_expand(\n\t))
-win32: QMAKE_POST_LINK += $$quote(copy ..\..\..\gameplay\res\logo_powered_white.png $$PWD_DEST_WIN\res$$escape_expand(\n\t))
+win32: QMAKE_POST_LINK += $$quote(xcopy ..\..\..\gplay3d\res\shaders $$PWD_DEST_WIN\res\shaders\* /s /y /d$$escape_expand(\n\t))
+win32: QMAKE_POST_LINK += $$quote(xcopy ..\..\..\gplay3d\res\ui $$PWD_DEST_WIN\res\ui\* /s /y /d$$escape_expand(\n\t))
+win32: QMAKE_POST_LINK += $$quote(copy ..\..\..\gplay3d\res\logo_powered_white.png $$PWD_DEST_WIN\res$$escape_expand(\n\t))
 win32: QMAKE_POST_LINK += $$quote(xcopy $$PWD_WIN\res $$PWD_DEST_WIN\res\ /s /y /d$$escape_expand(\n\t))
 win32: QMAKE_POST_LINK += $$quote(copy /Y $$PWD_WIN\game.dds.config $$PWD_DEST_WIN\game.config$$escape_expand(\n\t))

@@ -16,7 +16,7 @@ QMAKE_CLEAN += $$DESTDIR/$$TARGET
 #
 #-------------------------------------------------
 QT -= core gui
-TARGET = gameplay
+TARGET = gplay3d
 TEMPLATE = lib
 CONFIG += staticlib
 CONFIG += c++11
@@ -160,7 +160,7 @@ HEADERS += \
     src/ui/Theme.h \
     src/ui/ThemeStyle.h \
     src/ui/VerticalLayout.h \
-    src/gameplay.h
+    src/gplay3d.h
 
 SOURCES += \
     src/ai/AIAgent.cpp \
@@ -559,13 +559,13 @@ SOURCES += \
     DEFINES += GP_NO_LUA_BINDINGS
 }
 
-INCLUDEPATH += $$PWD/../gameplay/src
+INCLUDEPATH += $$PWD/../gplay3d/src
 INCLUDEPATH += $$PWD/../external-deps/include
 DEFINES += GP_USE_GAMEPAD
 
-linux: PRE_TARGETDEPS += $$PWD/../external-deps/lib/linux/x86_64/libgameplay-deps.a
+linux: PRE_TARGETDEPS += $$PWD/../external-deps/lib/linux/x86_64/libgplay3d-deps.a
 linux: SOURCES += src/core/PlatformSDL2.cpp
-linux: SOURCES += src/core/gameplay-main-linux.cpp
+linux: SOURCES += src/core/gplay3d-main-linux.cpp
 linux: QMAKE_CXXFLAGS += -lstdc++ -pthread -w
 linux: DEFINES += __linux__
 linux: INCLUDEPATH += /usr/include/gtk-2.0
@@ -583,7 +583,7 @@ linux: INCLUDEPATH += /usr/include/libpng12
 linux: INCLUDEPATH += /usr/include/harfbuzz
 
 macx: OBJECTIVE_SOURCES += src/PlatformMacOSX.mm
-macx: OBJECTIVE_SOURCES += src/gameplay-main-macosx.mm
+macx: OBJECTIVE_SOURCES += src/gplay3d-main-macosx.mm
 macx: QMAKE_CXXFLAGS += -x c++ -x objective-c++ -stdlib=libc++ -w -arch x86_64
 macx: LIBS += -F/System/Library/Frameworks -framework GameKit
 macx: LIBS += -F/System/Library/Frameworks -framework IOKit
@@ -593,9 +593,9 @@ macx: LIBS += -F/System/Library/Frameworks -framework OpenGL
 macx: LIBS += -F/System/Library/Frameworks -framework Cocoa
 macx: LIBS += -F/System/Library/Frameworks -framework Foundation
 
-win32: PRE_TARGETDEPS += $$PWD/../external-deps/lib/windows/x86_64/Debug/gameplay-deps.lib
+win32: PRE_TARGETDEPS += $$PWD/../external-deps/lib/windows/x86_64/Debug/gplay3d-deps.lib
 win32: SOURCES += src/PlatformSDL2.cpp
-win32: SOURCES += src/gameplay-main-windows.cpp
+win32: SOURCES += src/gplay3d-main-windows.cpp
 win32: DEFINES += WIN32 _UNICODE UNICODE
 win32: INCLUDEPATH += $$(DXSDK_DIR)/Include
 win32: INCLUDEPATH += $$PWD/../external-deps/include/compat/msvc
