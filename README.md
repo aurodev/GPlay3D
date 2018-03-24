@@ -37,6 +37,7 @@ Use QtCreator and see [wiki](https://github.com/fredakilla/GPlay3D/wiki/QtCreato
 - Declarative UI system supporing 2D/3D theme-able user interfaces.
 - Nice, customizable and complete built-in 2D GUI, with buttons, lists, edit boxes, layout...
 - ImGui GUI support.
+- File watcher system for hot reloading (shaders, scripts...)
 - Fully extensible animation system with skeletal character animation.
 - Complete 3D audio system with WAV and OGG support.
 - AI agent, state machine and messaging.
