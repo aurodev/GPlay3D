@@ -9,7 +9,7 @@ GPlay3D is a fork of the [GamePlay engine](http://www.gameplay3d.io/) v3.0 and b
 - bgfx integration is completed however it currently only works with bgfx opengl because it use the old glsl shaders. It needs a pass on shaders to use the bgfx shaderc syntax to be compatible with others bgfx renderers. 
 - Engine now use SDL2 by default to manage windows and inputs. Gamepad are not yet implanted.
 - Lua is temporarily disabled to speed up the compilation.
-- All previous gameplay samples and demo are now working.
+- All previous samples and demo are now working with the new renderer.
 - Tested on Linux and Windows.
 
 
