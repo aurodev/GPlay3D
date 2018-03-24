@@ -1,8 +1,7 @@
 # GPlay3D
 GPlay3D is C++ cross-platform game engine for creating 2D/3D games.
-GPlay3D is a fork of the [GamePlay engine](http://www.gameplay3d.io/) v3.0 and based on the [BGFX](https://github.com/bkaradzic/bgfx) graphics framework.
 
-Goal of this fork is to continue evolution of this engine version by integrating new features and modern rendering techniques.
+GPlay3D is a fork of the [GamePlay engine](http://www.gameplay3d.io/) v3.0 and based on the [BGFX](https://github.com/bkaradzic/bgfx) graphics framework. Goal of this fork is to continue evolution of this engine by integrating new features and modern rendering techniques.
 
 
 ## Status
