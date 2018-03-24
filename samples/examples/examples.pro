@@ -50,8 +50,8 @@ HEADERS += \
     src/ImGuiTest.h \
     src/SparkDemo.h \
 
-INCLUDEPATH += ../../gameplay/src
-INCLUDEPATH += ../../external-deps/include
+INCLUDEPATH += $$PWD/../../gameplay/src
+INCLUDEPATH += $$PWD/../../external-deps/include
 DEFINES += GP_USE_GAMEPAD
 
 linux: DEFINES += __linux__
