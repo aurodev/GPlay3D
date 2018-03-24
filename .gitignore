@@ -39,14 +39,12 @@ gameplay.xcworkspace/xcshareddata/gameplay.xccheckout
 /gameplay/gameplay.xcodeproj/xcuserdata
 /gameplay/gameplay.vcxproj.user
 
-/tools/encoder
 /tools/encoder/Debug
 /tools/encoder/Release
 /tools/encoder/gameplay-encoder.xcodeproj/xcuserdata
 /tools/encoder/gameplay-encoder.xcodeproj/project.xcworkspace/
 /tools/encoder/gameplay-encoder.vcxproj.user
 
-/tools/luagen
 /tools/luagen/Release
 /tools/luagen/Debug
 /tools/luagen/gameplay-luagen.xcodeproj/xcuserdata
@@ -54,11 +52,6 @@ gameplay.xcworkspace/xcshareddata/gameplay.xccheckout
 /tools/luagen/doxygen_entrydb_680.tmp
 /tools/luagen/doxygen_objdb_680.tmp
 /tools/luagen/xml
-
-/tools/editor
-/tools/editor/src
-/tools/editor/Debug
-/tools/editor/Release
 
 /samples/browser/Debug
 /samples/browser/DebugMem
