@@ -69,10 +69,6 @@ SparkDemo::SparkDemo()
 {
 }
 
-
-FrameBuffer* fb1;
-Model* _quadModel;
-
 void SparkDemo::initialize()
 {
     // Create the font for drawing the framerate.
@@ -99,60 +95,6 @@ void SparkDemo::initialize()
     lightNode->rotateX(MATH_DEG_TO_RAD(-45.0f));
 
 
-
-    const int FRAMEBUFFER_WIDTH = getWidth();
-    const int  FRAMEBUFFER_HEIGHT = getHeight();
-
-    // set views
-
-    Game * game = Game::getInstance();
-
-    View defaultView;
-    defaultView.clearColor = 0x111122ff;
-    defaultView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-    defaultView.depth = 1.0f;
-    defaultView.stencil = 0;
-    defaultView.rectangle = Rectangle(game->getWidth(), game->getHeight());
-    game->insertView(0, defaultView);
-
-    View secondView;
-    secondView.clearColor = 0x0000000;
-    secondView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-    secondView.depth = 1.0f;
-    secondView.stencil = 0;
-    secondView.rectangle = Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
-    game->insertView(1, secondView);
-
-
-    Texture* texColor = Texture::create("targetColor", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::RGBA, Texture::Type::TEXTURE_RT);
-    Texture* texDepth = Texture::create("targetDepth", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::DEPTH, Texture::Type::TEXTURE_RT);
-    std::vector<Texture*> textures;
-    textures.push_back(texColor);
-    textures.push_back(texDepth);
-    fb1 = FrameBuffer::create("PostProcessSample", textures);
-    //fb1 = FrameBuffer::create("depth", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::RGBA);
-
-
-    Mesh* mesh = Mesh::createQuad(0,0,256,256);//*/getWidth(),getHeight());
-    //Mesh* mesh = Mesh::createQuadFullscreen();
-    _quadModel = Model::create(mesh);
-    SAFE_RELEASE(mesh);
-    _quadModel->setMaterial("res/shaders/debug.vert", "res/shaders/debug.frag");
-
-
-
-
-    Texture::Sampler* sampler = Texture::Sampler::create(fb1->getRenderTarget(0));
-    _quadModel->getMaterial()->getParameter("u_texture")->setValue(sampler);
-    _quadModel->getMaterial()->getStateBlock()->setBlend(true);
-    _quadModel->getMaterial()->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
-    _quadModel->getMaterial()->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
-
-
-
-
-
-
     // Create a cube mesh for next models.
     Mesh* cubeMesh = createCubeMesh();
 
@@ -171,10 +113,7 @@ void SparkDemo::initialize()
         Node* planeNode = _scene->addNode("plane");
         planeNode->setDrawable(planeModel);
         planeNode->setScale(Vector3(5.0f, 0.001f, 5.0f));
-        planeModel->useMask(2);
         SAFE_RELEASE(planeModel);
-
-
     }
 
     // Create a small cube
@@ -208,7 +147,7 @@ void SparkDemo::initialize()
 
 
     // Create a material for particles
-    _materialParticle = Material::create("res/shaders/particle.vert", "res/shaders/particle.frag");    
+    _materialParticle = Material::create("res/shaders/particle.vert", "res/shaders/particle.frag");
     Texture::Sampler* sampler2 = _materialParticle->getParameter("u_diffuseTexture")->setValue("res/png/flare.png", true);
     sampler2->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
     _materialParticle->getStateBlock()->setCullFace(true);
@@ -294,14 +233,13 @@ void SparkDemo::initialize()
     Node* particleNode = _scene->addNode("sparkFoutain");
     particleNode->setDrawable(foutainEmitter);
     particleNode->setTranslation(0.0f, 0.1f, 0.0f);
-    foutainEmitter->useMask(1|2);
+
 
     // Create a node and attach trail foutain effect
     SparkParticleEmitter* trailEmitter = SparkParticleEmitter::create(spkEffectTrail, true);
     Node* trailNode = Node::create("sparkTrail");
     trailNode->setDrawable(trailEmitter);
     trailNode->setTranslation(0.0f, 0.8f, 0.0f);
-    trailEmitter->useMask(2);
 
     // set this last node a child of the cube node to move with the cube.
     _cubeNode->addChild(trailNode);
@@ -316,23 +254,11 @@ void SparkDemo::finalize()
 void SparkDemo::render(float elapsedTime)
 {
     // Clear the color and depth buffers
-    //clear(CLEAR_COLOR_DEPTH, 0.25f, 0.25f, 0.4f, 1.0f, 1.0f, 0);
-
-
-
-
-    // render scene in frame buffer
-    Game::getInstance()->bindView(1);
-    fb1->bind();
-    _scene->visit(this, &SparkDemo::drawScene, 2);
-
-
-
-    Game::getInstance()->bindView(0);
+    clear(CLEAR_COLOR_DEPTH, 0.25f, 0.25f, 0.4f, 1.0f, 1.0f, 0);
 
     // Visit all the nodes in the scene, drawing the models.
-    _scene->visit(this, &SparkDemo::drawScene, 1);
-    _quadModel->draw();
+    _scene->visit(this, &SparkDemo::drawScene);
+
     drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());
 }
 
@@ -451,15 +377,11 @@ bool SparkDemo::updateEmitters(Node* node, float elapsedTime)
     return true;
 }
 
-
-bool SparkDemo::drawScene(Node* node, int cookie)
+bool SparkDemo::drawScene(Node* node)
 {
     Drawable* drawable = node->getDrawable();
     if (drawable)
-    {
-        if(drawable->hasMask(cookie))
-            drawable->draw();
-    }
+        drawable->draw();
     return true;
 }
 

@@ -23,7 +23,7 @@ protected:
 
 private:
     bool updateEmitters(Node* node, float elapsedTime);
-    bool drawScene(Node* node, int cookie);
+    bool drawScene(Node* node);
     void showToolbox();
 
     FirstPersonCamera _fpCamera;
