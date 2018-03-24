@@ -774,6 +774,7 @@ void Game::loadConfig()
         char** argv;
         getArguments(&argc, &argv);
 
+        // config file is app name + ".config"
         std::string configFile = std::string(argv[0]) + ".config";
 
         // Try to load custom config from file.

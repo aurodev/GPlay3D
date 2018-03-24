@@ -97,7 +97,7 @@ ImGuiTest::ImGuiTest()
 void ImGuiTest::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Create a perspective projection matrix.
     Matrix projMatrix;
@@ -111,8 +111,8 @@ void ImGuiTest::initialize()
     _worldViewProjectionMatrix = projMatrix * viewMatrix;
 
     // Create a material
-    Material* material = Material::create("res/shaders/textured.vert", "res/shaders/textured.frag");
-    Texture::Sampler * sampler = Texture::Sampler::create("res/png/brick.png");
+    Material* material = Material::create("res/coredata/shaders/textured.vert", "res/coredata/shaders/textured.frag");
+    Texture::Sampler * sampler = Texture::Sampler::create("res/data/textures/brick.png");
     material->getParameter("u_diffuseTexture")->setValue(sampler);
     material->getParameter("u_worldViewProjectionMatrix")->setValue(_worldViewProjectionMatrix);
     material->getStateBlock()->setCullFace(true);

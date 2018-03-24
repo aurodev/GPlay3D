@@ -151,7 +151,7 @@ void ParticlesSample::initialize()
     addGrid(61);
 
     // Create a font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Load the form for editing ParticleEmitters.
     _form = Form::create("res/common/particles/editor.form");

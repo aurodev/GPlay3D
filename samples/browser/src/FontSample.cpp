@@ -18,7 +18,7 @@ std::string _fontNames[] =
 
 std::string _fontFiles[] =
 {
-    "res/ui/arial.gpb",
+    "res/coredata/ui/arial.gpb",
     "res/common/fonts/arial-distance.gpb",
     "res/common/fonts/badaboom.gpb",
     "res/common/fonts/fishfingers.gpb",

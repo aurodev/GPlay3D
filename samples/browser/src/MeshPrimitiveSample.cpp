@@ -156,7 +156,7 @@ MeshPrimitiveSample::MeshPrimitiveSample()
 void MeshPrimitiveSample::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Create an orthographic projection matrix.
     float width = getWidth() / (float)getHeight();
@@ -171,24 +171,24 @@ void MeshPrimitiveSample::initialize()
     // Create a material from the built-in "colored-unlit" vertex and fragment shaders.
     // This sample doesn't use lighting so the unlit shader is used.
     // This sample uses vertex color so VERTEX_COLOR is defined. Look at the shader source files to see the supported defines.
-    _triangles->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
+    _triangles->setMaterial("res/coredata/shaders/colored.vert", "res/coredata/shaders/colored.frag", "VERTEX_COLOR");
     
     Mesh* triangleStripMesh = createTriangleStripMesh();
     _triangleStrip = Model::create(triangleStripMesh);
     SAFE_RELEASE(triangleStripMesh);
-    Material* material = _triangleStrip->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
+    Material* material = _triangleStrip->setMaterial("res/coredata/shaders/colored.vert", "res/coredata/shaders/colored.frag", "VERTEX_COLOR");
     material->getStateBlock()->setDepthTest(true);
     material->getStateBlock()->setDepthWrite(true);
 
     Mesh* lineStripMesh = createLineStripMesh();
     _lineStrip = Model::create(lineStripMesh);
     SAFE_RELEASE(lineStripMesh);
-    _lineStrip->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
+    _lineStrip->setMaterial("res/coredata/shaders/colored.vert", "res/coredata/shaders/colored.frag", "VERTEX_COLOR");
     
     Mesh* lineMesh = createLinesMesh();
     _lines = Model::create(lineMesh);
     SAFE_RELEASE(lineMesh);
-    _lines->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
+    _lines->setMaterial("res/coredata/shaders/colored.vert", "res/coredata/shaders/colored.frag", "VERTEX_COLOR");
 }
 
 void MeshPrimitiveSample::finalize()

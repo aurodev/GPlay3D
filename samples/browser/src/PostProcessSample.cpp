@@ -82,7 +82,7 @@ PostProcessSample::PostProcessSample()
 
 void PostProcessSample::initialize()
 {
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Load game scene from file
     _scene = Scene::load("res/common/duck.gpb");

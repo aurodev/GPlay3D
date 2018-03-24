@@ -118,7 +118,7 @@ RenderToTexture::RenderToTexture()
 void RenderToTexture::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
 
     // 1. Create a colored triangle
@@ -135,7 +135,7 @@ void RenderToTexture::initialize()
     SAFE_RELEASE(mesh);
 
     // Create a material for the triangle.
-    Material* matTriangle = _triangleModel->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
+    Material* matTriangle = _triangleModel->setMaterial("res/coredata/shaders/colored.vert", "res/coredata/shaders/colored.frag", "VERTEX_COLOR");
 
 
 
@@ -176,7 +176,7 @@ void RenderToTexture::initialize()
 
 
     // create a material for the cube
-    Material* material = Material::create("res/shaders/textured.vert", "res/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT=1");
+    Material* material = Material::create("res/coredata/shaders/textured.vert", "res/coredata/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT=1");
 
     // use the renderTarget of the framebuffer as texture sampler for this material
     Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget("targetColor"));

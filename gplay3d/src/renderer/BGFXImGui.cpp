@@ -31,8 +31,8 @@ void BGFXImGui::imguiInit()
     imguiFontUniform = bgfx::createUniform( "s_tex", bgfx::UniformType::Int1 );
 
     // Create shader program
-    const bgfx::Memory* memVsh = shaderc::compileShader(shaderc::ST_VERTEX, "res/shaders/ocornut_imgui.vert", 0, "res/shaders/ocornut_imgui.io");
-    const bgfx::Memory* memFsh = shaderc::compileShader(shaderc::ST_FRAGMENT, "res/shaders/ocornut_imgui.frag", 0, "res/shaders/ocornut_imgui.io");
+    const bgfx::Memory* memVsh = shaderc::compileShader(shaderc::ST_VERTEX, "res/coredata/shaders/ocornut_imgui.vert", 0, "res/coredata/shaders/ocornut_imgui.io");
+    const bgfx::Memory* memFsh = shaderc::compileShader(shaderc::ST_FRAGMENT, "res/coredata/shaders/ocornut_imgui.frag", 0, "res/coredata/shaders/ocornut_imgui.io");
     bgfx::ShaderHandle vs = bgfx::createShader(memVsh);
     bgfx::ShaderHandle fs = bgfx::createShader(memFsh);
     imguiProgram = bgfx::createProgram( vs, fs, true );

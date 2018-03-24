@@ -43,7 +43,7 @@ LightSample::LightSample()
 void LightSample::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
 	// Load the scene
 	_scene = Scene::load("res/common/lightBrickWall.gpb");
@@ -404,7 +404,7 @@ void LightSample::initializePointTechnique(const char* technique)
 
 void LightSample::setUnlitMaterialTexture(Model* model, const char* texturePath, bool mipmap)
 {
-    Material* material = model->setMaterial("res/shaders/textured.vert", "res/shaders/textured.frag");
+    Material* material = model->setMaterial("res/coredata/shaders/textured.vert", "res/coredata/shaders/textured.frag");
     material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
 
     // Load the texture from file.

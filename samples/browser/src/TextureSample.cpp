@@ -25,7 +25,7 @@ Node* addQuadModelAndNode(Scene* scene, float x, float y, float width, float hei
 
 Material* setTextureUnlitMaterial(Model* model, const char* texturePath, bool mipmap = true)
 {
-    Material* material = model->setMaterial("res/shaders/textured.vert", "res/shaders/textured.frag");
+    Material* material = model->setMaterial("res/coredata/shaders/textured.vert", "res/coredata/shaders/textured.frag");
     material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
 
     // Load the texture from file.
@@ -49,7 +49,7 @@ TextureSample::TextureSample()
 void TextureSample::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Create an empty scene.
     _scene = Scene::create();
@@ -76,7 +76,7 @@ void TextureSample::initialize()
         // Find the position of the node in screen space
         _scene->getActiveCamera()->project(getViewport(), node->getTranslationWorld(), &x, &y);
 
-        //_text.push_back(Text::create("res/ui/arial.gpb", "Quad: Textured", Rectangle(x, y, textWidth, fontSize), Vector4::one(), fontSize, Font::ALIGN_TOP_HCENTER, false));
+        //_text.push_back(Text::create("res/coredata/ui/arial.gpb", "Quad: Textured", Rectangle(x, y, textWidth, fontSize), Vector4::one(), fontSize, Font::ALIGN_TOP_HCENTER, false));
     }
     // Textured quad points
     {

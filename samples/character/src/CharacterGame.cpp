@@ -36,7 +36,7 @@ void CharacterGame::initialize()
     displayScreen(this, &CharacterGame::drawSplash, NULL, 1000L);
 
     // Load the font.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Load scene.
     _scene = Scene::load("res/common/sample.scene");

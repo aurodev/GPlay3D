@@ -8,7 +8,7 @@ namespace gameplay
 {
 
 // Default terrain material path
-#define TERRAIN_MATERIAL "res/materials/terrain.material"
+#define TERRAIN_MATERIAL "res/coredata/materials/terrain.material"
 
 // The default square size of terrain patches for a terrain that
 // does not have an explicitly specified patch size.

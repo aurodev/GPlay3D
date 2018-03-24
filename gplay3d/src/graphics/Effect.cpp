@@ -5,8 +5,8 @@
 
 #define OPENGL_ES_DEFINE  "OPENGL_ES"
 
-#define INVALID_VS "res/shaders/invalid.vert"
-#define INVALID_FS "res/shaders/invalid.frag"
+#define INVALID_VS "res/coredata/shaders/invalid.vert"
+#define INVALID_FS "res/coredata/shaders/invalid.frag"
 
 namespace gameplay {
 

@@ -51,7 +51,7 @@ public:
             print("onDirectoryEvent: type[%s] dir[%s] file[%s]\n", actionLabel[action], dir.c_str(), filename.c_str());
 
             // if event occurs in the shader directory, reload cube material
-            if(dir == "res/shaders/")
+            if(dir == "res/coredata/shaders/")
             {
                 // reload material of cubemodel
                 _cubeModel->getMaterial()->reload();
@@ -62,7 +62,7 @@ public:
     void initialize()
     {
         // Create the font for drawing the framerate.
-        _font = Font::create("res/ui/arial.gpb");
+        _font = Font::create("res/coredata/ui/arial.gpb");
 
         // Create a new empty scene.
         _scene = Scene::create();
@@ -77,14 +77,14 @@ public:
 
 
         // Create a material.
-        Material* material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag");
+        Material* material = Material::create("res/coredata/shaders/colored.vert", "res/coredata/shaders/colored.frag");
         material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
         material->getStateBlock()->setCullFace(true);
         material->getStateBlock()->setDepthTest(true);
         material->getStateBlock()->setDepthWrite(true);
 
         // Load box mesh.
-        Bundle* bundle = Bundle::create("res/common/box.gpb");
+        Bundle* bundle = Bundle::create("res/data/scenes/box.gpb");
         Mesh* meshBox = bundle->loadMesh("box_Mesh");
         SAFE_RELEASE(bundle);
 

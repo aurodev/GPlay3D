@@ -1333,7 +1333,7 @@ PhysicsController::DebugDrawer::DebugDrawer()
     : _mode(btIDebugDraw::DBG_DrawAabb | btIDebugDraw::DBG_DrawConstraintLimits | btIDebugDraw::DBG_DrawConstraints | 
        btIDebugDraw::DBG_DrawContactPoints | btIDebugDraw::DBG_DrawWireframe), _meshBatch(NULL), _lineCount(0)
 {
-    Effect* effect = Effect::createFromFile("res/shaders/physics.vert", "res/shaders/physics.frag");
+    Effect* effect = Effect::createFromFile("res/coredata/shaders/physics.vert", "res/coredata/shaders/physics.frag");
 
     Material* material = Material::create(effect);
     GP_ASSERT(material && material->getStateBlock());

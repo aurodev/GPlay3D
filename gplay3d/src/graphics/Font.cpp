@@ -7,8 +7,8 @@
 #include "../graphics/Material.h"
 
 // Default font shaders
-#define FONT_VSH "res/shaders/font.vert"
-#define FONT_FSH "res/shaders/font.frag"
+#define FONT_VSH "res/coredata/shaders/font.vert"
+#define FONT_FSH "res/coredata/shaders/font.frag"
 
 namespace gameplay
 {

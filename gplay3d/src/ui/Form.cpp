@@ -18,8 +18,8 @@ static const float JOYSTICK_THRESHOLD = 0.75f;
 static const float GAMEPAD_FOCUS_REPEAT_DELAY = 300.0f;
 
 // Shaders used for drawing offscreen quad when form is attached to a node
-#define FORM_VSH "res/shaders/sprite.vert"
-#define FORM_FSH "res/shaders/sprite.frag"
+#define FORM_VSH "res/coredata/shaders/sprite.vert"
+#define FORM_FSH "res/coredata/shaders/sprite.frag"
 
 namespace gameplay
 {

@@ -25,7 +25,7 @@ WaterSample::WaterSample()
 void WaterSample::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Load the scene file
     _scene = Scene::load("res/common/water/watersample.scene");

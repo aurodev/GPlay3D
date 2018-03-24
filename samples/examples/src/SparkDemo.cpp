@@ -72,7 +72,7 @@ SparkDemo::SparkDemo()
 void SparkDemo::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Create a new empty scene.
     _scene = Scene::create();
@@ -103,11 +103,11 @@ void SparkDemo::initialize()
         Model* planeModel = Model::create(cubeMesh);
 
         // Create a simple textured material for the plane
-        Material* material = planeModel->setMaterial("res/shaders/textured.vert", "res/shaders/textured.frag");
+        Material* material = planeModel->setMaterial("res/coredata/shaders/textured.vert", "res/coredata/shaders/textured.frag");
         material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
 
         // Load the texture from file.
-        Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/png/dirt.png", true);
+        Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/data/textures/dirt.png", true);
         sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
         Node* planeNode = _scene->addNode("plane");
@@ -121,13 +121,13 @@ void SparkDemo::initialize()
         Model* cubeModel = Model::create(cubeMesh);
 
         // Create a material with a directional light for the cube
-        Material* material = cubeModel->setMaterial("res/shaders/textured.vert", "res/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT=1");
+        Material* material = cubeModel->setMaterial("res/coredata/shaders/textured.vert", "res/coredata/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT=1");
         material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
         material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", "INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX");
         material->getParameter("u_ambientColor")->setValue(Vector3(0.2f, 0.2f, 0.2f));
         material->getParameter("u_directionalLightColor[0]")->setValue(lightNode->getLight()->getColor());
         material->getParameter("u_directionalLightDirection[0]")->bindValue(lightNode, &Node::getForwardVectorWorld);
-        Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/png/brick.png", true);
+        Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/data/textures/brick.png", true);
         sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
         material->getStateBlock()->setCullFace(true);
         material->getStateBlock()->setDepthTest(true);
@@ -147,8 +147,8 @@ void SparkDemo::initialize()
 
 
     // Create a material for particles
-    _materialParticle = Material::create("res/shaders/particle.vert", "res/shaders/particle.frag");
-    Texture::Sampler* sampler2 = _materialParticle->getParameter("u_diffuseTexture")->setValue("res/png/flare.png", true);
+    _materialParticle = Material::create("res/coredata/shaders/particle.vert", "res/coredata/shaders/particle.frag");
+    Texture::Sampler* sampler2 = _materialParticle->getParameter("u_diffuseTexture")->setValue("res/data/textures/flare.png", true);
     sampler2->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
     _materialParticle->getStateBlock()->setCullFace(true);
     _materialParticle->getStateBlock()->setDepthTest(true);

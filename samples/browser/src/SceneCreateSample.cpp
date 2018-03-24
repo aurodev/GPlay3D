@@ -67,7 +67,7 @@ SceneCreateSample::SceneCreateSample()
 void SceneCreateSample::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Create a new empty scene.
     _scene = Scene::create();
@@ -102,7 +102,7 @@ void SceneCreateSample::initialize()
     SAFE_RELEASE(cubeMesh);
 
     // Create the material for the cube model and assign it to the first mesh part.
-    Material* material = cubeModel->setMaterial("res/shaders/textured.vert", "res/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT=1");
+    Material* material = cubeModel->setMaterial("res/coredata/shaders/textured.vert", "res/coredata/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT=1");
 
     // These parameters are normally set in a .material file but this example sets them programmatically.
     // Bind the uniform "u_worldViewProjectionMatrix" to use the WORLD_VIEW_PROJECTION_MATRIX from the scene's active camera and the node that the model belongs to.

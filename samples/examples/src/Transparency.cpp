@@ -38,7 +38,7 @@ public:
     void initialize()
     {
         // Create the font for drawing the framerate.
-        _font = Font::create("res/ui/arial.gpb");
+        _font = Font::create("res/coredata/ui/arial.gpb");
 
         // Create a new empty scene.
         _scene = Scene::create();
@@ -84,20 +84,20 @@ public:
         Mesh* mesh = Mesh::createQuad(0,0,256,256);
         _quadModel = Model::create(mesh);
         SAFE_RELEASE(mesh);
-        _quadModel->setMaterial("res/shaders/debug.vert", "res/shaders/debug.frag", "SHOW_TEXTURE");
+        _quadModel->setMaterial("res/coredata/shaders/debug.vert", "res/coredata/shaders/debug.frag", "SHOW_TEXTURE");
         Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
         _quadModel->getMaterial()->getParameter("u_texture")->setValue(sampler);
 
 
 
         // load box shape
-        Bundle* bundle = Bundle::create("res/common/box.gpb");
+        Bundle* bundle = Bundle::create("res/data/scenes/box.gpb");
         Mesh* meshBox = bundle->loadMesh("box_Mesh");
         SAFE_RELEASE(bundle);
 
         // Create a plane.
         Model* planeModel = Model::create(meshBox);
-        planeModel->setMaterial("res/common/box.material");
+        planeModel->setMaterial("res/data/materials/box.material");
         Node* planeNode = Node::create("plane");
         planeNode->setDrawable(planeModel);
         planeNode->setScale(8.0f, 0.001f, 8.0f);
@@ -105,7 +105,7 @@ public:
 
 
         // Create a base colored material with alpha blending
-        Material* material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag");
+        Material* material = Material::create("res/coredata/shaders/colored.vert", "res/coredata/shaders/colored.frag");
         material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
         material->getParameter("u_texture")->setValue(sampler);
         material->getStateBlock()->setCullFace(false);

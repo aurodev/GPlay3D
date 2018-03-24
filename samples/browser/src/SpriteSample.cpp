@@ -14,7 +14,7 @@ SpriteSample::SpriteSample()
 void SpriteSample::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Load sprite scene
     _scene = Scene::load("res/common/sprites/sprite.scene");
@@ -65,7 +65,7 @@ void SpriteSample::initialize()
 
 
     // Custom Effect in sprite
-    Effect* waterEffect = Effect::createFromFile("res/shaders/sprite.vert", "res/common/sprites/water2d.frag");
+    Effect* waterEffect = Effect::createFromFile("res/coredata/shaders/sprite.vert", "res/common/sprites/water2d.frag");
     Sprite* waterSprite = Sprite::create("res/common/sprites/water2d.png", getWidth() * 5, getHeight() / 3, waterEffect);
     SAFE_RELEASE(waterEffect);
     waterSprite->setAnchor(Vector2::zero());

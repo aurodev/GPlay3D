@@ -178,7 +178,7 @@ void Instancing::setTexturedGeometry()
 void Instancing::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Create a perspective projection matrix.
     float ratio = getWidth() / (float)getHeight();
@@ -193,14 +193,14 @@ void Instancing::initialize()
     _worldViewProjectionMatrix = _worldViewProjectionMatrix * dst;
 
     // Create a material from the built-in "colored-unlit" vertex and fragment shaders.
-    _materialColored = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR;INSTANCED");
+    _materialColored = Material::create("res/coredata/shaders/colored.vert", "res/coredata/shaders/colored.frag", "VERTEX_COLOR;INSTANCED");
     _materialColored->getStateBlock()->setCullFace(true);
     _materialColored->getStateBlock()->setDepthTest(true);
     _materialColored->getStateBlock()->setDepthWrite(true);
 
     // Create a material with texture
-    _materialTextured = Material::create("res/shaders/textured.vert", "res/shaders/textured.frag", "INSTANCED");
-    Texture::Sampler * sampler = Texture::Sampler::create("res/png/dirt.png");
+    _materialTextured = Material::create("res/coredata/shaders/textured.vert", "res/coredata/shaders/textured.frag", "INSTANCED");
+    Texture::Sampler * sampler = Texture::Sampler::create("res/data/textures/dirt.png");
     _materialTextured->getParameter("u_diffuseTexture")->setValue(sampler);
     _materialTextured->getStateBlock()->setCullFace(true);
     _materialTextured->getStateBlock()->setDepthTest(true);

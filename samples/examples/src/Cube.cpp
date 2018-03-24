@@ -181,7 +181,7 @@ void CubeExample::setIndexedGeometry(bool dynamic)
 void CubeExample::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Create a perspective projection matrix.
     float ratio = getWidth() / (float)getHeight();
@@ -189,7 +189,7 @@ void CubeExample::initialize()
     _worldViewProjectionMatrix.translate(Vector3(0,0,-15.0f));
 
     // Create a material from the built-in "colored-unlit" vertex and fragment shaders.
-    _material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
+    _material = Material::create("res/coredata/shaders/colored.vert", "res/coredata/shaders/colored.frag", "VERTEX_COLOR");
     _material->getStateBlock()->setCullFace(false);
     _material->getStateBlock()->setDepthTest(true);
     _material->getStateBlock()->setDepthWrite(true);

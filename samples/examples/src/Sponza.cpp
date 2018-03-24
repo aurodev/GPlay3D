@@ -26,9 +26,9 @@ Sponza::Sponza()
 void Sponza::initialize()
 {
     // Create the font for drawing the framerate.
-    _font = Font::create("res/ui/arial.gpb");
+    _font = Font::create("res/coredata/ui/arial.gpb");
 
-    _scene = Scene::load("res/common/sponza/sponza.gpb");
+    _scene = Scene::load("res/data/samples/examples/sponza/sponza.gpb");
 
     // set fps camera
     Vector3 cameraPosition(0, 1, 10);

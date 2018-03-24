@@ -128,7 +128,7 @@ public:
     void initialize()
     {
         // Create the font for drawing the framerate.
-        _font = Font::create("res/ui/arial.gpb");
+        _font = Font::create("res/coredata/ui/arial.gpb");
 
         // Create a new empty scene.
         _scene = Scene::create();
@@ -144,9 +144,9 @@ public:
 
         // Load a box shape and create the original box node but don't add it to scene.
         // It will be used as base node for creating clones.
-        Bundle * bundle = Bundle::create("res/common/box.gpb");
+        Bundle * bundle = Bundle::create("res/data/scenes/box.gpb");
         _originalBox = bundle->loadNode("box");
-        dynamic_cast<Model*>(_originalBox->getDrawable())->setMaterial("res/common/box.material", 0);
+        dynamic_cast<Model*>(_originalBox->getDrawable())->setMaterial("res/data/materials/box.material", 0);
         SAFE_RELEASE(bundle);
 
         // Add some listeners for the event MyMouseEvent.
