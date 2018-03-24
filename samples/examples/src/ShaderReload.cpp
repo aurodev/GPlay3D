@@ -3,8 +3,8 @@
 #include "SamplesGame.h"
 #include "FirstPersonCamera.h"
 #include <imgui/imgui.h>
-#include <eventManager/EventManager.h>
-#include <io/FileWatcher.h>
+#include <events/EventManager.h>
+#include <core/FileWatcher.h>
 
 
 using namespace gameplay;

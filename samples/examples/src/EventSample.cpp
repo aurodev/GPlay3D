@@ -4,8 +4,8 @@
 #include "FirstPersonCamera.h"
 #include <imgui/imgui.h>
 
-#include "eventManager/EventManager.h"
-#include "eventManager/BaseEventData.h"
+#include "events/EventManager.h"
+#include "events/BaseEventData.h"
 
 using namespace gameplay;
 

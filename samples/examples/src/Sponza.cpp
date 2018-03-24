@@ -1,6 +1,6 @@
 #include "Sponza.h"
 #include "SamplesGame.h"
-#include "BGFX/BGFXRenderer.h"
+#include "renderer/BGFXRenderer.h"
 
 #if defined(ADD_SAMPLE)
     ADD_SAMPLE("Graphics", "Sponza", Sponza, 4);

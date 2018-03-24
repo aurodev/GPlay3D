@@ -3,7 +3,7 @@
 #include "gameplay.h"
 #include "Example.h"
 #include "FirstPersonCamera.h"
-#include "ParticleSpark/SparkParticleEmitter.h"
+#include "sparkparticles/SparkParticleEmitter.h"
 #include <spark/SPARK.h>
 
 using namespace gameplay;
@@ -23,7 +23,7 @@ protected:
 
 private:
     bool updateEmitters(Node* node, float elapsedTime);
-    bool drawScene(Node* node);
+    bool drawScene(Node* node, int cookie);
     void showToolbox();
 
     FirstPersonCamera _fpCamera;
