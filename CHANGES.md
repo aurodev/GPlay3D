@@ -5,6 +5,8 @@
 - Adds support for SPARK particle engine.
 - Adds new samples.
 - Adds support for ImGui.
+- Adds a file watcher system for hot reloading.
+- Adds event system.
 
 
 ## v3.0.0
