@@ -14,14 +14,15 @@ Goal of this fork is to continue evolution of this engine version by integrating
 - Tested on Linux and Windows.
 
 
+## Building (fast way)
+
+Use QtCreator and see [wiki](https://github.com/fredakilla/GPlay3D/wiki/QtCreator-Setup).
+
+
 ## Screenshots
 <img src="https://i.imgur.com/u3arwg3.png" width="50%" height="%"><img src="https://i.imgur.com/JNNVlAo.jpg" width="50%" height="%">
 <img src="https://i.imgur.com/0ei9Y28.png" width="50%" height="%"><img src="https://i.imgur.com/mXvz27x.jpg" width="50%" height="%">
 <img src="https://i.imgur.com/nRpTNIm.jpg" width="50%" height="%"><img src="https://i.imgur.com/SDIgTkt.png" width="50%" height="%">
-
-## Building (fast way)
-
-Use QtCreator and see [wiki](https://github.com/fredakilla/GPlay3D/wiki/QtCreator-Setup).
 
 
 ## Features
