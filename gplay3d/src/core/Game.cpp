@@ -770,10 +770,16 @@ void Game::loadConfig()
 {
     if (_properties == NULL)
     {
+        int argc;
+        char** argv;
+        getArguments(&argc, &argv);
+
+        std::string configFile = std::string(argv[0]) + ".config";
+
         // Try to load custom config from file.
-        if (FileSystem::fileExists("game.config"))
+        if (FileSystem::fileExists(configFile.c_str()))
         {
-            _properties = Properties::create("game.config");
+            _properties = Properties::create(configFile.c_str());
 
             // Load filesystem aliases.
             Properties* aliases = _properties->getNamespace("aliases", true);

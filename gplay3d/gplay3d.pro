@@ -581,6 +581,7 @@ linux: INCLUDEPATH += /usr/lib/x86_64-linux-gnu/glib-2.0/include
 linux: INCLUDEPATH += /usr/include/pixman-1
 linux: INCLUDEPATH += /usr/include/libpng12
 linux: INCLUDEPATH += /usr/include/harfbuzz
+linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../res $$DESTDIR$$escape_expand(\n\t))
 
 macx: OBJECTIVE_SOURCES += src/PlatformMacOSX.mm
 macx: OBJECTIVE_SOURCES += src/gplay3d-main-macosx.mm
