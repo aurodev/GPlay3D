@@ -17,7 +17,7 @@ void SpriteSample::initialize()
     _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Load sprite scene
-    _scene = Scene::load("res/common/sprites/sprite.scene");
+    _scene = Scene::load("res/data/samples/browser/sprites/sprite.scene");
     _cameraNode = _scene->findNode("camera");
 
     // Setup the player
@@ -65,15 +65,15 @@ void SpriteSample::initialize()
 
 
     // Custom Effect in sprite
-    Effect* waterEffect = Effect::createFromFile("res/coredata/shaders/sprite.vert", "res/common/sprites/water2d.frag");
-    Sprite* waterSprite = Sprite::create("res/common/sprites/water2d.png", getWidth() * 5, getHeight() / 3, waterEffect);
+    Effect* waterEffect = Effect::createFromFile("res/coredata/shaders/sprite.vert", "res/data/samples/browser/sprites/water2d.frag");
+    Sprite* waterSprite = Sprite::create("res/data/samples/browser/sprites/water2d.png", getWidth() * 5, getHeight() / 3, waterEffect);
     SAFE_RELEASE(waterEffect);
     waterSprite->setAnchor(Vector2::zero());
     waterSprite->setOpacity(0.5f);
     _scene->findNode("water")->setDrawable(waterSprite);
     Material* waterMaterial = waterSprite->getMaterial();
     SAFE_RELEASE(waterSprite);
-    Texture::Sampler* noiseSampler = Texture::Sampler::create("res/common/sprites/water2d-noise.png");
+    Texture::Sampler* noiseSampler = Texture::Sampler::create("res/data/samples/browser/sprites/water2d-noise.png");
     waterMaterial->getParameter("u_texture_noise")->setValue(noiseSampler);
     SAFE_RELEASE(noiseSampler);
     waterMaterial->getParameter("u_time")->bindValue(this, &SpriteSample::getTime);

@@ -71,7 +71,7 @@ void TextureSample::initialize()
     // Textured quad mesh
     {
         Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize);
-        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/color-wheel.png");
+        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/data/textures/color-wheel.png");
         node->setTranslation(-25, cubeSize, 0);
         // Find the position of the node in screen space
         _scene->getActiveCamera()->project(getViewport(), node->getTranslationWorld(), &x, &y);
@@ -83,7 +83,7 @@ void TextureSample::initialize()
         Mesh* mesh = Mesh::createQuad(Vector3(0, cubeSize, 0), Vector3(0, 0, 0), Vector3(cubeSize, cubeSize, 0), Vector3(cubeSize, 0, 0));
         Node* node = addQuadModelAndNode(_scene, mesh);
         SAFE_RELEASE(mesh);
-        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/color-wheel.png");
+        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/data/textures/color-wheel.png");
         node->setTranslation(-14, cubeSize, 0);
         _scene->getActiveCamera()->project(getViewport(), node->getTranslationWorld(), &x, &y);
         //_text.push_back(_font->createText("Quad: Points", Rectangle(x, y, textWidth, fontSize), Vector4::one(), fontSize, Font::ALIGN_TOP_HCENTER, false));
@@ -91,7 +91,7 @@ void TextureSample::initialize()
     // Texture clamp
     {
         Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize, -1, -1, 2, 2);
-        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/color-wheel.png");
+        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/data/textures/color-wheel.png");
         node->setId("clamp");
         node->setTranslation(-3, cubeSize, 0);
         _scene->getActiveCamera()->project(getViewport(), node->getTranslationWorld(), &x, &y);
@@ -100,7 +100,7 @@ void TextureSample::initialize()
     // Texture wrapped+repeat
     {
         Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize, -1, -1, 2, 2);
-        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/color-wheel.png");
+        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/data/textures/color-wheel.png");
         node->setId("repeat");
         Texture::Sampler* sampler = dynamic_cast<Model*>(node->getDrawable())->getMaterial()->getParameter("u_diffuseTexture")->getSampler();
         if (sampler)
@@ -114,7 +114,7 @@ void TextureSample::initialize()
     // Mipmapping Off
     {
         Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize);
-        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/logo.png", false);
+        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/data/textures/logo.png", false);
         node->setId("mipmap off");
         node->setTranslation(-25.5f, -2.5f, 0);
         _scene->getActiveCamera()->project(getViewport(), node->getTranslationWorld(), &x, &y);
@@ -123,7 +123,7 @@ void TextureSample::initialize()
     // Mipmapping On
     {
         Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize);
-        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/logo.png");
+        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/data/textures/logo.png");
         node->setId("mipmap on");
         node->setTranslation(-5.5f, -2.5f, 0);
         _scene->getActiveCamera()->project(getViewport(), node->getTranslationWorld(), &x, &y);
@@ -143,7 +143,7 @@ void TextureSample::initialize()
     for(int i=0; i<4; i++)
     {
         Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize, -1, -1, 2, 2);
-        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/smiley.jpg");
+        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/data/textures/smiley.jpg");
         node->setId("wrapmodel");
         Texture::Sampler* sampler = dynamic_cast<Model*>(node->getDrawable())->getMaterial()->getParameter("u_diffuseTexture")->getSampler();
         if (sampler)
@@ -159,7 +159,7 @@ void TextureSample::initialize()
     // Linear filter
     {
         Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize, 0.25, 0.25, 0.70, 0.70);
-        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/smiley.jpg");
+        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/data/textures/smiley.jpg");
         node->setTranslation(22, 1, 0);
         Texture::Sampler* sampler = dynamic_cast<Model*>(node->getDrawable())->getMaterial()->getParameter("u_diffuseTexture")->getSampler();
         if (sampler)
@@ -171,7 +171,7 @@ void TextureSample::initialize()
     // Nearest filter
     {
         Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize, 0.25, 0.25, 0.70, 0.70);
-        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/smiley.jpg");
+        setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/data/textures/smiley.jpg");
         node->setTranslation(22, -10, 0);
         Texture::Sampler* sampler = dynamic_cast<Model*>(node->getDrawable())->getMaterial()->getParameter("u_diffuseTexture")->getSampler();
         if (sampler)

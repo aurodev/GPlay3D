@@ -85,13 +85,13 @@ void PostProcessSample::initialize()
     _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Load game scene from file
-    _scene = Scene::load("res/common/duck.gpb");
+    _scene = Scene::load("res/data/scenes/duck.gpb");
     _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
 
     // Initialize box model
     _modelNode = _scene->findNode("duck");
     Model* model = dynamic_cast<Model*>(_modelNode->getDrawable());
-    Material* material = model->setMaterial("res/common/duck.material");
+    Material* material = model->setMaterial("res/data/materials/duck.material");
     // Get light node
     Node* lightNode = _scene->findNode("directionalLight1");
     Light* light = lightNode->getLight();
@@ -115,28 +115,28 @@ void PostProcessSample::initialize()
     // Create our compositors that all output to the default framebuffer.
     Compositor* compositor = NULL;
 
-    compositor = Compositor::create(_frameBuffer, NULL, "res/common/postprocess/postprocess.material", "Passthrough");
+    compositor = Compositor::create(_frameBuffer, NULL, "res/data/samples/browser/postprocess/postprocess.material", "Passthrough");
     _compositors.push_back(compositor);
 
-    compositor = Compositor::create(_frameBuffer, NULL, "res/common/postprocess/postprocess.material", "Grayscale");
+    compositor = Compositor::create(_frameBuffer, NULL, "res/data/samples/browser/postprocess/postprocess.material", "Grayscale");
     _compositors.push_back(compositor);
 
-    compositor = Compositor::create(_frameBuffer, NULL, "res/common/postprocess/postprocess.material", "Sepia");
+    compositor = Compositor::create(_frameBuffer, NULL, "res/data/samples/browser/postprocess/postprocess.material", "Sepia");
     _compositors.push_back(compositor);
 
-    compositor = Compositor::create(_frameBuffer, NULL, "res/common/postprocess/postprocess.material", "Pixelate");
+    compositor = Compositor::create(_frameBuffer, NULL, "res/data/samples/browser/postprocess/postprocess.material", "Pixelate");
     _compositors.push_back(compositor);
 
-    compositor = Compositor::create(_frameBuffer, NULL, "res/common/postprocess/postprocess.material", "Sobel Edge");
+    compositor = Compositor::create(_frameBuffer, NULL, "res/data/samples/browser/postprocess/postprocess.material", "Sobel Edge");
     _compositors.push_back(compositor);
     compositor->getMaterial()->getParameter("u_width")->setValue((float)FRAMEBUFFER_WIDTH / 2.0f);
     compositor->getMaterial()->getParameter("u_height")->setValue((float)FRAMEBUFFER_HEIGHT / 2.0f);
 
-    compositor = Compositor::create(_frameBuffer, NULL, "res/common/postprocess/postprocess.material", "Gaussian Blur");
+    compositor = Compositor::create(_frameBuffer, NULL, "res/data/samples/browser/postprocess/postprocess.material", "Gaussian Blur");
     _compositors.push_back(compositor);
     compositor->getMaterial()->getParameter("u_length")->setValue(1.0f / ((float)FRAMEBUFFER_WIDTH / 2.0f));
 
-    compositor = Compositor::create(_frameBuffer, NULL, "res/common/postprocess/postprocess.material", "Old Film");
+    compositor = Compositor::create(_frameBuffer, NULL, "res/data/samples/browser/postprocess/postprocess.material", "Old Film");
     _compositors.push_back(compositor);
     compositor->getMaterial()->getParameter("u_sepiaValue")->setValue(0.8f);
     compositor->getMaterial()->getParameter("u_noiseValue")->setValue(0.4f);

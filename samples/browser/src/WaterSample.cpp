@@ -28,7 +28,7 @@ void WaterSample::initialize()
     _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Load the scene file
-    _scene = Scene::load("res/common/water/watersample.scene");
+    _scene = Scene::load("res/data/samples/browser/water/watersample.scene");
     _waterHeight = _scene->findNode("Water")->getTranslationY();
 
     // Set up a first person style camera

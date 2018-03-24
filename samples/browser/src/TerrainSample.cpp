@@ -40,28 +40,28 @@ TerrainSample::~TerrainSample()
 void TerrainSample::initialize()
 {
     // Load scene
-	_scene = Scene::load("res/common/terrain/sample.scene");
+    _scene = Scene::load("res/data/samples/browser/terrain/sample.scene");
 	_terrain = dynamic_cast<Terrain*>(_scene->findNode("terrain")->getDrawable());
     _sky = _scene->findNode("sky");
     _sky->setTag("lighting", "none");
 
     // Load shapes
     Bundle* bundle;
-    bundle = Bundle::create("res/common/sphere.gpb");
+    bundle = Bundle::create("res/data/scenes/sphere.gpb");
     _sphere = bundle->loadNode("sphere");
-    dynamic_cast<Model*>(_sphere->getDrawable())->setMaterial("res/common/terrain/shapes.material#sphere", 0);
+    dynamic_cast<Model*>(_sphere->getDrawable())->setMaterial("res/data/samples/browser/terrain/shapes.material#sphere", 0);
     SAFE_RELEASE(bundle);
 
-    bundle = Bundle::create("res/common/box.gpb");
+    bundle = Bundle::create("res/data/scenes/box.gpb");
     _box = bundle->loadNode("box");
-    dynamic_cast<Model*>(_box->getDrawable())->setMaterial("res/common/terrain/shapes.material#box", 0);
+    dynamic_cast<Model*>(_box->getDrawable())->setMaterial("res/data/samples/browser/terrain/shapes.material#box", 0);
     SAFE_RELEASE(bundle);
 
     // Load font
 	_font = Font::create("res/coredata/ui/arial.gpb");
 
     // Setup form
-    _form = Form::create("res/common/terrain/terrain.form");
+    _form = Form::create("res/data/samples/browser/terrain/terrain.form");
     _form->getControl("plusButton")->addListener(this, Control::Listener::CLICK);
     _form->getControl("minusButton")->addListener(this, Control::Listener::CLICK);
     _form->getControl("wireframe")->addListener(this, Control::Listener::VALUE_CHANGED);

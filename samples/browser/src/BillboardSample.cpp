@@ -288,7 +288,7 @@ void BillboardSample::loadGround()
 	Material* material = Material::create(effect); 
 	material->getStateBlock()->setDepthTest(true);
 	material->getStateBlock()->setBlend(false);
-	Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/png/dirt.png", true);
+    Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/data/textures/dirt.png", true);
 	sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 	material->getParameter("u_textureRepeat")->setValue(Vector2(GROUND_REPEAT_TEXTURE, GROUND_REPEAT_TEXTURE));
 	material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
@@ -316,7 +316,7 @@ void BillboardSample::loadBillboards()
 		Material* material = Material::create(effect); 
 		material->getStateBlock()->setDepthTest(true);
 		material->getStateBlock()->setBlend(false);
-		material->getParameter("u_diffuseTexture")->setValue("res/png/grass.png" , true);
+        material->getParameter("u_diffuseTexture")->setValue("res/data/textures/grass.png" , true);
 		material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
 		model->setMaterial(material);
 		SAFE_RELEASE(model);

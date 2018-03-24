@@ -46,7 +46,7 @@ void LightSample::initialize()
     _font = Font::create("res/coredata/ui/arial.gpb");
 
 	// Load the scene
-	_scene = Scene::load("res/common/lightBrickWall.gpb");
+    _scene = Scene::load("res/data/samples/browser/light/lightBrickWall.gpb");
     _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
 
 	// Get the wall model node
@@ -61,7 +61,7 @@ void LightSample::initialize()
 	Mesh* directionalLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
 	_directionalLightQuadModel = Model::create(directionalLightQuadMesh);
     SAFE_RELEASE(directionalLightQuadMesh);
-	setUnlitMaterialTexture(_directionalLightQuadModel, "res/png/light-directional.png"); 
+    setUnlitMaterialTexture(_directionalLightQuadModel, "res/data/samples/browser/light/light-directional.png");
 	_directionalLightNode->setDrawable(_directionalLightQuadModel);
     _directionalLightNode->setTranslation(0.0f, 0.0f, 7.0f);
 	_scene->addNode(_directionalLightNode);
@@ -74,7 +74,7 @@ void LightSample::initialize()
 	Mesh* spotLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
 	_spotLightQuadModel = Model::create(spotLightQuadMesh);
     SAFE_RELEASE(spotLightQuadMesh);
-	setUnlitMaterialTexture(_spotLightQuadModel, "res/png/light-spot.png");
+    setUnlitMaterialTexture(_spotLightQuadModel, "res/data/samples/browser/light/light-spot.png");
 	_spotLightNode->setDrawable(_spotLightQuadModel);
 	_spotLightNode->setTranslation(0.0f, 0.0f, 8.0f);
 	_scene->addNode(_spotLightNode);
@@ -87,17 +87,17 @@ void LightSample::initialize()
 	Mesh* pointLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
 	_pointLightQuadModel = Model::create(pointLightQuadMesh);
     SAFE_RELEASE(pointLightQuadMesh);
-	setUnlitMaterialTexture(_pointLightQuadModel, "res/png/light-point.png");
+    setUnlitMaterialTexture(_pointLightQuadModel, "res/data/samples/browser/light/light-point.png");
 	_pointLightNode->setDrawable(_pointLightQuadModel);
 	_pointLightNode->setTranslation(0.0f, 0.0f, 8.0f);
 	_scene->addNode(_pointLightNode);
 
     // Create and initialize lights and materials for lights
-	_lighting = Material::create("res/common/light.material");
+    _lighting = Material::create("res/data/samples/browser/light/light.material");
 	_model->setMaterial(_lighting);
 
     // Create and initialize ui form
-    _form = Form::create("res/common/light.form");
+    _form = Form::create("res/data/samples/browser/light/light.form");
     _properties = static_cast<Container*>(_form->getControl("lightProperties"));
 	_redSlider = static_cast<Slider*>(_form->getControl("redSlider"));
 	_redSlider->addListener(this, Control::Listener::VALUE_CHANGED);

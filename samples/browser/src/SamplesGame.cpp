@@ -24,7 +24,7 @@ void SamplesGame::initialize()
     }
 
     // Load camera script
-    getScriptController()->loadScript("res/common/camera.lua");
+    getScriptController()->loadScript("res/data/scripts/camera.lua");
 
     // Create the selection form
     _sampleSelectForm = Form::create("sampleSelect", NULL, Layout::LAYOUT_VERTICAL);

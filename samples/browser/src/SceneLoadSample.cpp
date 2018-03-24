@@ -16,7 +16,7 @@ void SceneLoadSample::initialize()
     // Create the font for drawing the framerate.
     _font = Font::create("res/coredata/ui/arial.gpb");
 
-    _scene = Scene::load("res/common/sample.scene");
+    _scene = Scene::load("res/data/samples/browser/sample.scene");
 
     // Update the aspect ratio for our scene's camera to match the current device resolution
     _scene->getActiveCamera()->setAspectRatio(getAspectRatio());

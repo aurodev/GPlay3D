@@ -116,7 +116,7 @@ void SceneCreateSample::initialize()
     material->getParameter("u_directionalLightDirection[0]")->bindValue(lightNode, &Node::getForwardVectorWorld);
 
     // Load the texture from file.
-    Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/png/crate.png", true);
+    Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/data/textures/crate.png", true);
     sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
     material->getStateBlock()->setCullFace(true);
     material->getStateBlock()->setDepthTest(true);

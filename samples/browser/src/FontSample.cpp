@@ -19,10 +19,10 @@ std::string _fontNames[] =
 std::string _fontFiles[] =
 {
     "res/coredata/ui/arial.gpb",
-    "res/common/fonts/arial-distance.gpb",
-    "res/common/fonts/badaboom.gpb",
-    "res/common/fonts/fishfingers.gpb",
-    "res/common/fonts/neuropol.gpb"
+    "res/data/fonts/arial-distance.gpb",
+    "res/data/fonts/badaboom.gpb",
+    "res/data/fonts/fishfingers.gpb",
+    "res/data/fonts/neuropol.gpb"
 };
 
 FontSample::FontSample()
@@ -68,7 +68,7 @@ void FontSample::initialize()
                                 "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
 
     // Create and listen to form.
-    _form = Form::create("res/common/text.form");
+    _form = Form::create("res/data/samples/browser/text.form");
     static_cast<Button*>(_form->getControl("fontButton"))->addListener(this, Control::Listener::CLICK);
     static_cast<Button*>(_form->getControl("wrapButton"))->addListener(this, Control::Listener::CLICK);
     static_cast<Button*>(_form->getControl("clipRectButton"))->addListener(this, Control::Listener::CLICK);

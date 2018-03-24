@@ -5,7 +5,7 @@
 ADD_SAMPLE("Graphics", "Particles", ParticlesSample, 9);
 #endif
 
-#define DEFAULT_PARTICLE_EMITTER "res/common/particles/fire.particle"
+#define DEFAULT_PARTICLE_EMITTER "res/data/samples/browser/particles/fire.particle"
 
 const float INPUT_SENSITIVITY = 0.05f;
 const float PANNING_SENSITIVITY = 0.01f;
@@ -117,7 +117,7 @@ void ParticlesSample::addGrid(unsigned int lineCount)
     mesh->setVertexData(&vertices[0], 0, pointCount);
 
     Model* model = Model::create(mesh);
-    model->setMaterial("res/common/particles/grid.material");
+    model->setMaterial("res/data/samples/browser/particles/grid.material");
     SAFE_RELEASE(mesh);
 
     _scene->addNode("grid")->setDrawable(model);
@@ -154,7 +154,7 @@ void ParticlesSample::initialize()
     _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Load the form for editing ParticleEmitters.
-    _form = Form::create("res/common/particles/editor.form");
+    _form = Form::create("res/data/samples/browser/particles/editor.form");
     _form->setConsumeInputEvents(false);
     //_form->setState(Control::FOCUS);
 

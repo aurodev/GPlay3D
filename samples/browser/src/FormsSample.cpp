@@ -14,11 +14,11 @@ FormsSample::FormsSample()
 {
     const char* formFiles[] = 
     {
-        "res/common/forms/formBasicControls.form",
-        "res/common/forms/formScrolling.form",
-        "res/common/forms/formFlowLayout.form",
-        "res/common/forms/formVerticalLayout.form",
-        "res/common/forms/formZOrder.form",
+        "res/data/samples/browser/forms/formBasicControls.form",
+        "res/data/samples/browser/forms/formScrolling.form",
+        "res/data/samples/browser/forms/formFlowLayout.form",
+        "res/data/samples/browser/forms/formVerticalLayout.form",
+        "res/data/samples/browser/forms/formZOrder.form",
     };
 
     _formFiles.assign(formFiles, formFiles + __formsCount);
@@ -73,7 +73,7 @@ void FormsSample::initialize()
     setMultiTouch(true);
     setVsync(false);
 
-    _formSelect = Form::create("res/common/forms/formSelect.form");
+    _formSelect = Form::create("res/data/samples/browser/forms/formSelect.form");
     _formSelect->setFocus();
 
     RadioButton* form0Button = static_cast<RadioButton*>(_formSelect->getControl("form0"));
