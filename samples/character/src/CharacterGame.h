@@ -1,7 +1,7 @@
 #ifndef CHARACTERGAME_H_
 #define CHARACTERGAME_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 using namespace gameplay;
 
 /**

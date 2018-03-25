@@ -1,7 +1,7 @@
 #ifndef TEXTURESAMPLE_H_
 #define TEXTURESAMPLE_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Sample.h"
 
 using namespace gameplay;

@@ -1,4 +1,4 @@
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Example.h"
 #include "SamplesGame.h"
 #include "FirstPersonCamera.h"

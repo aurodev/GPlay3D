@@ -1,7 +1,7 @@
 #ifndef PARTICLESSAMPLE_H_
 #define PARTICLESSAMPLE_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Sample.h"
 
 using namespace gameplay;

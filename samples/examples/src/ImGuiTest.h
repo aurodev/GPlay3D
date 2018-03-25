@@ -1,7 +1,7 @@
 #ifndef R_DYNAMIC_MESH_UPDATE_H_
 #define R_DYNAMIC_MESH_UPDATE_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Example.h"
 
 using namespace gameplay;

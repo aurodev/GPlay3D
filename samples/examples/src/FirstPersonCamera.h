@@ -1,7 +1,7 @@
 #ifndef FIRSTPERSONCAMERA_H_
 #define FIRSTPERSONCAMERA_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 
 using namespace gameplay;
 

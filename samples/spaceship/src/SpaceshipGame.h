@@ -1,7 +1,7 @@
 #ifndef SPACESHIPGAME_H_
 #define SPACESHIPGAME_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 
 using namespace gameplay;
 

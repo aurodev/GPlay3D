@@ -1,7 +1,7 @@
 #ifndef POSTPROCESSSAMPLE_H_
 #define POSTPROCESSSAMPLE_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Sample.h"
 
 using namespace gameplay;

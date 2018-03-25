@@ -1,7 +1,7 @@
 #ifndef WATERSAMPLE_H_
 #define WATERSAMPLE_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Sample.h"
 
 using namespace gameplay;

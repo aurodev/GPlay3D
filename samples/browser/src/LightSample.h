@@ -1,7 +1,7 @@
 #ifndef LIGHTSAMPLE_H_
 #define LIGHTSAMPLE_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Sample.h"
 #include "graphics/Material.h"
 #include "graphics/Model.h"

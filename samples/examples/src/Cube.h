@@ -1,7 +1,7 @@
 #ifndef R_GEOMETRY_H_
 #define R_GEOMETRY_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Example.h"
 
 using namespace gameplay;

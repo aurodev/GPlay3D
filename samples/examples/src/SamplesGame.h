@@ -1,7 +1,7 @@
 #ifndef SAMPLESGAME_H_
 #define SAMPLESGAME_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Example.h"
 
 using namespace gameplay;

@@ -1,7 +1,7 @@
 #ifndef SPRITESAMPLE_H_
 #define SPRITESAMPLE_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Sample.h"
 
 using namespace gameplay;

@@ -1,7 +1,7 @@
 #ifndef AUDIO3DSAMPLE_H_
 #define AUDIO3DSAMPLE_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Sample.h"
 #include "FirstPersonCamera.h"
 

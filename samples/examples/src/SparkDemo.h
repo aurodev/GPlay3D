@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Example.h"
 #include "FirstPersonCamera.h"
 #include "sparkparticles/SparkParticleEmitter.h"

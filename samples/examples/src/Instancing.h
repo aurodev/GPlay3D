@@ -1,7 +1,7 @@
 #ifndef R_INSTANCING_H_
 #define R_INSTANCING_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 #include "Example.h"
 
 using namespace gameplay;

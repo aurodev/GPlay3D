@@ -1,7 +1,7 @@
 #ifndef GRID_H_
 #define GRID_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 
 using namespace gameplay;
 
