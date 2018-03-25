@@ -25,7 +25,7 @@ void Audio3DSample::initialize()
     setMultiTouch(true);
     _font = Font::create("res/coredata/ui/arial.gpb");
     // Load game scene from file
-    _scene = Scene::load("res/common/box.gpb");
+    _scene = Scene::load("res/data/scenes/box.gpb");
 
     // Get light node
     Node* lightNode = _scene->findNode("directionalLight1");
@@ -35,7 +35,7 @@ void Audio3DSample::initialize()
     // Initialize box model
     Node* boxNode = _scene->findNode("box");
     Model* boxModel = dynamic_cast<Model*>(boxNode->getDrawable());
-    Material* boxMaterial = boxModel->setMaterial("res/common/box.material#lambert1");
+    Material* boxMaterial = boxModel->setMaterial("res/data/materials/box.material#lambert1");
 
     boxMaterial->getParameter("u_directionalLightColor[0]")->setValue(light->getColor());
     boxMaterial->getParameter("u_directionalLightDirection[0]")->setValue(lightNode->getForwardVectorView());
@@ -276,7 +276,7 @@ bool Audio3DSample::mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDel
 
 void Audio3DSample::addSound(const std::string& file)
 {
-    std::string path("res/common/");
+    std::string path("res/data/sounds/");
     path.append(file);
 
     Node* node = NULL;
@@ -335,7 +335,7 @@ void Audio3DSample::loadGrid(Scene* scene)
     assert(scene);
     Model* gridModel = createGridModel();
     assert(gridModel);
-    gridModel->setMaterial("res/common/grid.material");
+    gridModel->setMaterial("res/data/materials/grid.material");
     Node* node = scene->addNode("grid");
     node->setDrawable(gridModel);
     SAFE_RELEASE(gridModel);

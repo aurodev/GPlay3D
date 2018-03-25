@@ -12,7 +12,7 @@ AudioSample::AudioSample()
 
 void AudioSample::initialize()
 {
-    _formBackground = Form::create("res/common/audio/background.form");
+    _formBackground = Form::create("res/data/samples/browser/audio/background.form");
 
     const char * buttons[] = { "playButton", "pauseButton", "resumeButton", "rewindButton", "stopButton" };
     for (int i = 0; i < sizeof(buttons) / sizeof(uintptr_t); i++) {
@@ -21,7 +21,7 @@ void AudioSample::initialize()
     }   
 
     // Create the audio source here, and feed the values into the UI controls.
-    _audioBackground = AudioSource::create("res/common/audio/sample.audio#backgroundTrack");
+    _audioBackground = AudioSource::create("res/data/samples/browser/audio/sample.audio#backgroundTrack");
     _audioBackground->play();
 
     CheckBox* checkBox = static_cast<CheckBox*>(_formBackground->getControl("loopCheckBox"));
@@ -36,7 +36,7 @@ void AudioSample::initialize()
     slider->setValue(_audioBackground->getPitch());
     slider->addListener(this, Control::Listener::VALUE_CHANGED);
 
-    _formBraking = Form::create("res/common/audio/braking.form");
+    _formBraking = Form::create("res/data/samples/browser/audio/braking.form");
 
     Button* button = static_cast<Button*>(_formBraking->getControl("playBrakingButton"));
     button->addListener(this, Control::Listener::RELEASE);
@@ -44,7 +44,7 @@ void AudioSample::initialize()
     button = static_cast<Button*>(_formBraking->getControl("stopBrakingButton"));
     button->addListener(this, Control::Listener::RELEASE);
 
-    _formEngine = Form::create("res/common/audio/engine.form");
+    _formEngine = Form::create("res/data/samples/browser/audio/engine.form");
 
     button = static_cast<Button*>(_formEngine->getControl("playEngineButton"));
     button->addListener(this, Control::Listener::RELEASE);
@@ -52,7 +52,7 @@ void AudioSample::initialize()
     button = static_cast<Button*>(_formEngine->getControl("stopEngineButton"));
     button->addListener(this, Control::Listener::RELEASE);
 
-    _audioEngine = AudioSource::create("res/common/audio/sample.audio#engine");
+    _audioEngine = AudioSource::create("res/data/samples/browser/audio/sample.audio#engine");
 
     checkBox = static_cast<CheckBox*>(_formEngine->getControl("loopEngineCheckBox"));
     checkBox->setChecked(_audioEngine->isLooped());
@@ -66,7 +66,7 @@ void AudioSample::initialize()
     slider->setValue(_audioEngine->getPitch());
     slider->addListener(this, Control::Listener::VALUE_CHANGED);
     
-    _audioBraking = AudioSource::create("res/common/audio/sample.audio#braking");
+    _audioBraking = AudioSource::create("res/data/samples/browser/audio/sample.audio#braking");
     
     checkBox = static_cast<CheckBox*>(_formBraking->getControl("loopBrakingCheckBox"));
     checkBox->setChecked(_audioBraking->isLooped());

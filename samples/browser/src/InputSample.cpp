@@ -25,7 +25,7 @@ void InputSample::initialize()
     assert(_font);
 
     // Reuse part of the gamepad texture as the crosshair in this sample.
-    _crosshair = SpriteBatch::create("res/png/gamepad.png");
+    _crosshair = SpriteBatch::create("res/coredata/gamepad/gamepad.png");
     _crosshairDstRect.set(0, 0, 256, 256);
     _crosshairSrcRect.set(256, 0, 256, 256);
     _crosshairLowerLimit.set(-_crosshairSrcRect.width / 2.0f, -_crosshairSrcRect.height / 2.0f);
@@ -34,7 +34,7 @@ void InputSample::initialize()
 
     // Create input sample controls
     _keyboardState = false;
-    _inputSampleControls = Form::create("res/common/inputs.form");
+    _inputSampleControls = Form::create("res/data/samples/browser/inputs.form");
     static_cast<Button*>(_inputSampleControls->getControl("showKeyboardButton"))->addListener(this, Listener::CLICK);
     static_cast<Button*>(_inputSampleControls->getControl("captureMouseButton"))->addListener(this, Listener::CLICK);
 

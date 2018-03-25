@@ -17,7 +17,7 @@ material lambert1
             // samplers
             sampler u_diffuseTexture
             {
-                path = res/data/textures/brick.png
+                path = res/data/textures/crate.png
                 mipmap = true
                 wrapS = CLAMP
                 wrapT = CLAMP

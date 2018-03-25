@@ -8,7 +8,11 @@
 PhysicsCollisionObjectSample::PhysicsCollisionObjectSample()
     : _font(NULL), _scene(NULL), _lightNode(NULL), _form(NULL), _objectType(SPHERE), _throw(true), _drawDebug(0), _wireFrame(false)
 {
-    const char* paths[] = {"res/common/physics.physics#ball","res/common/physics.physics#box", "res/common/physics.physics#capsule", "res/common/physics.physics#duck"};
+    const char* paths[] = {"res/data/samples/browser/physics/physics.physics#ball",
+                           "res/data/samples/browser/physics/physics.physics#box",
+                           "res/data/samples/browser/physics/physics.physics#capsule",
+                           "res/data/samples/browser/physics/physics.physics#duck"};
+
     _collisionObjectPaths.assign(paths, paths + 4);
     const char* nodeIds[] = {"sphere", "box", "capsule", "duck"};
     _nodeIds.assign(nodeIds, nodeIds + 4);
@@ -23,13 +27,13 @@ void PhysicsCollisionObjectSample::initialize()
     // Create the font for drawing the framerate.
     _font = Font::create("res/coredata/ui/arial.gpb");
 
-    _scene = Scene::load("res/common/physics.scene");
+    _scene = Scene::load("res/data/samples/browser/physics/physics.scene");
     // Use the aspect ratio of the display instead of the aspect ratio defined in the scene file.
     _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
     _lightNode = _scene->findNode("directionalLight");
     _scene->visit(this, &PhysicsCollisionObjectSample::bindLights);
 
-    _form = Form::create("res/common/physics.form");
+    _form = Form::create("res/data/samples/browser/physics/physics.form");
     static_cast<Button*>(_form->getControl("wireframeButton"))->addListener(this, Control::Listener::CLICK);
     static_cast<Button*>(_form->getControl("drawDebugButton"))->addListener(this, Control::Listener::CLICK);
     static_cast<Button*>(_form->getControl("throwButton"))->addListener(this, Control::Listener::CLICK);
