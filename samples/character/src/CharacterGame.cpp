@@ -39,7 +39,7 @@ void CharacterGame::initialize()
     _font = Font::create("res/coredata/ui/arial.gpb");
 
     // Load scene.
-    _scene = Scene::load("res/common/sample.scene");
+    _scene = Scene::load("res/data/samples/character/common/sample.scene");
 
     // Update the aspect ratio for our scene's camera to match the current device resolution.
     _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
@@ -113,7 +113,7 @@ void CharacterGame::initializeCharacter()
 
     // Load character animations.
     _animation = node->getAnimation("animations");
-    _animation->createClips("res/common/boy.animation");
+    _animation->createClips("res/data/samples/character/common/boy.animation");
     _jumpClip = _animation->getClip("jump");
     _jumpClip->addListener(this, _jumpClip->getDuration() - 250);
     _kickClip = _animation->getClip("kick");
@@ -136,7 +136,7 @@ void CharacterGame::finalize()
 void CharacterGame::drawSplash(void* param)
 {
     clear(CLEAR_COLOR_DEPTH, Vector4(0, 0, 0, 1), 1.0f, 0);
-    SpriteBatch* batch = SpriteBatch::create("res/logo_powered_white.png");
+    SpriteBatch* batch = SpriteBatch::create("res/coredata/logo_powered_white.png");
     batch->start();
     batch->draw(getWidth() * 0.5f, getHeight() * 0.5f, 0.0f, 512.0f, 512.0f, 0.0f, 1.0f, 1.0f, 0.0f, Vector4::one(), true);
     batch->finish();

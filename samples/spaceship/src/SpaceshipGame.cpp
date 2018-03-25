@@ -82,7 +82,7 @@ void SpaceshipGame::initialize()
     _stateBlock->setCullFace(true);
 
     // Load our scene from file
-    _scene = Scene::load("res/spaceship.gpb");
+    _scene = Scene::load("res/data/samples/spaceship/spaceship.gpb");
 
     // Update the aspect ratio for our scene's camera to match the current device resolution
     _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
@@ -92,12 +92,12 @@ void SpaceshipGame::initialize()
     initializeEnvironment();
 
     // Create a background music audio track.
-    _backgroundMusic = AudioSource::create("res/background.ogg", true);
+    _backgroundMusic = AudioSource::create("res/data/samples/spaceship/background.ogg", true);
     if (_backgroundMusic)
         _backgroundMusic->setLooped(true);
 
     // Create font
-    _font = Font::create("res/airstrip.gpb");
+    _font = Font::create("res/data/samples/spaceship/airstrip.gpb");
 
     // Store camera node
     _cameraNode = _scene->findNode("camera1");
@@ -139,7 +139,7 @@ void SpaceshipGame::initializeSpaceship()
     // Glow effect node
     _glowNode = _scene->findNode("pGlow");
     material = dynamic_cast<Model*>(_glowNode->getDrawable())->setMaterial("res/coredata/shaders/textured.vert", "res/coredata/shaders/textured.frag", "MODULATE_COLOR");
-    material->getParameter("u_diffuseTexture")->setValue("res/propulsion_glow.png", true);
+    material->getParameter("u_diffuseTexture")->setValue("res/data/samples/spaceship/propulsion_glow.png", true);
     _glowDiffuseParameter = material->getParameter("u_modulateColor");
     initializeMaterial(material, false, false);
     // don't use the default state block for this one because we wants to add blending
@@ -153,7 +153,7 @@ void SpaceshipGame::initializeSpaceship()
 
 
     // Setup the sound
-    _spaceshipSound = AudioSource::create("res/spaceship.wav");
+    _spaceshipSound = AudioSource::create("res/data/samples/spaceship/spaceship.wav");
     if (_spaceshipSound)
     {
         _spaceshipSound->setLooped(true);
@@ -190,7 +190,7 @@ void SpaceshipGame::initializeEnvironment()
     nodes.clear();
     Node* pBackground = _scene->findNode("pBackground");
     material = dynamic_cast<Model*>(pBackground->getDrawable())->setMaterial("res/coredata/shaders/textured.vert", "res/coredata/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT=1");
-    material->getParameter("u_diffuseTexture")->setValue("res/background.png", true);
+    material->getParameter("u_diffuseTexture")->setValue("res/data/samples/spaceship/background.png", true);
     initializeMaterial(material, true, false);
 }
 
@@ -477,7 +477,7 @@ void SpaceshipGame::render(float elapsedTime)
 void SpaceshipGame::drawSplash(void* param)
 {
     clear(CLEAR_COLOR_DEPTH, Vector4(0, 0, 0, 1), 1.0f, 0);
-    SpriteBatch* batch = SpriteBatch::create("res/logo_powered_white.png");
+    SpriteBatch* batch = SpriteBatch::create("res/coredata/logo_powered_white.png");
     batch->start();
     batch->draw(this->getWidth() * 0.5f, this->getHeight() * 0.5f, 0.0f, 512.0f, 512.0f, 0.0f, 1.0f, 1.0f, 0.0f, Vector4::one(), true);
     batch->finish();

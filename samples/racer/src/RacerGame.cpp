@@ -48,7 +48,7 @@ void RacerGame::initialize()
     displayScreen(this, &RacerGame::drawSplash, NULL, 1000L);
 
     // Create the menu and start listening to its controls.
-    _menu = Form::create("res/common/menu.form");
+    _menu = Form::create("res/data/samples/racer/common/menu.form");
     _menu->setEnabled(false);
     static_cast<Button*>(_menu->getControl("newGameButton"))->addListener(this, Listener::CLICK);
     static_cast<Button*>(_menu->getControl("quitGameButton"))->addListener(this, Listener::CLICK);
@@ -61,11 +61,11 @@ void RacerGame::initialize()
     }
 
     // Create a pause button to display the menu
-    _overlay = Form::create("res/common/overlay.form");
+    _overlay = Form::create("res/data/samples/racer/common/overlay.form");
     static_cast<Button*>(_overlay->getControl("menuButton"))->addListener(this, Listener::CLICK);
 
     // Load the scene
-    _scene = Scene::load("res/common/racer.scene");
+    _scene = Scene::load("res/data/samples/racer/common/racer.scene");
 
     // Set the aspect ratio for the scene's camera to match the current resolution
     _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
@@ -74,7 +74,7 @@ void RacerGame::initialize()
     _scene->visit(this, &RacerGame::initializeScene);
 
     // Load and initialize game script
-    getScriptController()->loadScript("res/common/racer.lua");
+    getScriptController()->loadScript("res/data/samples/racer/common/racer.lua");
     getScriptController()->executeFunction<void>("setScene", "<Scene>", NULL, _scene);
 
     Node* carNode = _scene->findNode("carbody");
@@ -85,7 +85,7 @@ void RacerGame::initialize()
     }
 
     // Create audio tracks
-    _backgroundMusic = AudioSource::create("res/common/background_track.ogg", true);
+    _backgroundMusic = AudioSource::create("res/data/samples/racer/common/background_track.ogg", true);
     if (_backgroundMusic)
     {
         _backgroundMusic->setLooped(true);
@@ -93,7 +93,7 @@ void RacerGame::initialize()
         _backgroundMusic->setGain(0.3f);
     }
 
-    _engineSound = AudioSource::create("res/common/engine_loop.ogg");
+    _engineSound = AudioSource::create("res/data/samples/racer/common/engine_loop.ogg");
     if (_engineSound)
     {
         _engineSound->setLooped(true);
@@ -101,7 +101,7 @@ void RacerGame::initialize()
         _engineSound->setGain(0.7f);
     }
 
-    _brakingSound = AudioSource::create("res/common/braking.wav", true);
+    _brakingSound = AudioSource::create("res/data/samples/racer/common/braking.wav", true);
     _brakingSound->setLooped(false);
     _brakingSound->setGain(0.5f);
 
@@ -378,7 +378,7 @@ void RacerGame::drawSplash(void* param)
 {
     clear(CLEAR_COLOR_DEPTH, Vector4(0, 0, 0, 1), 1.0f, 0);
 
-    SpriteBatch* batch = SpriteBatch::create("res/logo_powered_white.png");
+    SpriteBatch* batch = SpriteBatch::create("res/coredata/logo_powered_white.png");
     batch->start();
     batch->draw(this->getWidth() * 0.5f, this->getHeight() * 0.5f, 0.0f, 512.0f, 512.0f, 0.0f, 1.0f, 1.0f, 0.0f, Vector4::one(), true);
     batch->finish();
