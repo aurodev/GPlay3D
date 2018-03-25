@@ -13,6 +13,7 @@ Thumbs.db
 /ipch
 /build
 /cmake
+/BUILD
 /Debug
 /Release
 /api/xml
