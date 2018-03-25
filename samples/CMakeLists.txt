@@ -1,7 +1,7 @@
 include(BuildHelpers.CMakeLists.txt)
 
 include_directories(
-        ${CMAKE_SOURCE_DIR}/gameplay/src
+        ${CMAKE_SOURCE_DIR}/gplay3d/src
         ${CMAKE_SOURCE_DIR}/external-deps/include
 )
 
@@ -37,10 +37,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             "-framework Foundation"
             "-framework Cocoa")
     link_directories(${CMAKE_SOURCE_DIR}/external-deps/lib/macosx/x86_64)
-    set(GAMEPLAY_LIBRARIES
+    set(GPLAY3D_LIBRARIES
             stdc++
-            gameplay
-            gameplay-deps
+            gplay3d
+            gplay3d-deps
             m
             dl
             pthread
@@ -56,10 +56,10 @@ ELSE(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     ENDIF(ARCH_DIR STREQUAL "x64")
 
 
-    set(GAMEPLAY_LIBRARIES
+    set(GPLAY3D_LIBRARIES
             stdc++
-            gameplay
-            gameplay-deps
+            gplay3d
+            gplay3d-deps
             m
             GL
             rt
@@ -69,12 +69,14 @@ ELSE(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             gtk-x11-2.0
             glib-2.0
             gobject-2.0
+            sndio
             )
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 add_definitions(-std=c++11)
 
 add_subdirectory(browser)
+add_subdirectory(examples)
 add_subdirectory(character)
 add_subdirectory(racer)
 add_subdirectory(spaceship)
