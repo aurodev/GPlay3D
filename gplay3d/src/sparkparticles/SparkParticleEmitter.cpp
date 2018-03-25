@@ -27,7 +27,7 @@ SparkParticleEmitter* SparkParticleEmitter::create(SPK::Ref<SPK::System> sparkSy
 
 Drawable* SparkParticleEmitter::clone(NodeCloneContext& context)
 {
-
+	return nullptr;
 }
 
 void SparkParticleEmitter::updateCameraPosition() const

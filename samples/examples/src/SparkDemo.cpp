@@ -170,7 +170,7 @@ void SparkDemo::initialize()
         renderer->setOrientation(SPK::OrientationPreset::CAMERA_PLANE_ALIGNED);
 
         // Emitter
-        SPK::Ref<SPK::SphericEmitter> particleEmitter = SPK::SphericEmitter::create(SPK::Vector3D(0.0f,1.0f,0.0f),0.1f * M_PI, 0.1f * M_PI);
+        SPK::Ref<SPK::SphericEmitter> particleEmitter = SPK::SphericEmitter::create(SPK::Vector3D(0.0f,1.0f,0.0f),0.1f * MATH_PI, 0.1f * MATH_PI);
         particleEmitter->setZone(SPK::Point::create(SPK::Vector3D(0.0f,0.015f,0.0f)));
         particleEmitter->setFlow(150);
         particleEmitter->setForce(1.5f,1.5f);
@@ -205,7 +205,7 @@ void SparkDemo::initialize()
         renderer->setOrientation(SPK::OrientationPreset::CAMERA_PLANE_ALIGNED);
 
         // Emitter
-        SPK::Ref<SPK::SphericEmitter> particleEmitter = SPK::SphericEmitter::create(SPK::Vector3D(0.0f,1.0f,0.0f),0.1f * M_PI, 0.1f * M_PI);
+        SPK::Ref<SPK::SphericEmitter> particleEmitter = SPK::SphericEmitter::create(SPK::Vector3D(0.0f,1.0f,0.0f),0.1f * MATH_PI, 0.1f * MATH_PI);
         particleEmitter->setZone(SPK::Point::create(SPK::Vector3D(0.0f,0.015f,0.0f)));
         particleEmitter->setFlow(50);
         particleEmitter->setForce(1.5f,1.5f);

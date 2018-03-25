@@ -57,7 +57,7 @@ ELSE(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 
     set(GPLAY3D_LIBRARIES
-            stdc++
+            #stdc++
             gplay3d
             gplay3d-deps
             m

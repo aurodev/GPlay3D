@@ -258,6 +258,8 @@ static bool drawWireframe(Mesh* mesh)
         // not supported
         return false;
     }*/
+
+	return false;
 }
 
 
@@ -310,6 +312,8 @@ static bool drawWireframe(MeshPart* part)
         // not supported
         return false;
     }*/
+
+	return false;
 }
 
 
