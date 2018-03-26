@@ -13,9 +13,11 @@ GPlay3D is a fork of the [GamePlay engine](http://www.gameplay3d.io/) v3.0 and b
 - Tested on Linux and Windows.
 
 
-## Building (fast way)
+## Building
+* [CMake (Linux)](https://github.com/fredakilla/GPlay3D/wiki/CMake-Linux-Setup)
+* [Qt Creator (Linux, Windows, MacOS)](https://github.com/fredakilla/GPlay3D/wiki/QtCreator-Setup)
 
-Use QtCreator and see [wiki](https://github.com/fredakilla/GPlay3D/wiki/QtCreator-Setup).
+See wiki for advanced build instructions : [wiki](https://github.com/fredakilla/GPlay3D/wiki/Compiling-framework)
 
 
 ## Screenshots
