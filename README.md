@@ -5,7 +5,6 @@ GPlay3D is a fork of the [GamePlay engine](http://www.gameplay3d.io/) v3.0 and b
 
 
 ## Status
-- Actually only Qt projects are up to date to build engine and samples, cmake will follow soon.
 - bgfx integration is completed however it currently only works with bgfx opengl because it use the old glsl shaders. It needs a pass on shaders to use the bgfx shaderc syntax to be compatible with others bgfx renderers. 
 - Engine now use SDL2 by default to manage windows and inputs. Gamepad are not yet implanted.
 - Lua is temporarily disabled to speed up the compilation.
@@ -15,9 +14,10 @@ GPlay3D is a fork of the [GamePlay engine](http://www.gameplay3d.io/) v3.0 and b
 
 ## Building
 * [CMake (Linux)](https://github.com/fredakilla/GPlay3D/wiki/CMake-Linux-Setup)
+* [CMake (Windows)](https://github.com/fredakilla/GPlay3D/wiki/CMake-Windows-Setup)
 * [Qt Creator (Linux, Windows, MacOS)](https://github.com/fredakilla/GPlay3D/wiki/QtCreator-Setup)
 
-See wiki for advanced build instructions : [wiki](https://github.com/fredakilla/GPlay3D/wiki/Compiling-framework)
+See [wiki](https://github.com/fredakilla/GPlay3D/wiki) for more detailed build instructions.
 
 
 ## Screenshots
