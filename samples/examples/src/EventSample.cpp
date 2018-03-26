@@ -156,28 +156,6 @@ public:
         EventManager::get()->addListener(GP_EVENT_LISTENER(&_dummyActor, DummyActor::onEventMouseClicked), MyMouseEvent::ID());
     }
 
-
-    Vector3 screenToWorld(float x, float y, float z, Rectangle viewport)
-    {
-        Vector3 p = Vector3(x, y, z);
-
-        // get the world-space position at the near clip plane.
-        Vector3 p0;
-        _scene->getActiveCamera()->unproject(viewport, x, y, 0.0f, &p0);
-
-        // get the world-space position at the far clip plane.
-        Vector3 p1;
-        _scene->getActiveCamera()->unproject(viewport, x, y, 1.0f, &p1);
-
-        // find (x, y) coordinates
-        float t = (z - p0.z) / (p1.z - p0.z);
-        p.x = (p0.x + t * (p1.x - p0.x));
-        p.y = (p0.y + t * (p1.y - p0.y));
-        p.z = z;
-
-        return p;
-    }
-
     void onEventCreateNewActor(EventDataRef eventData)
     {
         // this method was declared in initialisation as a listener for the MyMouseEvent event.
@@ -189,24 +167,30 @@ public:
         if(!mouseEvent)
             return;
 
-        // convert 2D mouse coordinates to 3D world position, with z set as 0.0f;
-        Vector3 pos3D = screenToWorld(mouseEvent->_mousePos.x,
-                                      mouseEvent->_mousePos.y,
-                                      0.0f,
-                                      getViewport()
-                                      );
+        // Find the position where the pick ray intersects with the floor (invisible plane on XZ axis).
+
+        Vector3 position;
+        Ray ray;
+        Camera* camera = _scene->getActiveCamera();
+        camera->pickRay(getViewport(), mouseEvent->_mousePos.x, mouseEvent->_mousePos.y, &ray);
+
+        float distance = ray.intersects(Plane(0, 1, 0, -0.5f));
+        if (distance != Ray::INTERSECTS_NONE)
+        {
+            position = Vector3((ray.getDirection() * distance) + ray.getOrigin());
+        }
 
         // clone the box and add it to scene.
         Node* newBox = _originalBox->clone();
-        newBox->setTranslation(pos3D);
+        newBox->setTranslation(position);
         _scene->addNode(newBox);
 
         print("onEventCreateNewActor => Create a new actor at mousePos(%.0fx%.0f) : 3DPos(%f,%f,%f)\n",
               mouseEvent->_mousePos.x,
               mouseEvent->_mousePos.y,
-              pos3D.x,
-              pos3D.y,
-              pos3D.z);
+              position.x,
+              position.y,
+              position.z);
     }
 
     void update(float elapsedTime)
