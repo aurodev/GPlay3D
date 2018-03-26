@@ -227,17 +227,25 @@ void MeshBatch::draw()
 
     // using bgfx transient buffers
 
+    uint32_t maxVertices = bgfx::getAvailTransientVertexBuffer(_vertexCount, _vertexDecl);
+    if(maxVertices < _vertexCount)
+        GP_WARN("Available transient vertices count is less than requested %d/%d.", _vertexCount, maxVertices);
+
     bgfx::TransientVertexBuffer tvb;
-    bgfx::allocTransientVertexBuffer(&tvb, _vertexCount, _vertexDecl);
-    memcpy(tvb.data, &_vertices[0], _vertexDecl.getSize(_vertexCount));
-    bgfx::setVertexBuffer(0, &tvb, 0, _vertexCount);
+    bgfx::allocTransientVertexBuffer(&tvb, maxVertices, _vertexDecl);
+    memcpy(tvb.data, &_vertices[0], _vertexDecl.getSize(maxVertices));
+    bgfx::setVertexBuffer(0, &tvb, 0, maxVertices);
 
     if(_indexed)
     {
+        uint32_t maxIndices = bgfx::getAvailTransientIndexBuffer(_indexCount);
+        if(maxIndices < _indexCount)
+            GP_WARN("Available transient indices count is less than requested %d/%d.", _indexCount, maxIndices);
+
         bgfx::TransientIndexBuffer tib;
-        bgfx::allocTransientIndexBuffer(&tib, _indexCount);
-        memcpy(tib.data, &_indices[0], sizeof(unsigned short)*_indexCount);
-        bgfx::setIndexBuffer(&tib, 0, _indexCount);
+        bgfx::allocTransientIndexBuffer(&tib, maxIndices);
+        memcpy(tib.data, &_indices[0], sizeof(unsigned short)*maxIndices);
+        bgfx::setIndexBuffer(&tib, 0, maxIndices);
     }
 
     // Bind the material.

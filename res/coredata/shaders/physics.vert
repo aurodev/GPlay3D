@@ -1,19 +1,13 @@
-///////////////////////////////////////////////////////////
-// Atttributes
-attribute vec3 a_position;
-attribute vec4 a_color;
+$input a_position, a_color0
+$output v_color
 
-///////////////////////////////////////////////////////////
-// Uniforms
-uniform mat4 u_projectionMatrix;
+#include "common/common.sh"
 
-///////////////////////////////////////////////////////////
-// Varyings
-varying vec4 v_color;
+uniform mat4 u_viewProjectionMatrix;
 
 
 void main()
 {
-    gl_Position = u_projectionMatrix * vec4(a_position, 1);
-    v_color = a_color;
+    gl_Position = u_viewProjectionMatrix * vec4(a_position, 1);
+    v_color = a_color0;
 }
