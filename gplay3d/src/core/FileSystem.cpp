@@ -587,7 +587,11 @@ std::string FileSystem::getExtension(const char* path)
 
 std::string FileSystem::getBaseName(const char* path)
 {
-    const std::string filename = path;
+    std::string filename = path;
+
+    // remove 2 first chars "./" if found ex: ./filename (linux fix)
+    if(filename.at(0) == '.' && filename.at(1) == '/')
+        filename.erase(0, 2);
 
     size_t lastdot = filename.find_last_of(".");
     if (lastdot == std::string::npos)
