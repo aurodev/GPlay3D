@@ -10,10 +10,8 @@
 #include "../renderer/Renderer.h"
 #include "../renderer/BGFXImGui.h"
 
-#if !defined(GP_PLATFORM_WINDOWS)
-int __argc = 0;
-char** __argv = 0;
-#endif
+int __app_argc;
+char** __app_argv;
 
 
 namespace gameplay {
@@ -927,9 +925,9 @@ void Platform::getSensorValues(float* accelX, float* accelY, float* accelZ, floa
 void Platform::getArguments(int* argc, char*** argv)
 {
     if (argc)
-        *argc = __argc;
+        *argc = __app_argc;
     if (argv)
-        *argv = __argv;
+        *argv = __app_argv;
 }
 
 void Platform::displayKeyboard(bool display)

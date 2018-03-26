@@ -10,12 +10,18 @@ using namespace gameplay;
     #include <windows.h>
 #endif
 
+extern int __app_argc;
+extern char** __app_argv;
+
 /**
  * Main entry point.
  */
 //extern "C" int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int cmdShow)
 int main(int argc, char *argv[])
 {
+	__app_argc = argc;
+	__app_argv = argv;
+
     Game* game = Game::getInstance();
     Platform* platform = Platform::create(game);
     GP_ASSERT(platform);
