@@ -1,5 +1,5 @@
 #ifndef GP_NO_PLATFORM
-#ifdef WIN32
+#ifdef _WIN32
 
 #include "gplay3d.h"
 
@@ -13,7 +13,8 @@ using namespace gameplay;
 /**
  * Main entry point.
  */
-extern "C" int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int cmdShow)
+//extern "C" int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int cmdShow)
+int main(int argc, char *argv[])
 {
     Game* game = Game::getInstance();
     Platform* platform = Platform::create(game);

@@ -36,7 +36,7 @@
 
 #ifdef __ANDROID__
     #define GP_PLATFORM_ANDROID		1
-#elif WIN32
+#elif _WIN32
     #define GP_PLATFORM_WINDOWS		1
 #elif __linux__
     #define GP_PLATFORM_LINUX		1
@@ -68,7 +68,7 @@ extern int strcmpnocase(const char* s1, const char* s2);
 }
 
 // Current function macro.
-#ifdef WIN32
+#ifdef _WIN32
 #define __current__func__ __FUNCTION__
 #else
 #define __current__func__ __func__
@@ -81,7 +81,7 @@ extern int strcmpnocase(const char* s1, const char* s2);
 #define GP_ASSERT(expression)
 #endif
 
-#if defined(WIN32) && defined(_MSC_VER)
+#if defined(_WIN32) && defined(_MSC_VER)
 #define DEBUG_BREAK() __debugbreak()
 #else
 #define DEBUG_BREAK()
@@ -118,7 +118,7 @@ extern int strcmpnocase(const char* s1, const char* s2);
         gameplay::Logger::log(gameplay::Logger::LEVEL_INFO, "\n"); \
     } while (0)
 
-#if defined(WIN32)
+#if defined(_WIN32)
     #pragma warning( disable : 4005 )
     #pragma warning( disable : 4172 )
     #pragma warning( disable : 4244 )
@@ -182,7 +182,7 @@ extern int strcmpnocase(const char* s1, const char* s2);
 #endif
 
 // NOMINMAX makes sure that windef.h doesn't add macros min and max
-#ifdef WIN32
+#ifdef _WIN32
     #define NOMINMAX
 #endif
 
@@ -192,7 +192,7 @@ extern int strcmpnocase(const char* s1, const char* s2);
     #include <AL/alc.h>
     #define AL_ALEXT_PROTOTYPES
     #include <AL/alext.h>
-#elif WIN32
+#elif _WIN32
     #define AL_LIBTYPE_STATIC
     #include <AL/al.h>
     #include <AL/alc.h>
@@ -232,11 +232,11 @@ using std::va_list;
     #define glClearDepth glClearDepthf
     #define OPENGL_ES
     #define GP_USE_VAO
-#elif WIN32
-        #define WIN32_LEAN_AND_MEAN
-        #define GLEW_STATIC
-        #include <GL/glew.h>
-        #define GP_USE_VAO
+#elif _WIN32
+		//#define WIN32_LEAN_AND_MEAN
+        //#define GLEW_STATIC
+        //#include <GL/glew.h>
+        //#define GP_USE_VAO
         #include <bgfx/bgfx.h>
 #elif __linux__
         #include <bgfx/bgfx.h>

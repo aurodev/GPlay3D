@@ -22,6 +22,10 @@ else()
     set(ARCH_DIR "x86")
 endif()
 
+if(MSVC)
+	set( CMAKE_CXX_FLAGS "/MP" )
+endif(MSVC)
+
 # gameplay library
 add_subdirectory(gplay3d)
 

@@ -4,7 +4,7 @@ add_definitions(-DGP_NO_LUA_BINDINGS)
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(GPLAY3D_PLATFORM_SRC
             src/core/PlatformMacOSX.mm
-            src/gplay3d-main-macosx.mm
+            src/core/gplay3d-main-macosx.mm
             )
 else(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(GPLAY3D_PLATFORM_SRC )
@@ -276,9 +276,7 @@ set(GPLAY3D_CPP
     src/ui/VerticalLayout.cpp
 )
 
-set(GPLAY3D_MAIN
-    src/core/gplay3d-main-linux.cpp
-)
+
 
 set(GPLAY3D_LUA
 )
@@ -288,20 +286,30 @@ include_directories(
     ../external-deps/include
 )
 
+
+MESSAGE("INCLUDE_DIRECTORIES: ${INCLUDE_DIRECTORIES}")
+
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
     include_directories(${GTK2_INCLUDE_DIRS})
     add_definitions(${GTK2_CFLAGS_OTHER})
     add_definitions(-D__linux__)
+	add_definitions(-lstdc++)
+	set(GPLAY3D_MAIN src/core/gplay3d-main-linux.cpp)
 ENDIF(CMAKE_SYSTEM_NAME MATCHES "Linux")
 
+IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	set(GPLAY3D_MAIN src/core/gplay3d-main-windows.cpp)	
+ENDIF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+
+
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    # using Clang
     add_definitions(-std=c++11 -stdlib=libc++)
-else()
-    add_definitions(-std=c++11)
-    add_definitions(-lstdc++)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	add_definitions(-std=c++11)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+	include_directories(../external-deps/include/compat/msvc)
 endif()
 
 add_library(gplay3d STATIC

@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifdef WIN32
+#ifdef _WIN32
     #include <windows.h>
     #include <tchar.h>
     #include <stdio.h>
@@ -244,7 +244,7 @@ void FileSystem::getFullPath(const char* path, std::string& fullPath)
 
 bool FileSystem::listFiles(const char* dirPath, std::vector<std::string>& files)
 {
-#ifdef WIN32
+#ifdef  _WIN32
     std::string path(FileSystem::getResourcePath());
     if (dirPath && strlen(dirPath) > 0)
     {
@@ -456,7 +456,7 @@ bool FileSystem::isAbsolutePath(const char* filePath)
 {
     if (filePath == 0 || filePath[0] == '\0')
         return false;
-#ifdef WIN32
+#ifdef _WIN32
     if (filePath[1] != '\0')
     {
         char first = filePath[0];
@@ -536,7 +536,7 @@ std::string FileSystem::getDirectoryName(const char* path)
     {
         return "";
     }
-#ifdef WIN32
+#ifdef _WIN32
     char drive[_MAX_DRIVE];
     char dir[_MAX_DIR];
     _splitpath(path, drive, dir, NULL, NULL);

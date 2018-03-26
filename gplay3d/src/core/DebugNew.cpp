@@ -7,7 +7,7 @@
 #include <thread>
 #include <mutex>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <dbghelp.h>
 #pragma comment(lib,"dbghelp.lib")
@@ -24,7 +24,7 @@ struct MemoryAllocationRecord
     int line;                       // source line of the allocation request
     MemoryAllocationRecord* next;
     MemoryAllocationRecord* prev;
-#ifdef WIN32
+#ifdef _WIN32
     bool trackStackTrace;
     unsigned int pc[MAX_STACK_FRAMES];
 #endif
@@ -216,7 +216,7 @@ void debugFree(void* p)
     free(mem);
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 void printStackTrace(MemoryAllocationRecord* rec)
 {
     const unsigned int bufferSize = 512;
@@ -293,7 +293,7 @@ extern void printMemoryLeaks()
         MemoryAllocationRecord* rec = __memoryAllocations;
         while (rec)
         {
-#ifdef WIN32
+#ifdef _WIN32
             if (rec->trackStackTrace)
             {
                 gameplay::print("[memory] LEAK: HEAP allocation leak at address %#x of size %d:\n", rec->address, rec->size);

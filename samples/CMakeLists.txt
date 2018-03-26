@@ -46,7 +46,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             pthread
             ${FRAMEWORK_LIBRS}
             )
-ELSE(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions(-D__linux__)
 
     IF(ARCH_DIR STREQUAL "x64")
@@ -57,7 +57,7 @@ ELSE(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 
     set(GPLAY3D_LIBRARIES
-            #stdc++
+            stdc++
             gplay3d
             gplay3d-deps
             m
@@ -71,7 +71,46 @@ ELSE(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             gobject-2.0
             sndio
             )
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+
+	include_directories(${CMAKE_SOURCE_DIR}/external-deps/include/compat/msvc)
+	
+	IF(ARCH_DIR STREQUAL "x64")
+		IF(CMAKE_BUILD_TYPE MATCHES Debug)
+			link_directories(${CMAKE_SOURCE_DIR}/external-deps/lib/windows/x86_64/Debug)
+		ELSEIF(CMAKE_BUILD_TYPE MATCHES Release)
+			link_directories(${CMAKE_SOURCE_DIR}/external-deps/lib/windows/x86_64/Release)
+		ENDIF()        
+    ELSE()
+        IF(CMAKE_BUILD_TYPE MATCHES Debug)
+			link_directories(${CMAKE_SOURCE_DIR}/external-deps/lib/windows/x32/Debug)
+		ELSEIF(CMAKE_BUILD_TYPE MATCHES Release)
+			link_directories(${CMAKE_SOURCE_DIR}/external-deps/lib/windows/x32/Release)
+		ENDIF() 
+    ENDIF()
+	
+	set(GPLAY3D_LIBRARIES
+            gplay3d
+            gplay3d-deps            
+			opengl32
+			kernel32
+			user32
+			winmm
+			gdi32
+			winspool
+			comdlg32
+			advapi32
+			shell32
+			imm32
+			ole32
+			oleaut32
+			uuid
+			version
+			odbc32
+			odbccp32
+    )
+	
+ENDIF()
 
 add_definitions(-std=c++11)
 
