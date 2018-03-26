@@ -214,7 +214,7 @@ const Vector4& TileSet::getColor() const
     return _color;
 }
 
-unsigned int TileSet::draw(bool wireframe)
+unsigned int TileSet::draw()
 {
     // Apply scene camera projection and translation offsets
     Vector3 position = Vector3::zero();

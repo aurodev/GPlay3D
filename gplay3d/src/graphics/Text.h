@@ -207,7 +207,7 @@ public:
     /**
      * @see Drawable::draw
      */
-    unsigned int draw(bool wireframe = false);
+    unsigned int draw();
     
 protected:
 

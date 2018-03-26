@@ -80,7 +80,7 @@ void SparkParticleEmitter::update(float dt)
     }
 }
 
-unsigned int SparkParticleEmitter::draw(bool wireframe)
+unsigned int SparkParticleEmitter::draw()
 {
     if(_alive)
     {

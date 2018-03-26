@@ -119,7 +119,7 @@ public:
      *
      * @return The nubmer of draw calls issued to draw the form.
      */
-    unsigned int draw(bool wireframe = false);
+    unsigned int draw();
 
     /**
      * Determines whether batching is enabled for this form.

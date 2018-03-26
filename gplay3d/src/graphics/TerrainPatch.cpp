@@ -570,7 +570,7 @@ void TerrainPatch::updateNodeBindings()
     __currentPatchIndex = -1;
 }
 
-unsigned int TerrainPatch::draw(bool wireframe)
+unsigned int TerrainPatch::draw()
 {
     Scene* scene = _terrain->_node ? _terrain->_node->getScene() : NULL;
     Camera* camera = scene ? scene->getActiveCamera() : NULL;
@@ -591,7 +591,7 @@ unsigned int TerrainPatch::draw(bool wireframe)
     _level = computeLOD(camera, bounds);
 
     // Draw the model for the current LOD
-    return _levels[_level]->model->draw(wireframe);
+    return _levels[_level]->model->draw();
 }
 
 const BoundingBox& TerrainPatch::getBoundingBox(bool worldSpace) const

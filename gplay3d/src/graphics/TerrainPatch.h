@@ -122,7 +122,7 @@ private:
 
     int addSampler(const char* path);
 
-    unsigned int draw(bool wireframe);
+    unsigned int draw();
 
     bool updateMaterial();
 

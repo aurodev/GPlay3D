@@ -6,7 +6,7 @@
 #endif
 
 PhysicsCollisionObjectSample::PhysicsCollisionObjectSample()
-    : _font(NULL), _scene(NULL), _lightNode(NULL), _form(NULL), _objectType(SPHERE), _throw(true), _drawDebug(0), _wireFrame(false)
+    : _font(NULL), _scene(NULL), _lightNode(NULL), _form(NULL), _objectType(SPHERE), _throw(true), _drawDebug(0)
 {
     const char* paths[] = {"res/data/samples/browser/physics/physics.physics#ball",
                            "res/data/samples/browser/physics/physics.physics#box",
@@ -108,10 +108,6 @@ void PhysicsCollisionObjectSample::keyEvent(Keyboard::KeyEvent evt, int key)
         case Keyboard::KEY_CAPITAL_B:
             incrementDebugDraw();
             break;
-        case Keyboard::KEY_M:
-        case Keyboard::KEY_CAPITAL_M:
-            toggleWireframe();
-            break;
         }
     }
 }
@@ -120,7 +116,7 @@ bool PhysicsCollisionObjectSample::drawScene(Node* node)
 {
     Drawable* drawable = node->getDrawable();
     if (drawable)
-        drawable->draw(_wireFrame);
+        drawable->draw();
     return true;
 }
 
@@ -197,22 +193,11 @@ void PhysicsCollisionObjectSample::incrementDebugDraw()
     static_cast<Button*>(_form->getControl("drawDebugButton"))->setText(_drawDebug == 0 ? "Normal" : "Debug");
 }
 
-void PhysicsCollisionObjectSample::toggleWireframe()
-{
-    _wireFrame = !_wireFrame;
-    static_cast<Button*>(_form->getControl("wireframeButton"))->setText(_wireFrame ? "Wireframe" : "Solid");
-}
-
 void PhysicsCollisionObjectSample::controlEvent(Control* control, EventType evt)
 {
     Button* button = static_cast<Button*>(control);
 
-    if (strcmp(button->getId(), "wireframeButton") == 0)
-    {
-        toggleWireframe();
-        
-    }
-    else if (strcmp(button->getId(), "drawDebugButton") == 0)
+    if (strcmp(button->getId(), "drawDebugButton") == 0)
     {
         incrementDebugDraw();
     }

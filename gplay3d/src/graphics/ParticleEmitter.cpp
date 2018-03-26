@@ -979,7 +979,7 @@ void ParticleEmitter::update(float elapsedTime)
     }
 }
 
-unsigned int ParticleEmitter::draw(bool wireframe)
+unsigned int ParticleEmitter::draw()
 {
     if (!isActive())
         return 0;

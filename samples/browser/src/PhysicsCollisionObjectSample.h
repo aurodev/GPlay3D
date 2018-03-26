@@ -41,8 +41,6 @@ private:
 
     void incrementDebugDraw();
 
-    void toggleWireframe();
-
     enum ObjectsTypes
     {
         SPHERE = 0, 
@@ -57,8 +55,7 @@ private:
     Form* _form;
     int _objectType;
     bool _throw;
-    int _drawDebug;
-    bool _wireFrame;
+    int _drawDebug;    
     std::vector<const char*> _collisionObjectPaths;
     std::vector<const char*> _nodeIds;
     std::vector<const char*> _nodeNames;

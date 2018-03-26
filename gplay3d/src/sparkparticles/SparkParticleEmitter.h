@@ -16,7 +16,7 @@ class SparkParticleEmitter : public Ref, public Drawable
 public:
 
     static SparkParticleEmitter* create(SPK::Ref<SPK::System> sparkSystem, bool worldTransformed);
-    unsigned int draw(bool wireframe = false) override;
+    unsigned int draw() override;
     void update(float dt);
 
 private:

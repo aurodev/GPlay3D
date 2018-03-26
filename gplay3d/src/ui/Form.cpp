@@ -233,7 +233,7 @@ const Matrix& Form::getProjectionMatrix() const
     return  _projectionMatrix;
 }
 
-unsigned int Form::draw(bool wireframe)
+unsigned int Form::draw()
 {
     if (!_visible || _absoluteClipBounds.width == 0 || _absoluteClipBounds.height == 0)
         return 0;

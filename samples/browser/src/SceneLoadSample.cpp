@@ -6,7 +6,7 @@
 #endif
 
 SceneLoadSample::SceneLoadSample()
-    : _font(NULL), _scene(NULL), _wireFrame(false)
+    : _font(NULL), _scene(NULL)
 {
     
 }
@@ -89,9 +89,7 @@ void SceneLoadSample::keyEvent(Keyboard::KeyEvent evt, int key)
     {
         switch (key)
         {
-        case Keyboard::KEY_W:
-        case Keyboard::KEY_CAPITAL_W:
-            _wireFrame = !_wireFrame;
+            default:
             break;
         }
     }
@@ -101,6 +99,6 @@ bool SceneLoadSample::drawScene(Node* node)
 {
     Drawable* drawable = node->getDrawable();
     if (drawable)
-        drawable->draw(_wireFrame);
+        drawable->draw();
     return true;
 }

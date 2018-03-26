@@ -101,8 +101,7 @@ private:
     int _rotateX;
     MaterialParameter* _materialParameterAlpha;
     unsigned int _keyFlags;
-    bool _physicsDebug;
-    bool _wireframe;
+    bool _physicsDebug;    
     Vector3 _oldBallPosition;
     bool _hasBall;
     bool _applyKick;

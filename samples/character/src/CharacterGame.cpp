@@ -22,7 +22,7 @@ CharacterGame game;
 CharacterGame::CharacterGame()
     : _font(NULL), _scene(NULL), _character(NULL), _characterNode(NULL), _characterMeshNode(NULL), _characterShadowNode(NULL), _basketballNode(NULL),
       _animation(NULL), _currentClip(NULL), _jumpClip(NULL), _kickClip(NULL), _rotateX(0), _materialParameterAlpha(NULL),
-      _keyFlags(0), _physicsDebug(false), _wireframe(false), _hasBall(false), _applyKick(false), _gamepad(NULL)
+      _keyFlags(0), _physicsDebug(false), _hasBall(false), _applyKick(false), _gamepad(NULL)
 {
     _buttonPressed = new bool[2];
 }
@@ -146,7 +146,7 @@ void CharacterGame::drawSplash(void* param)
 bool CharacterGame::drawScene(Node* node, bool transparent)
 {
     if (node->getDrawable() && (transparent == node->hasTag("transparent")))
-        node->getDrawable()->draw(_wireframe);
+        node->getDrawable()->draw();
 
     return true;
 }
@@ -431,10 +431,6 @@ void CharacterGame::keyEvent(Keyboard::KeyEvent evt, int key)
             break;
         case Keyboard::KEY_SHIFT:
             _keyFlags |= RUNNING;
-            break;
-        case Keyboard::KEY_M:
-        case Keyboard::KEY_CAPITAL_M:
-            _wireframe = !_wireframe;
             break;
         case Keyboard::KEY_C:
         case Keyboard::KEY_CAPITAL_C:

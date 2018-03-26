@@ -37,7 +37,6 @@ private:
 
     Font* _font;
     Scene* _scene;
-    bool _wireFrame;
 };
 
 #endif

@@ -225,106 +225,14 @@ void Model::setNode(Node* node)
     }
 }
 
-
-static bool drawWireframe(Mesh* mesh)
-{
-    GP_ASSERT(0);
-
-    /*
-
-    switch (mesh->getPrimitiveType())
-    {
-    case Mesh::TRIANGLES:
-        {
-            unsigned int vertexCount = mesh->getVertexCount();
-            for (unsigned int i = 0; i < vertexCount; i += 3)
-            {
-                GL_ASSERT( glDrawArrays(GL_LINE_LOOP, i, 3) );
-            }
-        }
-        return true;
-
-    case Mesh::TRIANGLE_STRIP:
-        {
-            unsigned int vertexCount = mesh->getVertexCount();
-            for (unsigned int i = 2; i < vertexCount; ++i)
-            {
-                GL_ASSERT( glDrawArrays(GL_LINE_LOOP, i-2, 3) );
-            }
-        }
-        return true;
-
-    default:
-        // not supported
-        return false;
-    }*/
-
-	return false;
-}
-
-
-
-static bool drawWireframe(MeshPart* part)
-{
-    GP_ASSERT(0);
-
-
-    /*
-    unsigned int indexCount = part->getIndexCount();
-    unsigned int indexSize = 0;
-    switch (part->getIndexFormat())
-    {
-    case Mesh::INDEX8:
-        indexSize = 1;
-        break;
-    case Mesh::INDEX16:
-        indexSize = 2;
-        break;
-    case Mesh::INDEX32:
-        indexSize = 4;
-        break;
-    default:
-        GP_ERROR("Unsupported index format (%d).", part->getIndexFormat());
-        return false;
-    }
-
-    switch (part->getPrimitiveType())
-    {
-    case Mesh::TRIANGLES:
-        {
-            for (size_t i = 0; i < indexCount; i += 3)
-            {
-                GL_ASSERT( glDrawElements(GL_LINE_LOOP, 3, part->getIndexFormat(), ((const GLvoid*)(i*indexSize))) );
-            }
-        }
-        return true;
-
-    case Mesh::TRIANGLE_STRIP:
-        {
-            for (size_t i = 2; i < indexCount; ++i)
-            {
-                GL_ASSERT( glDrawElements(GL_LINE_LOOP, 3, part->getIndexFormat(), ((const GLvoid*)((i-2)*indexSize))) );
-            }
-        }
-        return true;
-
-    default:
-        // not supported
-        return false;
-    }*/
-
-	return false;
-}
-
-
-unsigned int Model::draw(bool wireframe)
+unsigned int Model::draw()
 {
     GP_ASSERT(_mesh);
 
     unsigned int partCount = _mesh->getPartCount();
     if (partCount == 0)
     {
-        // No mesh parts (index buffers).
+        // No mesh parts (no index buffers).
         if (_material)
         {
             Technique* technique = _material->getTechnique();
@@ -335,13 +243,8 @@ unsigned int Model::draw(bool wireframe)
                 Pass* pass = technique->getPassByIndex(i);
                 GP_ASSERT(pass);
                 pass->bind(_mesh->getPrimitiveType());
-
                 _mesh->_vertexBuffer->bind();
-
-                if (!wireframe || !drawWireframe(_mesh))
-                {
-                    _mesh->draw();
-                }
+                _mesh->draw();
                 pass->unbind();
             }
         }
@@ -368,11 +271,7 @@ unsigned int Model::draw(bool wireframe)
 
                     _mesh->_vertexBuffer->bind();
                     part->_indexBuffer->bind();
-
-                    if (!wireframe || !drawWireframe(part))
-                    {
-                        part->draw();
-                    }
+                    part->draw();
                     pass->unbind();
                 }
             }

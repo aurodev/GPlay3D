@@ -23,7 +23,7 @@ struct TerrainHitFilter : public PhysicsController::HitFilter
 
 TerrainSample::TerrainSample()
 	: _font(NULL), _scene(NULL), _terrain(NULL), _sky(NULL), _form(NULL), _formVisible(true),
-	  _wireframe(false), _debugPhysics(false), _snapToGround(true), _vsync(true),
+      _debugPhysics(false), _snapToGround(true), _vsync(true),
       _mode(MODE_LOOK), _sphere(NULL), _box(NULL), _directionalLight(NULL)
 {
 }
@@ -164,8 +164,7 @@ bool TerrainSample::drawScene(Node* node)
     }
     if (drawable)
     {
-        bool wireframe = (node == _sky) ? false : _wireframe;
-        drawable->draw(wireframe);
+        drawable->draw();
     }
 
 	return true;
@@ -301,10 +300,6 @@ void TerrainSample::controlEvent(Control* control, EventType evt)
         _form->getControl("physicsSettings")->setVisible(false);
         _form->getControl("main")->setSize(50, 50);
         _formVisible = false;
-    }
-    else if (strcmp(control->getId(), "wireframe") == 0)
-    {
-        _wireframe = static_cast<CheckBox*>(control)->isChecked();
     }
     else if (strcmp(control->getId(), "patches") == 0)
     {
