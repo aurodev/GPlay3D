@@ -7,7 +7,6 @@ set(GAME_SRC
     src/Instancing.h
     src/Example.h
     src/Cube.h
-    src/Sponza.h
     src/FirstPersonCamera.h
     src/RenderToTexture.h
     src/ImGuiTest.h
