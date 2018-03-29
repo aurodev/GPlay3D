@@ -102,6 +102,11 @@ public:
                 material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_MATRIX);
 
 
+                material->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
+                material->setParameterAutoBinding("u_worldViewMatrix", RenderState::WORLD_VIEW_MATRIX);
+                material->setParameterAutoBinding("u_cameraWorldPosition", RenderState::CAMERA_WORLD_POSITION);
+
+
                 // Bind material uniform to method
                 material->getParameter("u_ambientColor")->bindValue(this, &Sponza::getAmbientLightColor);
 
@@ -159,12 +164,12 @@ public:
         _uAmbientColor.set(ambient);
 
         // Compute light direction in eye-space before to send it to shader
-        // Matrix viewMatrix = _scene->getActiveCamera()->getViewMatrix();
-        // Vector4 lightDirEyeSpace(direction);
-        // _uDirLightDirection[0] = viewMatrix * -lightDirEyeSpace;
+        /*Matrix viewMatrix = _scene->getActiveCamera()->getViewMatrix();
+         Vector4 lightDirEyeSpace(direction);
+         _uDirLightDirection[0] = viewMatrix * -lightDirEyeSpace;*/
         // or in world space computation
         Vector4 lightDirEyeSpace(direction);
-        _uDirLightDirection[0] = -lightDirEyeSpace;
+        _uDirLightDirection[0] = lightDirEyeSpace;
     }
 
     void render(float elapsedTime)
