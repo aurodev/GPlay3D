@@ -25,7 +25,7 @@ class Sponza : public Example
 
 public:
 
-    // get methods that will be binded with material uniform
+    // get methods used for material automatic binding
 
     const Vector3 getAmbientLightColor() const
     {
@@ -42,6 +42,13 @@ public:
         return &_uDirLightDirection[0];
     }
 
+    unsigned int getDirectionalLightCount() const
+    {
+        return MAX_DIR_LIGHTS;
+    }
+
+
+    //---------------------------------
 
 
     Sponza()
@@ -89,13 +96,21 @@ public:
 
             if(material)
             {
+                // when computing lighting in view-space
                 //material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
+                // when computing lighting in world-space
                 material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_MATRIX);
+
 
                 // Bind material uniform to method
                 material->getParameter("u_ambientColor")->bindValue(this, &Sponza::getAmbientLightColor);
-                //material->getParameter("u_directionalLightColor")->bindValue(this, &Sponza::getDirectionalLightColor);
-                //material->getParameter("u_directionalLightDirection")->bindValue(this, &Sponza::getDirectionalLightDirection);
+
+                // 2 options : uniform can be automatically binded using bindValue and ptr to methods
+                // or set manually with setValue in update() or render().
+                // First option need to declare methods for that.
+                // Second option need to add code inside render or update methods.
+                material->getParameter("u_directionalLightColor")->bindValue(this, &Sponza::getDirectionalLightColor, &Sponza::getDirectionalLightCount);
+                material->getParameter("u_directionalLightDirection")->bindValue(this, &Sponza::getDirectionalLightDirection, &Sponza::getDirectionalLightCount);
 
             }
         }
@@ -129,7 +144,7 @@ public:
 
         // Create some ImGui controls
         static float ambient[3] = { 0.2f, 0.2f, 0.2f };
-        static float direction[3] = { 0.25f, -1.0f, 0.25f };
+        static float direction[3] = { 0.0f, -1.0f, 0.0f };
         static float color[3] = { 0.75f, 0.75f, 0.75f };
         ImGui::SetNextWindowSize(ImVec2(200,200), ImGuiCond_FirstUseEver);
         ImGui::Begin("Light control");
@@ -141,8 +156,15 @@ public:
 
         // update uniform values
         _uDirLightColor[0].set(color);
-        _uDirLightDirection[0].set(direction);
         _uAmbientColor.set(ambient);
+
+        // Compute light direction in eye-space before to send it to shader
+        // Matrix viewMatrix = _scene->getActiveCamera()->getViewMatrix();
+        // Vector4 lightDirEyeSpace(direction);
+        // _uDirLightDirection[0] = viewMatrix * -lightDirEyeSpace;
+        // or in world space computation
+        Vector4 lightDirEyeSpace(direction);
+        _uDirLightDirection[0] = -lightDirEyeSpace;
     }
 
     void render(float elapsedTime)
@@ -153,17 +175,21 @@ public:
 
     bool drawScene(Node* node)
     {
+
         Drawable* drawable = node->getDrawable();
         if (drawable)
         {
-            // apply material uniform
-            Model* model = dynamic_cast<Model*>(drawable);
+            // apply manually material uniform
+            /*Model* model = dynamic_cast<Model*>(drawable);
             if (model)
             {
                 Material* material = model->getMaterial(0);
-                material->getParameter("u_directionalLightColor")->setValue(getDirectionalLightColor(), MAX_DIR_LIGHTS);
-                material->getParameter("u_directionalLightDirection")->setValue(getDirectionalLightDirection(), MAX_DIR_LIGHTS);
-            }
+                //material->getParameter("u_directionalLightColor")->setValue(getDirectionalLightColor(), MAX_DIR_LIGHTS);
+                //material->getParameter("u_directionalLightDirection")->setValue(getDirectionalLightDirection(), MAX_DIR_LIGHTS);
+
+
+                material->getParameter("u_directionalLightDirection[0]")->setValue(_uDirLightDirection[0]);//, MAX_DIR_LIGHTS);
+            }*/
 
             drawable->draw();
         }
