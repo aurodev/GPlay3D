@@ -32,6 +32,19 @@ class Sponza : public Example
     Vector4 _uSpotLightDirection[MAX_SPOT_LIGHTS];
     Vector4 _uSpotLightColor[MAX_SPOT_LIGHTS];
 
+
+    Node* _pointLightNode;
+    Model* _pointLightQuadModel;
+
+
+
+    /*
+     * point light attenuation shortcut
+    Linear = 4.5 / LightRange
+    Quadratic = 75.0 / LightRange^2
+    */
+
+
 public:
 
     // get methods used for material automatic binding
@@ -123,8 +136,25 @@ public:
         // Load sponza scene
         _scene = Scene::load("res/data/samples/examples/sponza/sponza.gpb");
 
+
+        // Create a point light and create a reference icon for the light
+        Light* pointLight = Light::createPoint(Vector3::one(), 16.0f);
+        _pointLightNode = Node::create("pointLight");
+        _pointLightNode->setLight(pointLight);
+        SAFE_RELEASE(pointLight);
+        _scene->addNode(_pointLightNode);
+
+
+
         // Initialise materials for all models
         _scene->visit(this, &Sponza::initializeMaterials);
+
+
+
+
+
+
+
 
         // set fps camera
         _fpCamera.initialize(1.0, 100000.0f);
@@ -181,6 +211,11 @@ public:
                 material->getParameter("u_spotLightColor")->bindValue(this, &Sponza::getSpotLightColor, &Sponza::getSpotLightCount);
 
 
+                /*Light* light = _pointLightNode->getLight();
+                //material->getParameter("u_pointLightPosition[0]")->bindValue(_pointLightNode, &Sponza::getPointLightPosition, &Sponza::getPointLightCount);
+                //material->getParameter("u_pointLightColor")->bindValue(this, &Sponza::getPointLightColor, &Sponza::getPointLightCount);
+                material->getParameter("u_pointLightPosition[0]")->bindValue(_pointLightNode, &Node::getTranslationView);
+                material->getParameter("u_pointLightColor[0]")->setValue(_uPointLightColor[0]);*/
 
             }
         }
@@ -251,20 +286,27 @@ public:
         // Compute light direction in eye-space before to send it to shader
         Matrix viewMatrix = _scene->getActiveCamera()->getViewMatrix();
         Vector4 lightDirEyeSpace(direction);
-        _uDirLightDirection[0] = /*viewMatrix **/ lightDirEyeSpace;
+        _uDirLightDirection[0] = viewMatrix * lightDirEyeSpace;
         // or in world space computation
         /*Vector4 lightDirEyeSpace(direction);
         _uDirLightDirection[0] = lightDirEyeSpace;*/
 
 
          Vector4 lightPosEyeSpace(pointLightPos[0], pointLightPos[1], pointLightPos[2], 1.0);
-         _uPointLightPosition[0] = /*viewMatrix **/ lightPosEyeSpace;
+         _uPointLightPosition[0] = viewMatrix * lightPosEyeSpace;
          _uPointLightColor[0].set(pointLightColor);
+         //_pointLightNode->setTranslation(Vector3(pointLightPos[0], pointLightPos[1], pointLightPos[2]));
 
 
 
-         _uSpotLightPosition[0].set(spotLightPos);
-         _uSpotLightDirection[0].set(spotLightDir);
+
+         Vector4 spotlightPosEyeSpace(spotLightPos[0], spotLightPos[1], spotLightPos[2], 1.0);
+         _uSpotLightPosition[0] = viewMatrix * spotlightPosEyeSpace;
+         Vector4 spotlightDirEyeSpace(spotLightDir[0], spotLightDir[1], spotLightDir[2], 0.0);
+         _uSpotLightDirection[0] = viewMatrix * spotlightDirEyeSpace;
+
+         //_uSpotLightPosition[0].set(spotLightPos);
+         //_uSpotLightDirection[0].set(spotLightDir);
          _uSpotLightColor[0].set(spotLightColor);
     }
 
