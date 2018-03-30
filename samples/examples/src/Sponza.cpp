@@ -18,13 +18,19 @@ class Sponza : public Example
 
     // ambient light color
     Vector3 _uAmbientColor;
-    // array of directional light
-    static const int MAX_DIR_LIGHTS = 1;
-    Vector4 _uDirLightColor[MAX_DIR_LIGHTS];
-    Vector4 _uDirLightDirection[MAX_DIR_LIGHTS];
 
+    static const int MAX_DIR_LIGHTS = 1;
+    Vector4 _uDirLightDirection[MAX_DIR_LIGHTS];
+    Vector4 _uDirLightColor[MAX_DIR_LIGHTS];
+
+    static const int MAX_POINT_LIGHTS = 1;
+    Vector4 _uPointLightPosition[MAX_POINT_LIGHTS];
     Vector4 _uPointLightColor[MAX_DIR_LIGHTS];
-    Vector4 _uPointLightPosition[MAX_DIR_LIGHTS];
+
+    static const int MAX_SPOT_LIGHTS = 1;
+    Vector4 _uSpotLightPosition[MAX_SPOT_LIGHTS];
+    Vector4 _uSpotLightDirection[MAX_SPOT_LIGHTS];
+    Vector4 _uSpotLightColor[MAX_SPOT_LIGHTS];
 
 public:
 
@@ -52,7 +58,7 @@ public:
 
 
 
-
+    // Point Lights
 
     const Vector4* getPointLightColor() const
     {
@@ -66,8 +72,32 @@ public:
 
     unsigned int getPointLightCount() const
     {
-        return MAX_DIR_LIGHTS;
+        return MAX_POINT_LIGHTS;
     }
+
+
+    // Spot Lights
+
+    const Vector4* getSpotLightColor() const
+    {
+        return &_uSpotLightColor[0];
+    }
+
+    const Vector4* getSpotLightPosition() const
+    {
+        return &_uSpotLightPosition[0];
+    }
+
+    const Vector4* getSpotLightDirection() const
+    {
+        return &_uSpotLightDirection[0];
+    }
+
+    unsigned int getSpotLightCount() const
+    {
+        return MAX_SPOT_LIGHTS;
+    }
+
 
 
     //---------------------------------
@@ -146,6 +176,10 @@ public:
                 material->getParameter("u_pointLightColor")->bindValue(this, &Sponza::getPointLightColor, &Sponza::getPointLightCount);
 
 
+                material->getParameter("u_spotLightPosition")->bindValue(this, &Sponza::getSpotLightPosition, &Sponza::getSpotLightCount);
+                material->getParameter("u_spotLightDirection")->bindValue(this, &Sponza::getSpotLightDirection, &Sponza::getSpotLightCount);
+                material->getParameter("u_spotLightColor")->bindValue(this, &Sponza::getSpotLightColor, &Sponza::getSpotLightCount);
+
 
 
             }
@@ -186,15 +220,28 @@ public:
         static float pointLightPos[3] = { 0.0f, 1.0f, 0.0f };
         static float pointLightColor[3] = { 0.75f, 0.75f, 0.75f };
 
+        static float spotLightPos[3] = { 0.0f, 1.0f, 0.0f };
+        static float spotLightDir[3] = { 0.0f, -1.0f, 0.0f };
+        static float spotLightColor[3] = { 0.75f, 0.75f, 0.75f };
+
         ImGui::SetNextWindowSize(ImVec2(200,200), ImGuiCond_FirstUseEver);
         ImGui::Begin("Light control");
         ImGui::SliderFloat3("Ambient", ambient, 0.0f, 1.0f);
-        ImGui::Text("Directionnal Light 1");
-        ImGui::SliderFloat3("Direction", direction, -100.0f, 100.0f);
-        ImGui::SliderFloat3("Color", color, 0.0f, 1.0f);
 
+        ImGui::Separator();
+        ImGui::SliderFloat3("DirDirection", direction, -100.0f, 100.0f);
+        ImGui::SliderFloat3("DirColor", color, 0.0f, 1.0f);
+
+        ImGui::Separator();
         ImGui::SliderFloat3("PointPos", pointLightPos, -100.0f, 100.0f);
         ImGui::SliderFloat3("PointColor", pointLightColor, 0.0f, 1.0f);
+
+
+        ImGui::Separator();
+        ImGui::SliderFloat3("SpotPos", spotLightPos, -100.0f, 100.0f);
+        ImGui::SliderFloat3("SpotDir", spotLightDir, -1.0f, 1.0f);
+        ImGui::SliderFloat3("SpotColor", spotLightColor, 0.0f, 1.0f);
+
         ImGui::End();
 
         // update uniform values
@@ -213,6 +260,12 @@ public:
          Vector4 lightPosEyeSpace(pointLightPos[0], pointLightPos[1], pointLightPos[2], 1.0);
          _uPointLightPosition[0] = /*viewMatrix **/ lightPosEyeSpace;
          _uPointLightColor[0].set(pointLightColor);
+
+
+
+         _uSpotLightPosition[0].set(spotLightPos);
+         _uSpotLightDirection[0].set(spotLightDir);
+         _uSpotLightColor[0].set(spotLightColor);
     }
 
     void render(float elapsedTime)
