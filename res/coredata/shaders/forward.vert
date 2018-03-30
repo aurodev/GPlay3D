@@ -9,6 +9,7 @@ uniform mat4 u_worldViewProjectionMatrix;
 uniform mat4 u_inverseTransposeWorldViewMatrix;
 uniform mat4 u_worldMatrix;
 uniform mat4 u_worldViewMatrix;
+uniform mat4 u_viewMatrix;
 
 
 
@@ -28,7 +29,7 @@ void main()
     v_normal = normalMatrix * a_normal;
     
 
-	v_position = u_worldMatrix * a_position;
+	v_position = u_worldViewMatrix * a_position;
 
 
     gl_Position = position;
