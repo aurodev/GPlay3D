@@ -12,6 +12,16 @@ material textured
         magFilter = LINEAR
     }
 
+    sampler u_normalMap
+    {
+        path = res/data/textures/brickn.png
+        mipmap = true
+        wrapS = REPEAT
+        wrapT = REPEAT
+        minFilter = NEAREST_MIPMAP_LINEAR
+        magFilter = LINEAR
+    }
+
     renderState
     {
         cullFace = true
@@ -22,8 +32,8 @@ material textured
     {
         pass 
         {
-            vertexShader = res/coredata/shaders/textured.vert
-            fragmentShader = res/coredata/shaders/textured.frag
+            vertexShader = res/coredata/shaders/forward.vert
+            fragmentShader = res/coredata/shaders/forward.frag
             defines = DIRECTIONAL_LIGHT_COUNT=1
         }
     }

@@ -1,5 +1,5 @@
-$input a_position, a_normal, a_texcoord0
-$output v_color, v_texcoord0, v_normal, v_position
+$input a_position, a_normal, a_texcoord0, a_tangent, a_bitangent
+$output v_color, v_texcoord0, v_normal, v_position, v_tbnViewSpace
 
 #include "common/bgfx_shader.sh"
 
@@ -30,6 +30,14 @@ void main()
     
 
 	v_position = u_worldViewMatrix * a_position;
+	
+
+    // for bump mapping
+	mat3 inverseTransposeWorldViewMatrix = mat3(u_inverseTransposeWorldViewMatrix);
+	vec3 N = normalize(inverseTransposeWorldViewMatrix * a_normal);
+	vec3 T = normalize(inverseTransposeWorldViewMatrix * a_tangent);
+    vec3 B = cross(T,N);
+    v_tbnViewSpace = mat3(T,B,N);
 
 
     gl_Position = position;

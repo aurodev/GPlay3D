@@ -1,8 +1,9 @@
-$input v_texcoord0, v_color, v_normal, v_position
+$input v_texcoord0, v_color, v_normal, v_position, v_tbnViewSpace
 
 #include "common/bgfx_shader.sh"
 
 SAMPLER2D(u_diffuseTexture, 0);
+SAMPLER2D(u_normalMap, 1);
 
 
 
@@ -93,9 +94,15 @@ void main()
     vec3 FragPos = v_position.xyz;
 
    
-    vec3 diffuseMap = texture2D(u_diffuseTexture, v_texcoord0).rgb;    
+    vec3 diffuseMap = texture2D(u_diffuseTexture, v_texcoord0).rgb; 
 
-   
+
+    // bump mapping
+    vec3 normalMap = texture2D(u_normalMap, v_texcoord0).rgb * 2 - 1;
+    Normal = v_tbnViewSpace * normalMap;
+    Normal = normalize(Normal);
+
+
 
     // setup material
     material.diffuse = diffuseMap.rgb;
@@ -114,7 +121,7 @@ void main()
 
 
     PointLight pointLights[1];
-    pointLights[0].position = u_pointLightPosition[0].xyz;
+    pointLights[0].position =  u_pointLightPosition[0].xyz;
     pointLights[0].ambient = u_ambientColor.rgb;
     pointLights[0].diffuse = u_pointLightColor[0].rgb;
     pointLights[0].specular = vec3(1.0, 1.0, 1.0);
