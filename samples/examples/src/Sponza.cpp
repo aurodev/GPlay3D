@@ -25,7 +25,7 @@ class Sponza : public Example
 
     static const int MAX_POINT_LIGHTS = 1;
     Vector4 _uPointLightPosition[MAX_POINT_LIGHTS];
-    Vector4 _uPointLightColor[MAX_DIR_LIGHTS];
+    Vector4 _uPointLightColor[MAX_POINT_LIGHTS];
 
     static const int MAX_SPOT_LIGHTS = 1;
     Vector4 _uSpotLightPosition[MAX_SPOT_LIGHTS];
@@ -33,10 +33,10 @@ class Sponza : public Example
     Vector4 _uSpotLightColor[MAX_SPOT_LIGHTS];
 
 
-    Node* _pointLightNode;
-    Model* _pointLightQuadModel;
+    Node* _pointLightNode[1];
+    Node* _boxNode;
 
-
+    Light* _lightPoint[1];
 
     /*
      * point light attenuation shortcut
@@ -89,6 +89,7 @@ public:
     }
 
 
+
     // Spot Lights
 
     const Vector4* getSpotLightColor() const
@@ -115,7 +116,6 @@ public:
 
     //---------------------------------
 
-
     Sponza()
         : _font(nullptr)
         , _scene(nullptr)
@@ -138,11 +138,19 @@ public:
 
 
         // Create a point light and create a reference icon for the light
-        Light* pointLight = Light::createPoint(Vector3::one(), 16.0f);
-        _pointLightNode = Node::create("pointLight");
-        _pointLightNode->setLight(pointLight);
-        SAFE_RELEASE(pointLight);
-        _scene->addNode(_pointLightNode);
+        _lightPoint[0] = Light::createPoint(Vector3::one(), 50);
+        _lightPoint[0]->setColor(1.0, 1.0, 1.0);
+        _lightPoint[0]->setRange(1000);
+
+
+        _pointLightNode[0] = Node::create("pointLight");
+        _pointLightNode[0]->setLight(_lightPoint[0]);
+        _scene->addNode(_pointLightNode[0]);
+
+
+
+
+
 
 
 
@@ -152,6 +160,15 @@ public:
 
 
 
+
+        Bundle* bundle = Bundle::create("res/data/scenes/box.gpb");
+        Mesh* mesh = bundle->loadMesh("box_Mesh");
+        Model* model = Model::create(mesh);
+        model->setMaterial("res/data/materials/color.material");
+        SAFE_RELEASE(mesh);
+        SAFE_RELEASE(bundle);
+         _pointLightNode[0]->setDrawable(model);
+        _pointLightNode[0]->setScale(3.0f);
 
 
 
@@ -168,6 +185,24 @@ public:
         FileWatcher::Get()->addDirectory("res/coredata/shaders", true);
         EventManager::get()->addListener(GP_EVENT_LISTENER(this, Sponza::onShaderDirectoryEvent), FileWatcherEvent::ID());
     }
+
+
+
+
+
+#define UNAME(S,I) std::string(S + '[' + std::to_string(I) + ']').c_str()
+
+    void setMaterialLight(Material* material, Light* light, int index)
+    {
+        if(light->getLightType() == Light::POINT)
+        {
+            material->getParameter(UNAME("u_pointLightPosition", index))->bindValue(light->getNode(), &Node::getTranslationView);
+            material->getParameter(UNAME("u_pointLightColor", index))->bindValue(light, &Light::getColor);
+            //material->getParameter(UNAME("u_pointLightAttenuation", index))->bindValue(light, &Light::getAttenuation);
+        }
+    }
+
+
 
     bool initializeMaterials(Node* node)
     {
@@ -202,13 +237,33 @@ public:
 
 
 
-                material->getParameter("u_pointLightPosition")->bindValue(this, &Sponza::getPointLightPosition, &Sponza::getPointLightCount);
+                //material->getParameter("u_pointLightPosition")->bindValue(this, &Sponza::getPointLightPosition, &Sponza::getPointLightCount);
+                material->getParameter("u_pointLightPosition[0]")->bindValue(_pointLightNode[0], &Node::getTranslationView);
                 material->getParameter("u_pointLightColor")->bindValue(this, &Sponza::getPointLightColor, &Sponza::getPointLightCount);
+                //material->getParameter("u_pointLightRange[0]")->bindValue(_lightPoint[0], &Light::getRange);
+
+                // todo: Light need a new method to get attenuation based on range.
+                float LightRange = 50;
+                Vector3 lightAttenuation;
+                lightAttenuation.x = 1;
+                lightAttenuation.y = 4.5 / LightRange;
+                lightAttenuation.z = 75.0 / pow(LightRange, 2);
+                material->getParameter("u_pointLightAttenuation[0]")->setValue(lightAttenuation);
+
+
 
 
                 material->getParameter("u_spotLightPosition")->bindValue(this, &Sponza::getSpotLightPosition, &Sponza::getSpotLightCount);
                 material->getParameter("u_spotLightDirection")->bindValue(this, &Sponza::getSpotLightDirection, &Sponza::getSpotLightCount);
                 material->getParameter("u_spotLightColor")->bindValue(this, &Sponza::getSpotLightColor, &Sponza::getSpotLightCount);
+
+                /*float LightRange = 50;
+                Vector3 lightAttenuation;
+                lightAttenuation.x = 1;
+                lightAttenuation.y = 4.5 / LightRange;
+                lightAttenuation.z = 75.0 / pow(LightRange, 2);*/
+                material->getParameter("u_spotLightAttenuation[0]")->setValue(lightAttenuation);
+
 
 
                 /*Light* light = _pointLightNode->getLight();
@@ -296,8 +351,7 @@ public:
          _uPointLightPosition[0] = viewMatrix * lightPosEyeSpace;
          _uPointLightColor[0].set(pointLightColor);
          //_pointLightNode->setTranslation(Vector3(pointLightPos[0], pointLightPos[1], pointLightPos[2]));
-
-
+         _pointLightNode[0]->setTranslation(lightPosEyeSpace.x, lightPosEyeSpace.y, lightPosEyeSpace.z);
 
 
          Vector4 spotlightPosEyeSpace(spotLightPos[0], spotLightPos[1], spotLightPos[2], 1.0);
@@ -308,6 +362,10 @@ public:
          //_uSpotLightPosition[0].set(spotLightPos);
          //_uSpotLightDirection[0].set(spotLightDir);
          _uSpotLightColor[0].set(spotLightColor);
+
+
+        Model* model = (Model*)_pointLightNode[0]->getDrawable();
+        model->getMaterial()->getParameter("u_color")->setValue(_uPointLightColor[0]);
     }
 
     void render(float elapsedTime)

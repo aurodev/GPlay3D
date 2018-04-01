@@ -17,7 +17,7 @@ uniform mat4 u_viewMatrix;
 uniform vec4 u_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
 
 
-
+#define BUMP_MAP
 
 
 void main()
@@ -32,13 +32,13 @@ void main()
 	v_position = u_worldViewMatrix * a_position;
 	
 
-    // for bump mapping
+#if defined(BUMP_MAP)
 	mat3 inverseTransposeWorldViewMatrix = mat3(u_inverseTransposeWorldViewMatrix);
 	vec3 N = normalize(inverseTransposeWorldViewMatrix * a_normal);
 	vec3 T = normalize(inverseTransposeWorldViewMatrix * a_tangent);
     vec3 B = cross(T,N);
     v_tbnViewSpace = mat3(T,B,N);
-
+#endif
 
     gl_Position = position;
 }
