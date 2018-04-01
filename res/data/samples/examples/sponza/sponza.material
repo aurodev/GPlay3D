@@ -10,7 +10,7 @@ material textured
         wrapT = CLAMP
         minFilter = LINEAR_MIPMAP_LINEAR
         magFilter = LINEAR
-    }
+    }    
 
     sampler u_normalMap
     {
@@ -22,6 +22,19 @@ material textured
         magFilter = LINEAR
     }
 
+
+    sampler u_specularMap
+    {
+        path = res/data/samples/examples/sponza/sponza/sponza_floor_a_spec.dds
+        mipmap = true
+        wrapS = REPEAT
+        wrapT = REPEAT
+        minFilter = NEAREST_MIPMAP_LINEAR
+        magFilter = LINEAR
+    }
+
+
+   
     renderState
     {
         cullFace = true
