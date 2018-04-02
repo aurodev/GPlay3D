@@ -98,7 +98,7 @@ public:
     /**
      * Stores a pointer/array of Vector3 values in this parameter.
      */
-    //@@void setValue(const Vector3* values, unsigned int count = 1);
+    void setValue(const Vector3* values, unsigned int count = 1);
 
 
     /**

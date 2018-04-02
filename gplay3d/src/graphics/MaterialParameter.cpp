@@ -232,6 +232,17 @@ void MaterialParameter::setValue(const Vector4& value)
     }
 }
 
+
+void MaterialParameter::setValue(const Vector3* values, unsigned int count)
+{
+    GP_ASSERT(values);
+    clearValue();
+
+    _value.floatPtrValue = const_cast<float*> (&values[0].x);
+    _count = count;
+    _type = MaterialParameter::VECTOR3;
+}
+
 void MaterialParameter::setValue(const Vector4* values, unsigned int count)
 {
     GP_ASSERT(values);
@@ -551,8 +562,7 @@ void MaterialParameter::bind(Effect* effect)
         //@@_uniform->setValue(reinterpret_cast<Vector4*>(_value.floatPtrValue), _count);
         break;
     case MaterialParameter::VECTOR3:
-        GP_ASSERT(0);
-        //@@_uniform->setValue(reinterpret_cast<Vector3*>(_value.floatPtrValue), _count);
+        _uniform->setValue(reinterpret_cast<Vector3*>(_value.floatPtrValue), _count);
         break;
     case MaterialParameter::VECTOR4:
         _uniform->setValue(reinterpret_cast<Vector4*>(_value.floatPtrValue), _count);
