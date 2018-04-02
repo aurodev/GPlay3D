@@ -230,6 +230,13 @@ public:
      */
     float getOuterAngleCos() const;
 
+    /**
+     * Returns the light attenuation of the point or spot light.
+     *
+     * @return The light attenuation of the point or spot light.
+     */
+    const Vector3& getAttenuation() const;
+
 private:
 
     /**
@@ -252,6 +259,7 @@ private:
         Vector3 color;
         float range;
         float rangeInverse;
+        Vector3 attenuation;
 
         Point(const Vector3& color, float range);
     };
@@ -269,6 +277,7 @@ private:
         float innerAngleCos;
         float outerAngle;
         float outerAngleCos;
+        Vector3 attenuation;
 
         Spot(const Vector3& color, float range, float innerAngle, float outerAngle);
     };

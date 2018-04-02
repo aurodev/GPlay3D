@@ -5,6 +5,15 @@
 namespace gameplay
 {
 
+static Vector3 __getAttenuationFromRange(float range)
+{
+    Vector3 attenuation;
+    attenuation.x = 1.0f;
+    attenuation.y = 4.5f / range;
+    attenuation.z = 75.0f / pow(range, 2.0f);
+    return attenuation;
+}
+
 Light::Light(Light::Type type, const Vector3& color) :
     _type(type), _node(NULL)
 {
@@ -242,11 +251,13 @@ void Light::setRange(float range)
         GP_ASSERT(_point);
         _point->range = range;
         _point->rangeInverse = 1.0f / range;
+        _point->attenuation = __getAttenuationFromRange(range);
         break;
     case SPOT:
         GP_ASSERT(_spot);
         _spot->range = range;
         _spot->rangeInverse = 1.0f / range;
+        _spot->attenuation = __getAttenuationFromRange(range);
         break;
     default:
         GP_ERROR("Unsupported light type (%d).", _type);
@@ -358,6 +369,9 @@ Light::Point::Point(const Vector3& color, float range)
     : color(color), range(range)
 {
     rangeInverse = 1.0f / range;
+
+    attenuation = __getAttenuationFromRange(range);
+
 }
 
 Light::Spot::Spot(const Vector3& color, float range, float innerAngle, float outerAngle)
@@ -366,6 +380,25 @@ Light::Spot::Spot(const Vector3& color, float range, float innerAngle, float out
     rangeInverse = 1.0f / range;
     innerAngleCos = cos(innerAngle);
     outerAngleCos = cos(outerAngle);
+
+    attenuation = __getAttenuationFromRange(range);
+}
+
+
+const Vector3& Light::getAttenuation() const
+{
+    switch (_type)
+    {
+    case POINT:
+        GP_ASSERT(_point);
+        return _point->attenuation;
+    case SPOT:
+        GP_ASSERT(_spot);
+        return _spot->attenuation;
+    default:
+        GP_ERROR("Unsupported light type (%d).", _type);
+        return Vector3::zero();
+    }
 }
 
 }
