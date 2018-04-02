@@ -12,7 +12,7 @@ $input v_texcoord0, v_color, v_normal, v_position, v_tbnViewSpace
 #define SPECULAR_MAP
 #define SPECULAR
 #define TEXTURE_DISCARD_ALPHA
-
+//#define FOG
 
 
 
@@ -38,18 +38,24 @@ SAMPLER2D(u_specularMap, 2);
 
 uniform vec4 u_ambientColor;
 
+
+#if (DIRECTIONAL_LIGHT_COUNT > 0)
 uniform vec4 u_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
 uniform vec4 u_directionalLightColor[DIRECTIONAL_LIGHT_COUNT];
+#endif
 
+#if (POINT_LIGHT_COUNT > 0)
 uniform vec4 u_pointLightPosition[POINT_LIGHT_COUNT];
 uniform vec4 u_pointLightColor[POINT_LIGHT_COUNT];
 uniform vec4 u_pointLightAttenuation[POINT_LIGHT_COUNT];
+#endif
 
+#if (SPOT_LIGHT_COUNT > 0)
 uniform vec4 u_spotLightPosition[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightDirection[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightColor[SPOT_LIGHT_COUNT];
 uniform vec4 u_spotLightAttenuation[SPOT_LIGHT_COUNT];
-
+#endif
 
 
 
@@ -97,14 +103,33 @@ Material material;
 
 
 
+#if (FOG)
+
+uniform vec3 u_fogColor;
+uniform vec2 u_fogDistance; // x=near, y=far
+
+struct FogInfo
+{
+    float maxDist;
+    float minDist;
+    vec3 color;
+};
+
+FogInfo fog;
+
+#endif
+
+
+
+
 
 float computeSpecular(vec3 lightDir, vec3 normal, vec3 viewDir)
 {
-    // Phong shading
+    // Phong
     //vec3 reflectDir = reflect(-lightDir, normal);
     //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 
-    // Blinn-Phong shading
+    // Blinn
     vec3 halfwayDir = normalize(lightDir + viewDir);  
     float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
 
@@ -228,7 +253,7 @@ void main()
 #if defined(DIFFUSE_MAP)
     vec4 diffuseMap = texture2D(u_diffuseTexture, v_texcoord0);
 #else
-    vec4 diffuseMap = vec3(0.5, 0.5, 0.5);
+    vec4 diffuseMap = vec4(0.5, 0.5, 0.5, 1.0);
 #endif
 
 
@@ -250,7 +275,7 @@ void main()
 #if defined(SPECULAR_MAP)
     vec4 specularMap = texture2D(u_specularMap, v_texcoord0);
 #else
-    vec4 specularMap = vec3(0.5, 0.5, 0.5, 0.5);
+    vec4 specularMap = vec4(0.5, 0.5, 0.5, 1.0);
 #endif
 #endif
 
@@ -265,14 +290,15 @@ void main()
 
 
 
-
+#if (DIRECTIONAL_LIGHT_COUNT > 0)
     DirLight dirLight[1];
     dirLight[0].direction = u_directionalLightDirection[0].xyz;
     dirLight[0].ambient = u_ambientColor.rgb;
     dirLight[0].diffuse = u_directionalLightColor[0].rgb;
     dirLight[0].specular = vec3(1.0, 1.0, 1.0);
+#endif
 
-
+#if (POINT_LIGHT_COUNT > 0)
     PointLight pointLight[1];
     pointLight[0].position =  u_pointLightPosition[0].xyz;
     pointLight[0].ambient = u_ambientColor.rgb;
@@ -281,8 +307,9 @@ void main()
     pointLight[0].constant = u_pointLightAttenuation[0].x;
     pointLight[0].linear = u_pointLightAttenuation[0].y;
     pointLight[0].quadratic = u_pointLightAttenuation[0].z;
+#endif
 
-
+#if (SPOT_LIGHT_COUNT > 0)
     SpotLight spotLight[1];
     spotLight[0].position = u_spotLightPosition[0].xyz;
     spotLight[0].direction =  u_spotLightDirection[0].xyz;
@@ -294,30 +321,50 @@ void main()
     spotLight[0].quadratic = u_spotLightAttenuation[0].z;
     spotLight[0].cutOff = 0.6;
     spotLight[0].outerCutOff = 0.5;
-
+#endif
 
 
 
     vec3 viewDir = normalize(-position);
     vec3 result = vec3(0,0,0);
 
+
     // directional lights
+#if (DIRECTIONAL_LIGHT_COUNT > 0)
     for(int i = 0; i < DIRECTIONAL_LIGHT_COUNT; i++)
     {
         result = computeDirLight(dirLight[i], normalVector, viewDir);
     }
+#endif
 
     // point lights
+#if (POINT_LIGHT_COUNT > 0)
     for(int i = 0; i < POINT_LIGHT_COUNT; i++)
     {
         result += computePointLight(pointLight[i], normalVector, position, viewDir);   
     }
+#endif
 
     // spot lights
+#if (SPOT_LIGHT_COUNT > 0)
     for(int i = 0; i < SPOT_LIGHT_COUNT; i++)
     {
         result += computeSpotLight(spotLight[i], normalVector, position, viewDir);  
     }
+#endif
+
+
+
+#if defined(FOG)
+    fog.maxDist = 160;
+    fog.minDist = 50;
+    fog.color = vec3(0.5, 0.5, 0.5);
+
+    float dist = abs(position.z);
+    float fogFactor = (fog.maxDist - dist) / (fog.maxDist -  fog.minDist);
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
+    result = mix(fog.color, result, fogFactor);
+#endif
 
     // gamma    
     //result = pow(result, vec3(1.0/2.2));
