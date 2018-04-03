@@ -133,7 +133,7 @@ Texture* Texture::create(Format format, unsigned int width, unsigned int height,
     textureInfo.type = type;
     textureInfo.id = "";
 
-    Texture* texture = BGFXTexture::createFromData(data, textureInfo);
+    Texture* texture = BGFXTexture::createFromData(textureInfo, data);
     if (generateMipmaps)
         texture->generateMipmaps();
 
@@ -150,7 +150,7 @@ Texture* Texture::create(const char* id, unsigned int width, unsigned int height
     textureInfo.type = type;
     textureInfo.id = id;
 
-    Texture* texture = BGFXTexture::createFromData(0, textureInfo);
+    Texture* texture = BGFXTexture::createFromData(textureInfo);
 
     return texture;
 }

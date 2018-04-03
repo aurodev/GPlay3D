@@ -14,7 +14,7 @@ public:
     ~BGFXTexture();
 
     static Texture* createFromFile(const char* path);
-    static Texture* createFromData(const unsigned char* data, Texture::GPTextureInfo info);
+    static Texture* createFromData(Texture::GPTextureInfo info, const unsigned char* data = nullptr);
 
     void bind(Uniform* uniform, Texture* texture);
     const bgfx::TextureHandle getHandle() const { return _handle; }

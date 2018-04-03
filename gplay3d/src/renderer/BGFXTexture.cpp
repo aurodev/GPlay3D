@@ -258,7 +258,7 @@ Texture * BGFXTexture::createFromFile(const char * path)
     return texture;
 }
 
-Texture* BGFXTexture::createFromData(const unsigned char* data, Texture::GPTextureInfo info)
+Texture* BGFXTexture::createFromData(Texture::GPTextureInfo info, const unsigned char* data)
 {
     BGFXTexture * bgfxTexture = new BGFXTexture();
 
