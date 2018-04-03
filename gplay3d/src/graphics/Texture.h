@@ -89,7 +89,7 @@ public:
     /**
      * Texture information record
      */
-    struct GPTextureInfo
+    struct TextureInfo
     {
         unsigned int width;
         unsigned int height;
@@ -97,6 +97,7 @@ public:
         unsigned int bytePerPixel;
         Type type;
         std::string id;
+        uint32_t flags;
     };
 
     /**
@@ -230,11 +231,13 @@ public:
      * @return The new texture.
      * @script{create}
      */
-    static Texture* create(Format format, unsigned int width, unsigned int height, const unsigned char* data, bool generateMipmaps = false, Type type = TEXTURE_2D);
+    static Texture* create(Format format, unsigned int width, unsigned int height, const unsigned char* data, bool generateMipmaps = false, Type type = TEXTURE_2D, uint32_t flags = BGFX_TEXTURE_NONE);
 
 
 
-    static Texture* create(const char* id, unsigned int width, unsigned int height, Format format, Type type = TEXTURE_2D);
+    static Texture* create(TextureInfo& textureInfo);
+
+    static Texture* create(const char* id, unsigned int width, unsigned int height, Format format, Type type = TEXTURE_2D, uint32_t flags = BGFX_TEXTURE_NONE);
 
     BGFXTexture* getGpuTexture() { return _gpuTtexture; }
 

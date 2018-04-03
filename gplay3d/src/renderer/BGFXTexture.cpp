@@ -258,7 +258,7 @@ Texture * BGFXTexture::createFromFile(const char * path)
     return texture;
 }
 
-Texture* BGFXTexture::createFromData(Texture::GPTextureInfo info, const unsigned char* data)
+Texture* BGFXTexture::createFromData(Texture::TextureInfo info, const unsigned char* data, uint32_t flags)
 {
     BGFXTexture * bgfxTexture = new BGFXTexture();
 
@@ -290,7 +290,6 @@ Texture* BGFXTexture::createFromData(Texture::GPTextureInfo info, const unsigned
         imageContainer->m_data = mem->data;
     }
 
-    uint32_t flags = BGFX_TEXTURE_NONE;
     if(info.type == Texture::TEXTURE_RT)
     {
         flags |= BGFX_TEXTURE_RT;
