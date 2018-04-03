@@ -74,7 +74,7 @@ public:
 
         // Create a framebuffer with rgba and depth textures
         Texture* texColor = Texture::create("targetColor", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::RGBA, Texture::Type::TEXTURE_RT);
-        Texture* texDepth = Texture::create("targetDepth", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::DEPTH, Texture::Type::TEXTURE_RT);
+        Texture* texDepth = Texture::create("targetDepth", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::D16, Texture::Type::TEXTURE_RT);
         std::vector<Texture*> textures;
         textures.push_back(texColor);
         textures.push_back(texDepth);

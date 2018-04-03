@@ -76,7 +76,7 @@ void WaterSample::initialize()
 
     {
     Texture* texColor = Texture::create("targetColor", BUFFER_SIZE, BUFFER_SIZE, Texture::Format::RGBA, Texture::Type::TEXTURE_RT);
-    Texture* texDepth = Texture::create("targetDepth", BUFFER_SIZE, BUFFER_SIZE, Texture::Format::DEPTH, Texture::Type::TEXTURE_RT);
+    Texture* texDepth = Texture::create("targetDepth", BUFFER_SIZE, BUFFER_SIZE, Texture::Format::D16, Texture::Type::TEXTURE_RT);
     std::vector<Texture*> textures;
     textures.push_back(texColor);
     textures.push_back(texDepth);
@@ -86,7 +86,7 @@ void WaterSample::initialize()
 
     {
     Texture* texColor = Texture::create("targetColor", BUFFER_SIZE, BUFFER_SIZE, Texture::Format::RGBA, Texture::Type::TEXTURE_RT);
-    Texture* texDepth = Texture::create("targetDepth", BUFFER_SIZE, BUFFER_SIZE, Texture::Format::DEPTH, Texture::Type::TEXTURE_RT);
+    Texture* texDepth = Texture::create("targetDepth", BUFFER_SIZE, BUFFER_SIZE, Texture::Format::D16, Texture::Type::TEXTURE_RT);
     std::vector<Texture*> textures;
     textures.push_back(texColor);
     textures.push_back(texDepth);

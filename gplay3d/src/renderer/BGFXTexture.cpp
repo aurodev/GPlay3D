@@ -28,7 +28,8 @@ namespace gameplay {
     Texture::Format::RGBA4444  == bgfx::TextureFormat::RGBA4
     Texture::Format::RGBA5551  == bgfx::TextureFormat::RGB5A1
     Texture::Format::ALPHA     == bgfx::TextureFormat::R8
-    Texture::Format::DEPTH     == bgfx::TextureFormat::D16
+    Texture::Format::D16       == bgfx::TextureFormat::D16
+    Texture::Format::D32       == bgfx::TextureFormat::D32
 ----------------------------------------------------------------------
 */
 
@@ -43,7 +44,8 @@ bgfx::TextureFormat::Enum BGFXTexture::toBgfxFormat(Texture::Format gp3dFormat)
     case Texture::Format::RGBA4444   : return bgfx::TextureFormat::RGBA4;
     case Texture::Format::RGBA5551   : return bgfx::TextureFormat::RGB5A1;
     case Texture::Format::ALPHA      : return bgfx::TextureFormat::R8;
-    case Texture::Format::DEPTH      : return bgfx::TextureFormat::D16;
+    case Texture::Format::D16        : return bgfx::TextureFormat::D16;
+    case Texture::Format::D32        : return bgfx::TextureFormat::D32;
     default:
         GP_ASSERT(!"gp3d texture format unknown.");
         return bgfx::TextureFormat::Unknown;
@@ -61,7 +63,8 @@ Texture::Format BGFXTexture::toGp3dFormat(bgfx::TextureFormat::Enum bimgTextureF
     case bgfx::TextureFormat::RGBA4     : return Texture::Format::RGBA4444;
     case bgfx::TextureFormat::RGB5A1    : return Texture::Format::RGBA5551;
     case bgfx::TextureFormat::R8        : return Texture::Format::ALPHA;
-    case bgfx::TextureFormat::D16       : return Texture::Format::DEPTH;
+    case bgfx::TextureFormat::D16       : return Texture::Format::D16;
+    case bgfx::TextureFormat::D32       : return Texture::Format::D32;
 
     case bgfx::TextureFormat::BC2       : return Texture::Format::RGBA;
     case bgfx::TextureFormat::BC3       : return Texture::Format::RGBA;
