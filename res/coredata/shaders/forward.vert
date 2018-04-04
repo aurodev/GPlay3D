@@ -1,5 +1,5 @@
 $input a_position, a_normal, a_texcoord0, a_tangent, a_bitangent
-$output v_color, v_texcoord0, v_normal, v_position, v_tbnViewSpace
+$output v_color, v_texcoord0, v_normal, v_position, v_tbnViewSpace, v_shadowcoord
 
 #include "common/bgfx_shader.sh"
 
@@ -10,6 +10,7 @@ uniform mat4 u_worldViewMatrix;
 uniform mat4 u_worldViewProjectionMatrix;
 uniform mat4 u_inverseTransposeWorldViewMatrix;
 
+uniform mat4 u_lightSpaceMatrix;
 
 void main()
 {
@@ -29,6 +30,17 @@ void main()
     vec3 B = cross(T,N);
     v_tbnViewSpace = mat3(T,B,N);
 #endif
+
+
+	//v_shadowcoord = u_depthBiasWorldViewProjection * a_position;
+
+	const float shadowMapOffset = 0.001;
+	vec3 posOffset = a_position.xyz + v_normal.xyz * shadowMapOffset;
+	v_shadowcoord = mul(u_lightSpaceMatrix, vec4(posOffset, 1.0) );
+
+	
+	//v_shadowcoord = u_lightSpaceMatrix * a_position;
+
 
     gl_Position = position;
 }

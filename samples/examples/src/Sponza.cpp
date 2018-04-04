@@ -5,6 +5,10 @@
 #include <events/EventManager.h>
 #include <core/FileWatcher.h>
 
+
+FrameBuffer* _frameBuffer;
+Matrix _lightSpaceMatrix;
+
 /**
  * A manager for lights in scene.
  */
@@ -66,6 +70,37 @@ public:
             material->getParameter(formatName("u_spotLightColor", i).c_str())->bindValue(_spotLights[i], &Light::getColor);
             material->getParameter(formatName("u_spotLightAttenuation", i).c_str())->bindValue(_spotLights[i], &Light::getAttenuation);
         }
+
+
+
+        material->getStateBlock()->setDepthTest(true);
+        material->getStateBlock()->setDepthFunction(RenderState::DEPTH_LESS);
+
+        /*Vector3 lightInvDir = Vector3(0.5, 0, -1);
+        Matrix depthProjectionMatrix, depthViewMatrix, depthModelMatrix;
+        Matrix::createOrthographic(-10, 10, -10, 10, &depthProjectionMatrix);
+        Matrix::createLookAt(lightInvDir, Vector3(0,0,0), Vector3(0,1,0), &depthViewMatrix);
+        depthModelMatrix = Matrix::identity();
+        Matrix depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;*/
+
+
+       /* Matrix projMatrix;
+        Matrix::createPerspective(45.0f, 800 / 600, 1.0f, 1000.0f, &projMatrix);
+        Matrix viewMatrix;
+        Matrix::createLookAt(Vector3(0,0,-800), Vector3::zero(), Vector3::unitY(), &viewMatrix);
+        Matrix depthMVP = projMatrix * viewMatrix;*/
+
+
+        //material->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
+        //material->setParameterAutoBinding("u_lightMtx", RenderState::WORLD_VIEW_MATRIX);
+        Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
+        material->getParameter("s_shadowMap")->setSampler(sampler);
+
+
+
+
+
+
     }
 
     void setAmbientColor(Vector3 ambient)
@@ -195,6 +230,10 @@ class Sponza : public Example
     FirstPersonCamera _fpCamera;
     LightManager _lightManager;
 
+
+    Model* _quadModel;
+
+
 public:
 
     Sponza()
@@ -219,13 +258,13 @@ public:
 
         // Use a light manager to declare lights
         _lightManager.setScene(_scene);
-        _lightManager.setAmbientColor(Vector3(0.2, 0.2, 0.2));
+        _lightManager.setAmbientColor(Vector3(0.1, 0.1, 0.1));
         _lightManager.addDirectionnalLight(Light::createDirectional(Vector3(0.5, 0.2, 0.2)));
-        _lightManager.addPointLight(Light::createPoint(Vector3(0.0, 0.0, 1.0), 500));
-        _lightManager.addSpotLight(Light::createSpot(Vector3(0.0, 0.0, 1.0), 100, MATH_DEG_TO_RAD(30.0f),  MATH_DEG_TO_RAD(45.0f)));
+        _lightManager.addPointLight(Light::createPoint(Vector3(0.0, 0.0, 1.0), 50));
+        _lightManager.addSpotLight(Light::createSpot(Vector3(0.0, 0.0, 1.0), 50, MATH_DEG_TO_RAD(30.0f),  MATH_DEG_TO_RAD(45.0f)));
 
         // Initialise materials for all models
-        _scene->visit(this, &Sponza::initializeMaterials);
+       /// _scene->visit(this, &Sponza::initializeMaterials);
 
         // create a cube
         Bundle* bundle = Bundle::create("res/data/scenes/box.gpb");
@@ -251,6 +290,90 @@ public:
         // Add watcher to shader directory and bind event to be notified on changes
         FileWatcher::Get()->addDirectory("res/coredata/shaders", true);
         EventManager::get()->addListener(GP_EVENT_LISTENER(this, Sponza::onShaderDirectoryEvent), FileWatcherEvent::ID());
+
+
+
+#define FRAMEBUFFER_WIDTH 1024
+#define FRAMEBUFFER_HEIGHT 1024
+
+        // create views
+        Game * game = Game::getInstance();
+
+        View defaultView;
+        defaultView.clearColor = 0x111122ff;
+        defaultView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
+        defaultView.depth = 1.0f;
+        defaultView.stencil = 0;
+        defaultView.rectangle = Rectangle(game->getWidth(), game->getHeight());
+        game->insertView(0, defaultView);
+
+        View secondView;
+        secondView.clearColor = 0x303030ff;
+        secondView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
+        secondView.depth = 1.0f;
+        secondView.stencil = 0;
+        secondView.rectangle = Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
+        game->insertView(1, secondView);
+
+
+        // Create a framebuffer with a depth texture
+        Texture::TextureInfo texInfo;
+        texInfo.id = "targetDepth";
+        texInfo.width = FRAMEBUFFER_WIDTH;
+        texInfo.height = FRAMEBUFFER_HEIGHT;
+        texInfo.type = Texture::TEXTURE_RT;
+        texInfo.format = Texture::Format::D16;
+        texInfo.flags = BGFX_TEXTURE_RT | BGFX_TEXTURE_COMPARE_LEQUAL;
+        Texture* texDepth = Texture::create(texInfo);
+
+        std::vector<Texture*> textures;
+        textures.push_back(texDepth);
+        _frameBuffer = FrameBuffer::create("MyFrameBuffer", textures);
+
+
+
+        // Create a quad for framebuffer preview
+       /* Mesh* meshQuad = Mesh::createQuad(0,0,256,256);
+        _quadModel = Model::create(meshQuad);
+        SAFE_RELEASE(meshQuad);
+        _quadModel->setMaterial("res/coredata/shaders/debug.vert", "res/coredata/shaders/debug.frag", "SHOW_DEPTH");
+        Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
+        _quadModel->getMaterial()->getParameter("u_texture")->setValue(sampler);
+
+
+
+
+        // Create a perspective projection matrix.
+        /*Matrix projMatrix;
+        Matrix::createPerspective(45.0f, getWidth() / (float)getHeight(), 1.0f, 1000.0f, &projMatrix);
+        //Matrix::createOrthographic(10, 10, -1.0f, 1.0f, &projMatrix);
+
+        // Create a lookat view matrix.
+        Matrix viewMatrix;
+        Matrix::createLookAt(Vector3(0,0,-500), Vector3::zero(), Vector3::unitY(), &viewMatrix);
+
+        // set mvp matrix
+        _LightMatrix = projMatrix * viewMatrix;
+
+
+        _quadModel->getMaterial()->getParameter("u_projectionMatrix")->setValue(_LightMatrix);*/
+
+
+
+        /*Vector3 lightInvDir = Vector3(-2, 4, -1);
+        Matrix depthProjectionMatrix, depthViewMatrix, depthModelMatrix;
+        Matrix::createOrthographic(-100, 100, -100, 100, &depthProjectionMatrix);
+        Matrix::createLookAt(lightInvDir, Vector3(0,0,0), Vector3(0,1,0), &depthViewMatrix);
+        depthModelMatrix = Matrix::identity();
+        _lightSpaceMatrix = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;*/
+
+
+
+
+
+
+         _scene->visit(this, &Sponza::initializeMaterials);
+
     }
 
     bool initializeMaterials(Node* node)
@@ -274,7 +397,7 @@ public:
 
         // Create some ImGui controls
         static float ambient[3] = { 0.2f, 0.2f, 0.2f };
-        static float dirLightDirection[3] = { 0.0f, -1.0f, 0.0f };
+        static float dirLightDirection[3] = { -2.0, -4.0f, -1.0f };
         static float dirLightColor[3] = { 0.75f, 0.75f, 0.75f };
         static float pointLightPos[3] = { 0.0f, 1.0f, 0.0f };
         static float pointLightColor[3] = { 0.75f, 0.75f, 0.75f };
@@ -310,19 +433,95 @@ public:
         _lightManager.setSpotLightPosition(0, Vector3(spotLightPos));
         _lightManager.setSpotLightDirection(0, Vector3(spotLightDir));
         _lightManager.setSpotLightColor(0, spotLightColor);
+
+
+
+
+
+
+
+
+
+
+
+        ////
+
+        Vector3 lightInvDir; // Vector3(-2, 4, -1);
+        lightInvDir = _lightManager.getDirectionnalLight(0)->getNode()->getForwardVector();
+
+        Matrix depthProjectionMatrix, depthViewMatrix, depthModelMatrix;
+        Matrix::createOrthographic(-1000, 1000, 1, 100, &depthProjectionMatrix);
+        //Matrix::createLookAt(lightInvDir, Vector3(0,0,0), Vector3(0,1,0), &depthViewMatrix);
+        //Matrix::createFromEuler(lightInvDir.x, lightInvDir.y, lightInvDir.z, &depthViewMatrix);
+
+        Matrix::createFromEuler(MATH_DEG_TO_RAD(lightInvDir.x),
+                                    MATH_DEG_TO_RAD(-lightInvDir.y),
+                                    MATH_DEG_TO_RAD(lightInvDir.z),
+                                    &depthViewMatrix);
+
+
+
+
+        depthModelMatrix = Matrix::identity();
+        _lightSpaceMatrix = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+        //_lightSpaceMatrix = depthProjectionMatrix * depthModelMatrix * lightInvDir;
     }
 
     void render(float elapsedTime)
     {
+        Game::getInstance()->bindView(1);
+        _frameBuffer->bind();
+        _scene->visit(this, &Sponza::drawSceneForShadow);
+
+        Game::getInstance()->bindView(0);
         _scene->visit(this, &Sponza::drawScene);
+
         drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());
+    }
+
+    bool drawSceneForShadow(Node* node)
+    {
+        Drawable* drawable = node->getDrawable();
+        if (drawable)
+        {
+            Model* model = dynamic_cast<Model*>(drawable);
+            model->getMaterial(0)->setTechnique("mytech2");
+
+            model->getMaterial(0)->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
+            model->getMaterial(0)->getParameter("u_mymodel")->setValue(Matrix::identity());
+
+
+            drawable->draw();
+        }
+        return true;
     }
 
     bool drawScene(Node* node)
     {
         Drawable* drawable = node->getDrawable();
         if (drawable)
+        {
+            Model* model = dynamic_cast<Model*>(drawable);
+            model->getMaterial(0)->setTechnique("mytech1");
+
+
+
+
+
+
+
+
+
+
+            model->getMaterial(0)->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
+
+            /*Material* material = model->getMaterial(0);
+            Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
+            material->getParameter("s_shadowMap")->setValue(sampler);*/
+            //material->getParameter("s_shadowMap")->setSampler(_frameBuffer->getRenderTarget(0));
+
             drawable->draw();
+        }
         return true;
     }
 

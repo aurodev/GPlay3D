@@ -293,6 +293,7 @@ Texture* BGFXTexture::createFromData(Texture::TextureInfo info, const unsigned c
         imageContainer->m_data = mem->data;
     }
 
+    flags |= info.flags;
     if(info.type == Texture::TEXTURE_RT)
     {
         flags |= BGFX_TEXTURE_RT;

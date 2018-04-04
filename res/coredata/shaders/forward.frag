@@ -1,11 +1,11 @@
-$input v_texcoord0, v_color, v_normal, v_position, v_tbnViewSpace
+$input v_texcoord0, v_color, v_normal, v_position, v_tbnViewSpace, v_shadowcoord
 
-#include "common/bgfx_shader.sh"
+#include "common/common.sh"
 
 
 #define DIRECTIONAL_LIGHT_COUNT 1
-#define POINT_LIGHT_COUNT 1
-#define SPOT_LIGHT_COUNT 1
+#define POINT_LIGHT_COUNT 0
+#define SPOT_LIGHT_COUNT 0
 
 #define DIFFUSE_MAP
 #define BUMP_MAP
@@ -34,7 +34,8 @@ $input v_texcoord0, v_color, v_normal, v_position, v_tbnViewSpace
 SAMPLER2D(u_diffuseTexture, 0);
 SAMPLER2D(u_normalMap, 1);
 SAMPLER2D(u_specularMap, 2);
-
+//SAMPLER2DSHADOW(s_shadowMap, 3);
+SAMPLER2D(s_shadowMap, 3);
 
 uniform vec4 u_ambientColor;
 
@@ -120,8 +121,29 @@ FogInfo fog;
 #endif
 
 
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;    
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture2D(s_shadowMap, projCoords.xy).x; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
+    return shadow;
+}
 
+/*
+float hardShadow(vec4 _shadowCoord, float _bias)
+{
+    vec3 texCoord = _shadowCoord.xyz / _shadowCoord.w;
+    return shadow2D(s_shadowMap, vec3(texCoord.xy, texCoord.z-_bias) );
+}
+*/
 
 float computeSpecular(vec3 lightDir, vec3 normal, vec3 viewDir)
 {
@@ -139,15 +161,28 @@ float computeSpecular(vec3 lightDir, vec3 normal, vec3 viewDir)
 // calculates the color when using a directional light.
 vec3 computeDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
+
+    float shadow = ShadowCalculation(v_shadowcoord);
+    //float shadow = hardShadow(v_shadowcoord, 0.001);
+
+
+
     vec3 lightDir = normalize(-light.direction);
 
     // diffuse
     float diff = max(dot(normal, lightDir), 0.0);
 
+   
+
     // specular
 #if defined(SPECULAR)
     float spec = computeSpecular(lightDir, normal, viewDir);
 #endif
+
+
+    diff *= shadow;
+    spec *= shadow;
+
 
     // combine results
 
