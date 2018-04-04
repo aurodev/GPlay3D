@@ -34,12 +34,12 @@ void main()
 
 	//v_shadowcoord = u_depthBiasWorldViewProjection * a_position;
 
-	const float shadowMapOffset = 0.001;
+	const float shadowMapOffset = 0.01;
 	vec3 posOffset = a_position.xyz + v_normal.xyz * shadowMapOffset;
 	v_shadowcoord = mul(u_lightSpaceMatrix, vec4(posOffset, 1.0) );
 
 	
-	//v_shadowcoord = u_lightSpaceMatrix * a_position;
+	//v_shadowcoord =  u_lightSpaceMatrix * a_position;
 
 
     gl_Position = position;

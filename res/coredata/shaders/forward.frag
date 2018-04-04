@@ -162,8 +162,8 @@ float computeSpecular(vec3 lightDir, vec3 normal, vec3 viewDir)
 vec3 computeDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
 
-    float shadow = ShadowCalculation(v_shadowcoord);
-    //float shadow = hardShadow(v_shadowcoord, 0.001);
+    float shadow = 1.0 - ShadowCalculation(v_shadowcoord);
+    //float shadow = hardShadow(v_shadowcoord, 0.1);
 
 
 

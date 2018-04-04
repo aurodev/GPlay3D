@@ -53,6 +53,7 @@ public:
         for(unsigned int i=0; i<_dirLights.size(); ++i)
         {
             material->getParameter(formatName("u_directionalLightDirection", i).c_str())->bindValue(_dirLights[i]->getNode(), &Node::getForwardVectorView);
+            ///material->getParameter(formatName("u_directionalLightDirection", i).c_str())->bindValue(this, &LightManager::getDirection);
             material->getParameter(formatName("u_directionalLightColor", i).c_str())->bindValue(_dirLights[i], &Light::getColor);
         }
 
@@ -72,9 +73,9 @@ public:
         }
 
 
+        //material->getStateBlock()->setDepthTest(true);
+        //material->getStateBlock()->setDepthFunction(RenderState::DEPTH_LESS);
 
-        material->getStateBlock()->setDepthTest(true);
-        material->getStateBlock()->setDepthFunction(RenderState::DEPTH_LESS);
 
         /*Vector3 lightInvDir = Vector3(0.5, 0, -1);
         Matrix depthProjectionMatrix, depthViewMatrix, depthModelMatrix;
@@ -95,7 +96,7 @@ public:
         //material->setParameterAutoBinding("u_lightMtx", RenderState::WORLD_VIEW_MATRIX);
         Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
         material->getParameter("s_shadowMap")->setSampler(sampler);
-
+        sampler->setWrapMode(Texture::BORDER, Texture::BORDER);
 
 
 
@@ -124,6 +125,8 @@ public:
                                     &q);
 
         _dirLights[index]->getNode()->setRotation(q);
+
+        //_dirLights[index]->getNode()->setRotation(direction, 1.0f);
     }
 
     void setDirectionnalLightColor(unsigned int index, Vector3 color)
@@ -211,6 +214,15 @@ private:
     std::vector<Light*> _dirLights;
     std::vector<Light*> _pointLights;
     std::vector<Light*> _spotLights;
+
+
+public:
+    const Vector3 getDirection() const
+    {
+        return _direction;
+    }
+
+    Vector3 _direction;
 };
 
 
@@ -397,7 +409,7 @@ public:
 
         // Create some ImGui controls
         static float ambient[3] = { 0.2f, 0.2f, 0.2f };
-        static float dirLightDirection[3] = { -2.0, -4.0f, -1.0f };
+        static float dirLightDirection[3] = { -2.0, 4.0f, -1.0f };
         static float dirLightColor[3] = { 0.75f, 0.75f, 0.75f };
         static float pointLightPos[3] = { 0.0f, 1.0f, 0.0f };
         static float pointLightColor[3] = { 0.75f, 0.75f, 0.75f };
@@ -409,7 +421,7 @@ public:
         ImGui::Begin("Light control");
         ImGui::SliderFloat3("Ambient", ambient, 0.0f, 1.0f);
         ImGui::Separator();
-        ImGui::SliderFloat3("DirDirection", dirLightDirection, -360.0f, 360.0f);
+        ImGui::SliderFloat3("DirDirection", dirLightDirection, -400.0f, 400.0f);
         ImGui::SliderFloat3("DirColor", dirLightColor, 0.0f, 1.0f);
         ImGui::Separator();
         ImGui::SliderFloat3("PointPos", pointLightPos, -100.0f, 100.0f);
@@ -436,7 +448,7 @@ public:
 
 
 
-
+        _lightManager._direction = Vector3(dirLightDirection);
 
 
 
@@ -446,24 +458,44 @@ public:
 
         ////
 
-        Vector3 lightInvDir; // Vector3(-2, 4, -1);
-        lightInvDir = _lightManager.getDirectionnalLight(0)->getNode()->getForwardVector();
+        /*Vector3 lightInvDir =  Vector3(-2, -4, -1);
+        //lightInvDir = _lightManager.getDirectionnalLight(0)->getNode()->getForwardVector();
+        lightInvDir = _lightManager._direction;
+
+
+        Vector3 dd;
+        _scene->getActiveCamera()->getViewMatrix().getForwardVector(&dd);
 
         Matrix depthProjectionMatrix, depthViewMatrix, depthModelMatrix;
         Matrix::createOrthographic(-1000, 1000, 1, 100, &depthProjectionMatrix);
-        //Matrix::createLookAt(lightInvDir, Vector3(0,0,0), Vector3(0,1,0), &depthViewMatrix);
+        Matrix::createLookAt(lightInvDir,dd , Vector3(0,1,0), &depthViewMatrix);
         //Matrix::createFromEuler(lightInvDir.x, lightInvDir.y, lightInvDir.z, &depthViewMatrix);
 
-        Matrix::createFromEuler(MATH_DEG_TO_RAD(lightInvDir.x),
+        /*Matrix::createFromEuler(MATH_DEG_TO_RAD(lightInvDir.x),
                                     MATH_DEG_TO_RAD(-lightInvDir.y),
                                     MATH_DEG_TO_RAD(lightInvDir.z),
-                                    &depthViewMatrix);
+                                    &depthViewMatrix);*/
+
+        Vector3 lightPos(1, 4.0f, 0);
+        lightPos = _lightManager.getDirectionnalLight(0)->getNode()->getForwardVector();
+        lightPos.negate();
+
+
+        Matrix lightProjection, lightView;
+        //Matrix lightSpaceMatrix;
+        float near_plane = 0.1f, far_plane = 1000.0f;
+        //lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+            Matrix::createOrthographic(-100, 100, near_plane, far_plane, &lightProjection);
+
+        //lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+            Matrix::createLookAt(lightPos, Vector3(0.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), &lightView);
+        _lightSpaceMatrix = lightProjection * lightView;
 
 
 
 
-        depthModelMatrix = Matrix::identity();
-        _lightSpaceMatrix = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+        //depthModelMatrix = Matrix::identity();
+        //_lightSpaceMatrix = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
         //_lightSpaceMatrix = depthProjectionMatrix * depthModelMatrix * lightInvDir;
     }
 
@@ -487,6 +519,10 @@ public:
             Model* model = dynamic_cast<Model*>(drawable);
             model->getMaterial(0)->setTechnique("mytech2");
 
+
+            model->getMaterial(0)->getStateBlock()->setDepthTest(true);
+            model->getMaterial(0)->getStateBlock()->setDepthFunction(RenderState::DEPTH_LESS);
+
             model->getMaterial(0)->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
             model->getMaterial(0)->getParameter("u_mymodel")->setValue(Matrix::identity());
 
@@ -503,14 +539,6 @@ public:
         {
             Model* model = dynamic_cast<Model*>(drawable);
             model->getMaterial(0)->setTechnique("mytech1");
-
-
-
-
-
-
-
-
 
 
             model->getMaterial(0)->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
