@@ -76,32 +76,10 @@ public:
         //material->getStateBlock()->setDepthTest(true);
         //material->getStateBlock()->setDepthFunction(RenderState::DEPTH_LESS);
 
-
-        /*Vector3 lightInvDir = Vector3(0.5, 0, -1);
-        Matrix depthProjectionMatrix, depthViewMatrix, depthModelMatrix;
-        Matrix::createOrthographic(-10, 10, -10, 10, &depthProjectionMatrix);
-        Matrix::createLookAt(lightInvDir, Vector3(0,0,0), Vector3(0,1,0), &depthViewMatrix);
-        depthModelMatrix = Matrix::identity();
-        Matrix depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;*/
-
-
-       /* Matrix projMatrix;
-        Matrix::createPerspective(45.0f, 800 / 600, 1.0f, 1000.0f, &projMatrix);
-        Matrix viewMatrix;
-        Matrix::createLookAt(Vector3(0,0,-800), Vector3::zero(), Vector3::unitY(), &viewMatrix);
-        Matrix depthMVP = projMatrix * viewMatrix;*/
-
-
-        //material->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
-        //material->setParameterAutoBinding("u_lightMtx", RenderState::WORLD_VIEW_MATRIX);
+        // bind frame buffer depth target to sampler
         Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
         material->getParameter("s_shadowMap")->setSampler(sampler);
         sampler->setWrapMode(Texture::BORDER, Texture::BORDER);
-
-
-
-
-
     }
 
     void setAmbientColor(Vector3 ambient)
@@ -125,8 +103,6 @@ public:
                                     &q);
 
         _dirLights[index]->getNode()->setRotation(q);
-
-        //_dirLights[index]->getNode()->setRotation(direction, 1.0f);
     }
 
     void setDirectionnalLightColor(unsigned int index, Vector3 color)
@@ -214,15 +190,6 @@ private:
     std::vector<Light*> _dirLights;
     std::vector<Light*> _pointLights;
     std::vector<Light*> _spotLights;
-
-
-public:
-    const Vector3 getDirection() const
-    {
-        return _direction;
-    }
-
-    Vector3 _direction;
 };
 
 
@@ -275,8 +242,6 @@ public:
         _lightManager.addPointLight(Light::createPoint(Vector3(0.0, 0.0, 1.0), 50));
         _lightManager.addSpotLight(Light::createSpot(Vector3(0.0, 0.0, 1.0), 50, MATH_DEG_TO_RAD(30.0f),  MATH_DEG_TO_RAD(45.0f)));
 
-        // Initialise materials for all models
-       /// _scene->visit(this, &Sponza::initializeMaterials);
 
         // create a cube
         Bundle* bundle = Bundle::create("res/data/scenes/box.gpb");
@@ -340,12 +305,12 @@ public:
 
         std::vector<Texture*> textures;
         textures.push_back(texDepth);
-        _frameBuffer = FrameBuffer::create("MyFrameBuffer", textures);
+        _frameBuffer = FrameBuffer::create("ShadowFrameBuffer", textures);
 
 
 
         // Create a quad for framebuffer preview
-       /* Mesh* meshQuad = Mesh::createQuad(0,0,256,256);
+        Mesh* meshQuad = Mesh::createQuad(0,0,256,256);
         _quadModel = Model::create(meshQuad);
         SAFE_RELEASE(meshQuad);
         _quadModel->setMaterial("res/coredata/shaders/debug.vert", "res/coredata/shaders/debug.frag", "SHOW_DEPTH");
@@ -353,39 +318,8 @@ public:
         _quadModel->getMaterial()->getParameter("u_texture")->setValue(sampler);
 
 
-
-
-        // Create a perspective projection matrix.
-        /*Matrix projMatrix;
-        Matrix::createPerspective(45.0f, getWidth() / (float)getHeight(), 1.0f, 1000.0f, &projMatrix);
-        //Matrix::createOrthographic(10, 10, -1.0f, 1.0f, &projMatrix);
-
-        // Create a lookat view matrix.
-        Matrix viewMatrix;
-        Matrix::createLookAt(Vector3(0,0,-500), Vector3::zero(), Vector3::unitY(), &viewMatrix);
-
-        // set mvp matrix
-        _LightMatrix = projMatrix * viewMatrix;
-
-
-        _quadModel->getMaterial()->getParameter("u_projectionMatrix")->setValue(_LightMatrix);*/
-
-
-
-        /*Vector3 lightInvDir = Vector3(-2, 4, -1);
-        Matrix depthProjectionMatrix, depthViewMatrix, depthModelMatrix;
-        Matrix::createOrthographic(-100, 100, -100, 100, &depthProjectionMatrix);
-        Matrix::createLookAt(lightInvDir, Vector3(0,0,0), Vector3(0,1,0), &depthViewMatrix);
-        depthModelMatrix = Matrix::identity();
-        _lightSpaceMatrix = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;*/
-
-
-
-
-
-
+        // Initialise materials for all models in scene
          _scene->visit(this, &Sponza::initializeMaterials);
-
     }
 
     bool initializeMaterials(Node* node)
@@ -409,7 +343,7 @@ public:
 
         // Create some ImGui controls
         static float ambient[3] = { 0.2f, 0.2f, 0.2f };
-        static float dirLightDirection[3] = { -2.0, 4.0f, -1.0f };
+        static float dirLightDirection[3] = { -30.0, -92.0f, -1.0f };
         static float dirLightColor[3] = { 0.75f, 0.75f, 0.75f };
         static float pointLightPos[3] = { 0.0f, 1.0f, 0.0f };
         static float pointLightColor[3] = { 0.75f, 0.75f, 0.75f };
@@ -448,55 +382,17 @@ public:
 
 
 
-        _lightManager._direction = Vector3(dirLightDirection);
+        // set light matrix for shadows
 
-
-
-
-
-
-
-        ////
-
-        /*Vector3 lightInvDir =  Vector3(-2, -4, -1);
-        //lightInvDir = _lightManager.getDirectionnalLight(0)->getNode()->getForwardVector();
-        lightInvDir = _lightManager._direction;
-
-
-        Vector3 dd;
-        _scene->getActiveCamera()->getViewMatrix().getForwardVector(&dd);
-
-        Matrix depthProjectionMatrix, depthViewMatrix, depthModelMatrix;
-        Matrix::createOrthographic(-1000, 1000, 1, 100, &depthProjectionMatrix);
-        Matrix::createLookAt(lightInvDir,dd , Vector3(0,1,0), &depthViewMatrix);
-        //Matrix::createFromEuler(lightInvDir.x, lightInvDir.y, lightInvDir.z, &depthViewMatrix);
-
-        /*Matrix::createFromEuler(MATH_DEG_TO_RAD(lightInvDir.x),
-                                    MATH_DEG_TO_RAD(-lightInvDir.y),
-                                    MATH_DEG_TO_RAD(lightInvDir.z),
-                                    &depthViewMatrix);*/
-
-        Vector3 lightPos(1, 4.0f, 0);
-        lightPos = _lightManager.getDirectionnalLight(0)->getNode()->getForwardVector();
+        Vector3 lightPos = _lightManager.getDirectionnalLight(0)->getNode()->getForwardVector();
         lightPos.negate();
 
-
         Matrix lightProjection, lightView;
-        //Matrix lightSpaceMatrix;
-        float near_plane = 0.1f, far_plane = 1000.0f;
-        //lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-            Matrix::createOrthographic(-100, 100, near_plane, far_plane, &lightProjection);
-
-        //lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-            Matrix::createLookAt(lightPos, Vector3(0.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), &lightView);
+        float near_plane = 0.1f, far_plane = 300.0f;
+        Matrix::createOrthographic(-100, 100, near_plane, far_plane, &lightProjection);
+        Matrix::createLookAt(lightPos, Vector3(0.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), &lightView);
         _lightSpaceMatrix = lightProjection * lightView;
 
-
-
-
-        //depthModelMatrix = Matrix::identity();
-        //_lightSpaceMatrix = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
-        //_lightSpaceMatrix = depthProjectionMatrix * depthModelMatrix * lightInvDir;
     }
 
     void render(float elapsedTime)
@@ -507,6 +403,7 @@ public:
 
         Game::getInstance()->bindView(0);
         _scene->visit(this, &Sponza::drawScene);
+        _quadModel->draw();
 
         drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());
     }
@@ -518,15 +415,7 @@ public:
         {
             Model* model = dynamic_cast<Model*>(drawable);
             model->getMaterial(0)->setTechnique("mytech2");
-
-
-            model->getMaterial(0)->getStateBlock()->setDepthTest(true);
-            model->getMaterial(0)->getStateBlock()->setDepthFunction(RenderState::DEPTH_LESS);
-
             model->getMaterial(0)->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
-            model->getMaterial(0)->getParameter("u_mymodel")->setValue(Matrix::identity());
-
-
             drawable->draw();
         }
         return true;
@@ -539,15 +428,7 @@ public:
         {
             Model* model = dynamic_cast<Model*>(drawable);
             model->getMaterial(0)->setTechnique("mytech1");
-
-
             model->getMaterial(0)->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
-
-            /*Material* material = model->getMaterial(0);
-            Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
-            material->getParameter("s_shadowMap")->setValue(sampler);*/
-            //material->getParameter("s_shadowMap")->setSampler(_frameBuffer->getRenderTarget(0));
-
             drawable->draw();
         }
         return true;

@@ -35,7 +35,8 @@ SOURCES += \
     src/SparkDemo.cpp \
     src/Transparency.cpp \
     src/ShaderReload.cpp \
-    src/EventSample.cpp
+    src/EventSample.cpp \
+    src/LightsAndShadows.cpp
 
 HEADERS += \
     src/SamplesGame.h \

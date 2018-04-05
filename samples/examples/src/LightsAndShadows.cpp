@@ -6,7 +6,7 @@
 
 using namespace gameplay;
 
-class MyNewExample : public Example
+class LightsAndShadows : public Example
 {
     FirstPersonCamera _fpCamera;
     Font* _font;
@@ -14,7 +14,7 @@ class MyNewExample : public Example
 
 public:
 
-    MyNewExample()
+    LightsAndShadows()
         : _font(nullptr), _scene(nullptr)
     {
     }
@@ -65,7 +65,7 @@ public:
         clear(CLEAR_COLOR_DEPTH, 0.1f, 0.1f, 0.2f, 1.0f, 1.0f, 0);
 
         // Visit all the nodes in the scene, drawing the models.
-        _scene->visit(this, &MyNewExample::drawScene);
+        _scene->visit(this, &LightsAndShadows::drawScene);
 
         drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());
     }
@@ -112,6 +112,6 @@ public:
 };
 
 #if defined(ADD_SAMPLE)
-    ADD_SAMPLE("Category", "MyNewExample", MyNewExample, 255);
+    ADD_SAMPLE("Graphics", "Lights And Shadows", LightsAndShadows, 255);
 #endif
 
