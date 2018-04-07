@@ -595,6 +595,12 @@ public:
     void setRotation(const Vector3& axis, float angle);
 
     /**
+     * Sets forward direction. Positive Z axis equals identity rotation.
+     * @param direction
+     */
+    void setDirection(const Vector3& direction);
+
+    /**
      * Sets the translation component for this transform to the
      * specified translation vector.
      *

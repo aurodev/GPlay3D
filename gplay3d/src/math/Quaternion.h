@@ -100,6 +100,14 @@ public:
     Quaternion(const Vector3& axis, float angle);
 
     /**
+     * Constructs a quaternion from the rotation difference between two direction vectors.
+     *
+     * @param start The start vector direction.
+     * @param end The end vector direction.
+     */
+    Quaternion(const Vector3& start, const Vector3& end);
+
+    /**
      * Constructs a new quaternion that is a copy of the specified one.
      *
      * @param copy The quaternion to copy.
@@ -138,6 +146,16 @@ public:
      * @return true if this quaternion is all zeros, false otherwise.
      */
     bool isZero() const;
+
+    /**
+     * Creates this quaternion equal from the rotation difference between two direction vectors.
+     * and stores the result in dst.
+     *
+     * @param start The start vector direction.
+     * @param end The end vector direction.
+     * @param dst A quaternion to store the result in.
+     */
+    static void createFromRotationTo(const Vector3& start, const Vector3& end, Quaternion* dst);
 
 	/**
 	* Creates this quaternion equal to the rotation from the specified euler angles

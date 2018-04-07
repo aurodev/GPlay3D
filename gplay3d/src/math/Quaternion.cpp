@@ -29,6 +29,11 @@ Quaternion::Quaternion(const Vector3& axis, float angle)
     set(axis, angle);
 }
 
+Quaternion::Quaternion(const Vector3& start, const Vector3& end)
+{
+    Quaternion::createFromRotationTo(start, end, this);
+}
+
 Quaternion::Quaternion(const Quaternion& copy)
 {
     set(copy);
@@ -58,6 +63,43 @@ bool Quaternion::isIdentity() const
 bool Quaternion::isZero() const
 {
     return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f;
+}
+
+void Quaternion::createFromRotationTo(const Vector3& start, const Vector3& end, Quaternion* dst)
+{
+    Vector3 normStart;
+    Vector3 normEnd;
+
+    start.normalize(&normStart);
+    end.normalize(&normEnd);
+
+    float d = normStart.dot(normEnd);
+
+    if (d > -1.0f + MATH_EPSILON)
+    {
+        Vector3 c = normStart;
+        c.cross(normEnd);
+        float s = sqrtf((1.0f + d) * 2.0f);
+        float invS = 1.0f / s;
+
+        dst->x = c.x * invS;
+        dst->y = c.y * invS;
+        dst->z = c.z * invS;
+        dst->w = 0.5f * s;
+    }
+    else
+    {
+        Vector3 axis = Vector3::unitX();
+        axis.cross(normStart);
+
+        if (axis.length() < MATH_EPSILON)
+        {
+            axis = Vector3::unitY();
+            axis.cross(normStart);
+        }
+
+        createFromAxisAngle(axis, MATH_DEG_TO_RAD(180.0f), dst);
+    }
 }
 
 void Quaternion::createFromEuler(float yaw, float pitch, float roll, Quaternion* dst)

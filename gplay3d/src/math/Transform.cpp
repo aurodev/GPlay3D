@@ -551,6 +551,11 @@ void Transform::setRotation(const Vector3& axis, float angle)
     dirty(DIRTY_ROTATION);
 }
 
+void Transform::setDirection(const Vector3& direction)
+{
+    setRotation(Quaternion(-Vector3::unitZ(), direction));
+}
+
 void Transform::setTranslation(const Vector3& translation)
 {
     if (isStatic())
