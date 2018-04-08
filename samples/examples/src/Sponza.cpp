@@ -39,8 +39,30 @@ public:
         _spotLights.push_back(light);
     }
 
+    void initializeMaterials()
+    {
+         _scene->visit(this, &LightManager::initializeMaterials);
+    }
+
+    bool initializeMaterials(Node* node)
+    {
+        Model* model = dynamic_cast<Model*>(node->getDrawable());
+        if (model)
+        {
+            for(unsigned int i=0; i<model->getMeshPartCount(); i++)
+            {
+                Material* material = model->getMaterial(i);
+                if(material)
+                    initLightForMaterial(material);
+            }
+
+        }
+        return true;
+    }
+
     void initLightForMaterial(Material* material)
     {
+        material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
         material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
         material->setParameterAutoBinding("u_viewMatrix", RenderState::VIEW_MATRIX);
         material->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
@@ -90,62 +112,6 @@ public:
     const Vector3 getAmbientColor() const
     {
         return _ambientColor;
-    }
-
-    void setDirectionnalLightDirection(unsigned int index, Vector3 direction)
-    {
-        GP_ASSERT(index < _dirLights.size());
-
-        Quaternion q;
-        Quaternion::createFromEuler(MATH_DEG_TO_RAD(direction.x),
-                                    MATH_DEG_TO_RAD(direction.y),
-                                    MATH_DEG_TO_RAD(direction.z),
-                                    &q);
-
-        _dirLights[index]->getNode()->setRotation(q);
-    }
-
-    void setDirectionnalLightColor(unsigned int index, Vector3 color)
-    {
-        GP_ASSERT(index < _dirLightColors.size());
-        _dirLights[index]->setColor(color);
-    }
-
-    void setPointLightPosition(unsigned int index, Vector3 position)
-    {
-        GP_ASSERT(index < _pointLights.size());
-        _pointLights[index]->getNode()->setTranslation(position);
-    }
-
-    void setPointLightColor(unsigned int index, Vector3 color)
-    {
-        GP_ASSERT(index < _pointLights.size());
-        _pointLights[0]->setColor(color);
-    }
-
-    void setSpotLightPosition(unsigned int index, Vector3 position)
-    {
-        GP_ASSERT(index < _spotLights.size());
-        _spotLights[index]->getNode()->setTranslation(position);
-    }
-
-    void setSpotLightDirection(unsigned int index, Vector3 direction)
-    {
-        GP_ASSERT(index < _spotLights.size());
-
-        Quaternion q;
-        Quaternion::createFromEuler(MATH_DEG_TO_RAD(direction.x),
-                                    MATH_DEG_TO_RAD(direction.y),
-                                    MATH_DEG_TO_RAD(direction.z),
-                                    &q);
-
-        _spotLights[index]->getNode()->setRotation(q);
-    }
-
-    void setSpotLightColor(unsigned int index, Vector3 color)
-    {
-        GP_ASSERT(index < _spotLights.size());
-        _spotLights[0]->setColor(color);
     }
 
     Light* getDirectionnalLight(unsigned int index)
@@ -319,7 +285,8 @@ public:
 
 
         // Initialise materials for all models in scene
-         _scene->visit(this, &Sponza::initializeMaterials);
+         //_scene->visit(this, &Sponza::initializeMaterials);
+        _lightManager.initializeMaterials();
     }
 
     bool initializeMaterials(Node* node)
@@ -343,7 +310,7 @@ public:
 
         // Create some ImGui controls
         static float ambient[3] = { 0.2f, 0.2f, 0.2f };
-        static float dirLightDirection[3] = { -30.0, -92.0f, -1.0f };
+        static float dirLightDirection[3] = { 0.0, -1.0f, -0.1f };
         static float dirLightColor[3] = { 0.75f, 0.75f, 0.75f };
         static float pointLightPos[3] = { 0.0f, 1.0f, 0.0f };
         static float pointLightColor[3] = { 0.75f, 0.75f, 0.75f };
@@ -355,14 +322,14 @@ public:
         ImGui::Begin("Light control");
         ImGui::SliderFloat3("Ambient", ambient, 0.0f, 1.0f);
         ImGui::Separator();
-        ImGui::SliderFloat3("DirDirection", dirLightDirection, -400.0f, 400.0f);
+        ImGui::SliderFloat3("DirDirection", dirLightDirection, -1.0f, 1.0f);
         ImGui::SliderFloat3("DirColor", dirLightColor, 0.0f, 1.0f);
         ImGui::Separator();
         ImGui::SliderFloat3("PointPos", pointLightPos, -100.0f, 100.0f);
         ImGui::SliderFloat3("PointColor", pointLightColor, 0.0f, 1.0f);
         ImGui::Separator();
         ImGui::SliderFloat3("SpotPos", spotLightPos, -100.0f, 100.0f);
-        ImGui::SliderFloat3("SpotDir", spotLightDir, -360.0f, 360.0f);
+        ImGui::SliderFloat3("SpotDir", spotLightDir, -1.0f, 1.0f);
         ImGui::SliderFloat3("SpotColor", spotLightColor, 0.0f, 1.0f);
         ImGui::End();
 
@@ -370,15 +337,15 @@ public:
 
         _lightManager.setAmbientColor(ambient);
 
-        _lightManager.setDirectionnalLightDirection(0, Vector3(dirLightDirection));
-        _lightManager.setDirectionnalLightColor(0, Vector3(dirLightColor));
+        _lightManager.getDirectionnalLight(0)->getNode()->setDirection(dirLightDirection);
+        _lightManager.getDirectionnalLight(0)->setColor(dirLightColor);
 
-        _lightManager.setPointLightPosition(0, Vector3(pointLightPos));
-        _lightManager.setPointLightColor(0, pointLightColor);
+        _lightManager.getPointLight(0)->getNode()->setTranslation(pointLightPos);
+        _lightManager.getPointLight(0)->setColor(pointLightColor);
 
-        _lightManager.setSpotLightPosition(0, Vector3(spotLightPos));
-        _lightManager.setSpotLightDirection(0, Vector3(spotLightDir));
-        _lightManager.setSpotLightColor(0, spotLightColor);
+        _lightManager.getSpotLight(0)->getNode()->setTranslation(spotLightPos);
+        _lightManager.getSpotLight(0)->getNode()->setDirection(spotLightDir);
+        _lightManager.getSpotLight(0)->setColor(spotLightColor);
 
 
 

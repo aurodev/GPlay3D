@@ -4,16 +4,16 @@ $input v_texcoord0, v_color, v_normal, v_position, v_tbnViewSpace, v_shadowcoord
 
 
 #define DIRECTIONAL_LIGHT_COUNT 1
-#define POINT_LIGHT_COUNT 0
-#define SPOT_LIGHT_COUNT 0
+#define POINT_LIGHT_COUNT 1
+#define SPOT_LIGHT_COUNT 1
 
 #define DIFFUSE_MAP
 #define BUMP_MAP
 #define SPECULAR_MAP
 #define SPECULAR
-#define TEXTURE_DISCARD_ALPHA
+//#define TEXTURE_DISCARD_ALPHA
 //#define FOG
-
+#define SHADOW
 
 
 
@@ -32,9 +32,8 @@ $input v_texcoord0, v_color, v_normal, v_position, v_tbnViewSpace, v_shadowcoord
 
 
 SAMPLER2D(u_diffuseTexture, 0);
-SAMPLER2D(u_normalMap, 1);
-SAMPLER2D(u_specularMap, 2);
-//SAMPLER2DSHADOW(s_shadowMap, 3);
+SAMPLER2D(u_normalTexture, 1);
+SAMPLER2D(u_specularTexture, 2);
 SAMPLER2D(s_shadowMap, 3);
 
 uniform vec4 u_ambientColor;
@@ -137,14 +136,6 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     return shadow;
 }
 
-/*
-float hardShadow(vec4 _shadowCoord, float _bias)
-{
-    vec3 texCoord = _shadowCoord.xyz / _shadowCoord.w;
-    return shadow2D(s_shadowMap, vec3(texCoord.xy, texCoord.z-_bias) );
-}
-*/
-
 float computeSpecular(vec3 lightDir, vec3 normal, vec3 viewDir)
 {
     // Phong
@@ -161,28 +152,21 @@ float computeSpecular(vec3 lightDir, vec3 normal, vec3 viewDir)
 // calculates the color when using a directional light.
 vec3 computeDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
-
-    float shadow = 1.0 - ShadowCalculation(v_shadowcoord);
-    //float shadow = hardShadow(v_shadowcoord, 0.1);
-
-
-
     vec3 lightDir = normalize(-light.direction);
 
     // diffuse
     float diff = max(dot(normal, lightDir), 0.0);
-
-   
 
     // specular
 #if defined(SPECULAR)
     float spec = computeSpecular(lightDir, normal, viewDir);
 #endif
 
-
+#if defined(SHADOW)
+    float shadow = 1.0 - ShadowCalculation(v_shadowcoord);
     diff *= shadow;
     spec *= shadow;
-
+#endif
 
     // combine results
 
@@ -299,7 +283,7 @@ void main()
 
 
 #if defined(BUMP_MAP)
-    vec4 normalMap = texture2D(u_normalMap, v_texcoord0) * 2 - 1;
+    vec4 normalMap = texture2D(u_normalTexture, v_texcoord0) * 2 - 1;
     normalVector = v_tbnViewSpace * normalMap.rgb;
 #endif
 
@@ -308,7 +292,7 @@ void main()
 
 #if defined(SPECULAR)
 #if defined(SPECULAR_MAP)
-    vec4 specularMap = texture2D(u_specularMap, v_texcoord0);
+    vec4 specularMap = texture2D(u_specularTexture, v_texcoord0);
 #else
     vec4 specularMap = vec4(0.5, 0.5, 0.5, 1.0);
 #endif
