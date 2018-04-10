@@ -9,6 +9,7 @@ $output v_color, v_texcoord0, v_normal, v_position, v_tbnViewSpace, v_shadowcoor
 uniform mat4 u_worldViewMatrix;
 uniform mat4 u_worldViewProjectionMatrix;
 uniform mat4 u_inverseTransposeWorldViewMatrix;
+uniform mat4 u_worldMatrix;
 
 uniform mat4 u_lightSpaceMatrix;
 
@@ -31,15 +32,12 @@ void main()
     v_tbnViewSpace = mat3(T,B,N);
 #endif
 
-
-	//v_shadowcoord = u_depthBiasWorldViewProjection * a_position;
-
+	
+	// shadow
 	const float shadowMapOffset = 0.01;
 	vec3 posOffset = a_position.xyz + v_normal.xyz * shadowMapOffset;
-	v_shadowcoord = mul(u_lightSpaceMatrix, vec4(posOffset, 1.0) );
-
-	
-	//v_shadowcoord =  u_lightSpaceMatrix * a_position;
+	v_shadowcoord = mul(u_lightSpaceMatrix, mul(u_worldMatrix, vec4(posOffset, 1.0)) );
+	//v_shadowcoord =   u_lightSpaceMatrix * u_worldMatrix * a_position;
 
 
     gl_Position = position;

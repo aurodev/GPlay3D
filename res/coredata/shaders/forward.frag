@@ -3,9 +3,9 @@ $input v_texcoord0, v_color, v_normal, v_position, v_tbnViewSpace, v_shadowcoord
 #include "common/common.sh"
 
 
-#define DIRECTIONAL_LIGHT_COUNT 1
-#define POINT_LIGHT_COUNT 1
-#define SPOT_LIGHT_COUNT 1
+//#define DIRECTIONAL_LIGHT_COUNT 1
+//#define POINT_LIGHT_COUNT 1
+//#define SPOT_LIGHT_COUNT 1
 
 #define DIFFUSE_MAP
 #define BUMP_MAP
@@ -121,19 +121,12 @@ FogInfo fog;
 
 
 float ShadowCalculation(vec4 fragPosLightSpace)
-{
-    // perform perspective divide
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;    
-    // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture2D(s_shadowMap, projCoords.xy).x; 
-    // get depth of current fragment from light's perspective
-    float currentDepth = projCoords.z;
-    // check whether current frag pos is in shadow
-    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
-
-    return shadow;
+{   
+    vec3 tex_coords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    tex_coords = tex_coords * 0.5 + 0.5;
+    float depth = texture2D(s_shadowMap, tex_coords.xy).r;
+    float inShadow = (depth < tex_coords.z) ? 1.0 : 0.0;
+    return inShadow;
 }
 
 float computeSpecular(vec3 lightDir, vec3 normal, vec3 viewDir)
