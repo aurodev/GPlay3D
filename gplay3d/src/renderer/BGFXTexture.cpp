@@ -154,7 +154,7 @@ bgfx::TextureHandle createTexture(bimg::ImageContainer* imageContainer, uint32_t
                     , mem
                     );
     }
-    else if (1 < imageContainer->m_depth)
+    /*else if (1 < imageContainer->m_depth)
     {
         handle = bgfx::createTexture3D(
                     uint16_t(imageContainer->m_width)
@@ -165,7 +165,7 @@ bgfx::TextureHandle createTexture(bimg::ImageContainer* imageContainer, uint32_t
                     , flags
                     , mem
                     );
-    }
+    }*/
     else
     {
         handle = bgfx::createTexture2D(

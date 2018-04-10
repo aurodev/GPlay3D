@@ -355,7 +355,7 @@ public:
         lightPos.negate();
 
         Matrix lightProjection, lightView;
-        float near_plane = 0.1f, far_plane = 300.0f;
+        float near_plane = -500.0f, far_plane = 500.0f;
         Matrix::createOrthographic(-100, 100, near_plane, far_plane, &lightProjection);
         Matrix::createLookAt(lightPos, Vector3(0.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), &lightView);
         _lightSpaceMatrix = lightProjection * lightView;
@@ -382,6 +382,7 @@ public:
         {
             Model* model = dynamic_cast<Model*>(drawable);
             model->getMaterial(0)->setTechnique("mytech2");
+            model->getMaterial(0)->getParameter("u_worldMatrix")->setValue(model->getNode()->getWorldMatrix());
             model->getMaterial(0)->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
             drawable->draw();
         }
@@ -395,6 +396,7 @@ public:
         {
             Model* model = dynamic_cast<Model*>(drawable);
             model->getMaterial(0)->setTechnique("mytech1");
+            model->getMaterial(0)->getParameter("u_worldMatrix")->setValue(model->getNode()->getWorldMatrix());
             model->getMaterial(0)->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
             drawable->draw();
         }

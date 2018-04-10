@@ -3,10 +3,9 @@
 #include "SamplesGame.h"
 #include "FirstPersonCamera.h"
 #include <imgui/imgui.h>
+#include <core/FileWatcher.h>
 
 using namespace gameplay;
-
-
 
 
 class LightManager2
@@ -89,15 +88,6 @@ public:
             material->getParameter(formatName("u_spotLightColor", i).c_str())->bindValue(_spotLights[i], &Light::getColor);
             material->getParameter(formatName("u_spotLightAttenuation", i).c_str())->bindValue(_spotLights[i], &Light::getAttenuation);
         }
-
-
-        //material->getStateBlock()->setDepthTest(true);
-        //material->getStateBlock()->setDepthFunction(RenderState::DEPTH_LESS);
-
-        // bind frame buffer depth target to samplerbumpSampler
-        /*Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
-        material->getParameter("s_shadowMap")->setSampler(sampler);
-        sampler->setWrapMode(Texture::BORDER, Texture::BORDER);*/
     }
 
     void setAmbientColor(Vector3 ambient)
@@ -166,16 +156,19 @@ class LightsAndShadows : public Example
     FirstPersonCamera _fpCamera;
     Font* _font;
     Scene* _scene;
-
     LightManager2 _lightManager;
-
     Node* _node;
+    Model* _quadModel;
+    FrameBuffer* _frameBuffer;
+    Matrix _lightSpaceMatrix;
+    Vector4 _shadowProjection;
 
 public:
 
     LightsAndShadows()
-        : _font(nullptr), _scene(nullptr)
+        : _font(nullptr), _scene(nullptr), _node(nullptr)
     {
+        _shadowProjection = Vector4(-10,10,-10,10);
     }
 
     void finalize()
@@ -201,13 +194,57 @@ public:
         _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
 
 
-        // create a material
-        Material* material = Material::create("res/coredata/shaders/forward.vert", "res/coredata/shaders/forward.frag", "DIRECTIONAL_LIGHT_COUNT=1");
+
+
+#define FRAMEBUFFER_WIDTH 1024
+#define FRAMEBUFFER_HEIGHT 1024
+
+        // create views
+        Game * game = Game::getInstance();
+
+        View defaultView;
+        defaultView.clearColor = 0x111122ff;
+        defaultView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
+        defaultView.depth = 1.0f;
+        defaultView.stencil = 0;
+        defaultView.rectangle = Rectangle(game->getWidth(), game->getHeight());
+        game->insertView(0, defaultView);
+
+        View secondView;
+        secondView.clearColor = 0x303030ff;
+        secondView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
+        secondView.depth = 1.0f;
+        secondView.stencil = 0;
+        secondView.rectangle = Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
+        game->insertView(1, secondView);
+
+
+        // Create a framebuffer with a depth texture
+        Texture::TextureInfo texInfo;
+        texInfo.id = "targetDepth";
+        texInfo.width = FRAMEBUFFER_WIDTH;
+        texInfo.height = FRAMEBUFFER_HEIGHT;
+        texInfo.type = Texture::TEXTURE_RT;
+        texInfo.format = Texture::Format::D16;
+        texInfo.flags = BGFX_TEXTURE_RT ;
+        Texture* texDepth = Texture::create(texInfo);
+
+        std::vector<Texture*> textures;
+        textures.push_back(texDepth);
+        //_frameBuffer2 = FrameBuffer::create("ShadowFrameBuffer", textures);
+        _frameBuffer = FrameBuffer::create("ShadowFrameBuffer", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::D16);
+
+
+
+
+
+        // material
+
+        Material* material = Material::create("res/data/materials/test.material");
         material->getStateBlock()->setCullFace(false);
         material->getStateBlock()->setDepthTest(true);
         material->getStateBlock()->setDepthWrite(true);
 
-        // Load the texture from file.
         Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/data/textures/brick.png", true);
         sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
@@ -216,6 +253,11 @@ public:
 
         Texture::Sampler* specSampler = material->getParameter("u_specularTexture")->setValue("res/data/textures/brickspec.png", true);
         specSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+
+        Texture::Sampler* shadowSampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
+        material->getParameter("s_shadowMap")->setSampler(shadowSampler);
+        shadowSampler->setWrapMode(Texture::BORDER, Texture::BORDER);
+
 
 
 
@@ -258,7 +300,7 @@ public:
         _scene->addNode(nodeTorusKnot);
 
         // create a cone
-        Model* modelCone = Model::create(bundle->loadMesh("Cone_Mesh"));
+       Model* modelCone = Model::create(bundle->loadMesh("Cone_Mesh"));
         modelCone->setMaterial(material->clone());
         Node* nodeCone = Node::create("cone");
         nodeCone->setDrawable(modelCone);
@@ -278,23 +320,34 @@ public:
 
         // Use a light manager to declare lights
         _lightManager.setScene(_scene);
-        _lightManager.setAmbientColor(Vector3(0.1, 0.1, 0.1));
+        _lightManager.setAmbientColor(Vector3(0.3, 0.3, 0.3));
         _lightManager.addDirectionnalLight(Light::createDirectional(Vector3(0.5, 0.5, 0.2)));
         _lightManager.addPointLight(Light::createPoint(Vector3(0.0, 0.0, 1.0), 50));
         _lightManager.addSpotLight(Light::createSpot(Vector3(0.0, 0.0, 1.0), 50, MATH_DEG_TO_RAD(30.0f),  MATH_DEG_TO_RAD(45.0f)));
         _lightManager.initializeMaterials();
 
-
-        _lightManager.setAmbientColor(Vector3(0,0,0));
         _lightManager.getDirectionnalLight(0)->setColor(Vector3(1,1,1));
 
 
         _node = nodeMonkey;
 
 
-
         SAFE_RELEASE(bundle);
         SAFE_RELEASE(material);
+
+
+        // Add watcher to shader directory and bind event to be notified on changes
+        FileWatcher::Get()->addDirectory("res/coredata/shaders", true);
+        EventManager::get()->addListener(GP_EVENT_LISTENER(this, LightsAndShadows::onShaderDirectoryEvent), FileWatcherEvent::ID());
+
+
+        // Create a quad for framebuffer preview
+        Mesh* meshQuad = Mesh::createQuad(0,0,256,256);
+        _quadModel = Model::create(meshQuad);
+        SAFE_RELEASE(meshQuad);
+        _quadModel->setMaterial("res/coredata/shaders/debug.vert", "res/coredata/shaders/debug.frag", "SHOW_DEPTH");
+        Texture::Sampler* samplerDepth = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
+        _quadModel->getMaterial()->getParameter("u_texture")->setValue(samplerDepth);
     }
 
     void update(float elapsedTime)
@@ -308,33 +361,67 @@ public:
 
     void render(float elapsedTime)
     {
-        // Clear the color and depth buffers
-        clear(CLEAR_COLOR_DEPTH, 0.1f, 0.1f, 0.2f, 1.0f, 1.0f, 0);
+        Game::getInstance()->bindView(1);
+        _frameBuffer->bind();
+        _scene->visit(this, &LightsAndShadows::drawScene, (void*)1);
 
-        // Visit all the nodes in the scene, drawing the models.
-        _scene->visit(this, &LightsAndShadows::drawScene);
+        Game::getInstance()->bindView(0);
+        _scene->visit(this, &LightsAndShadows::drawScene, (void*)0);
+        _quadModel->draw();
 
         drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());
     }
 
-    bool drawScene(Node* node)
+    bool drawScene(Node* node, void* cookie)
     {
         Drawable* drawable = node->getDrawable();
         if (drawable)
+        {
+            Model* model = dynamic_cast<Model*>(drawable);
+
+            if((int*)cookie == (int*)1)
+            {
+                model->getMaterial(0)->setTechnique("shadowmap");
+            }
+            else
+            {
+                model->getMaterial(0)->setTechnique("forward");
+            }
+
+
+            model->getMaterial(0)->getParameter("u_worldMatrix")->setValue(model->getNode()->getWorldMatrix());
+            model->getMaterial(0)->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
+
             drawable->draw();
+        }
         return true;
     }
 
     void showToolbox()
     {
-        static float dirLightDirection[3] = { 0.0, -1.0f, 0.0f };
+        static float dirLightDirection[3] = { -1.0f, -1.0f, -1.0f };
+        static float orthoProj[4] = { -10.0f, 10.0f, -10.0f, 10.0f };
 
         ImGui::Begin("Toolbox");
-        ImGui::SliderFloat3("Direction", dirLightDirection, -1.0f, 1.0f);
-        ImGui::End();      
+        ImGui::SliderFloat4("shadow projection", orthoProj, -100.0f, 100.0f);
+        ImGui::SliderFloat3("light direction", dirLightDirection, -1.0f, 1.0f);
+        ImGui::End();
+
+        if(orthoProj[0] < 0 && orthoProj[1] > 0 && orthoProj[2] != orthoProj[3])
+            _shadowProjection.set(orthoProj);
 
         _lightManager.getDirectionnalLight(0)->getNode()->setDirection(Vector3(dirLightDirection));
-        _node->setDirection(Vector3(dirLightDirection));
+
+        if(_node)
+            _node->setDirection(Vector3(dirLightDirection));
+
+
+        // set light matrix for shadows
+        Vector3 lightDir = _lightManager.getDirectionnalLight(0)->getNode()->getForwardVector();
+        Matrix lightProjection, lightView;
+        Matrix::createOrthographic(_shadowProjection.x, _shadowProjection.y, _shadowProjection.z, _shadowProjection.w, &lightProjection);
+        Matrix::createLookAt(Vector3(0.0, 0.0, 0.0), lightDir, Vector3(0.0, 1.0, 0.0), &lightView);
+        _lightSpaceMatrix = lightProjection * lightView;
     }
 
     void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
@@ -344,11 +431,6 @@ public:
         switch (evt)
         {
         case Touch::TOUCH_PRESS:
-            if (x < 75 && y < 50)
-            {
-                // Toggle Vsync if the user touches the top left corner
-                setVsync(!isVsync());
-            }
             break;
         case Touch::TOUCH_RELEASE:
             break;
@@ -362,6 +444,26 @@ public:
         _fpCamera.keyEvent(evt, key);
     }
 
+
+    void onShaderDirectoryEvent(EventDataRef eventData)
+    {
+        auto watchFileEvent = std::dynamic_pointer_cast<FileWatcherEvent>(eventData);
+
+        // if change on shader directory reload material for all scene nodes
+        if(watchFileEvent)
+            _scene->visit(this, &LightsAndShadows::reloadMaterials);
+    }
+
+    bool reloadMaterials(Node* node)
+    {
+        Model* model = dynamic_cast<Model*>(node->getDrawable());
+        if (model)
+        {
+            Material* material = model->getMaterial(0);
+            material->reload();
+        }
+        return true;
+    }
 };
 
 #if defined(ADD_SAMPLE)
