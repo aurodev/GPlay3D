@@ -251,7 +251,7 @@ public:
         Texture::Sampler* bumpSampler = material->getParameter("u_normalTexture")->setValue("res/data/textures/brickn.png", true);
         bumpSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
-        Texture::Sampler* specSampler = material->getParameter("u_specularTexture")->setValue("res/data/textures/spec.jpg", true);
+        Texture::Sampler* specSampler = material->getParameter("u_specularTexture")->setValue("res/data/textures/spec.png", true);
         specSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
         Texture::Sampler* shadowSampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
