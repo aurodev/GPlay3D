@@ -25,6 +25,7 @@ set(GAME_SRC
     src/Transparency.cpp
     src/ShaderReload.cpp
     src/EventSample.cpp
+    src/LightsAndShadows.cpp
 )
 
 add_executable(${GAME_NAME} ${GAME_SRC})
