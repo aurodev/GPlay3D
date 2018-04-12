@@ -126,9 +126,9 @@ void ClassBinding::write(string dir, const set<string>& includes, string* bindin
             return;
         }
 
-        o << "#include \"Base.h\"\n";
-        o << "#include \"ScriptController.h\"\n";
-        o << "#include \"lua_" << uniquename << ".h\"\n";
+        o << "#include \"../core/Base.h\"\n";
+        o << "#include \"../script/ScriptController.h\"\n";
+        o << "#include \"../lua/lua_" << uniquename << ".h\"\n";
 
         // Ensure we include the original class header, even 
         // if the list of includes doesn't have it.
