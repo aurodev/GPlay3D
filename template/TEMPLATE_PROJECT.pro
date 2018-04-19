@@ -25,7 +25,7 @@ SOURCES += src/TemplateGame.cpp
 
 HEADERS += src/TemplateGame.h
 
-INCLUDEPATH += GAMEPLAY_PATH/gameplay/src
+INCLUDEPATH += GAMEPLAY_PATH/gplay3d/src
 INCLUDEPATH += GAMEPLAY_PATH/external-deps/include
 DEFINES += GP_USE_GAMEPAD
 
@@ -44,16 +44,11 @@ linux: INCLUDEPATH += /usr/lib/x86_64-linux-gnu/glib-2.0/include
 linux: INCLUDEPATH += /usr/include/pixman-1
 linux: INCLUDEPATH += /usr/include/libpng12
 linux: INCLUDEPATH += /usr/include/harfbuzz
-linux: LIBS += -L$$DESTDIR -lgameplay
-linux: LIBS += -L$$PWD/GAMEPLAY_PATH/external-deps/lib/linux/x86_64/ -lgameplay-deps
+linux: PRE_TARGETDEPS += $$DESTDIR/libgplay3d.a
+linux: LIBS += -L$$DESTDIR -lgplay3d
+linux: LIBS += -L$$PWD/GAMEPLAY_PATH/external-deps/lib/linux/x86_64/ -lgplay3d-deps
 linux: LIBS += -lm -lGL -lrt -ldl -lX11 -lpthread -lgtk-x11-2.0 -lglib-2.0 -lgobject-2.0 -lsndio
-#linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/GAMEPLAY_PATH/gameplay/res/shaders ../res$$escape_expand(\n\t))
-#linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/GAMEPLAY_PATH/gameplay/res/ui ../res$$escape_expand(\n\t))
-#linux: QMA#KE_POST_LINK += $$quote(cp -rf $$PWD/GAMEPLAY_PATH/gameplay/res/logo_powered_white.png ../res$$escape_expand(\n\t))
-linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/res $$DESTDIR$$escape_expand(\n\t))
 linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/game.config $$DESTDIR$$escape_expand(\n\t))
-linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/GAMEPLAY_PATH/gameplay/res/shaders $$DESTDIR/res$$escape_expand(\n\t))
-linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/GAMEPLAY_PATH/gameplay/res/ui $$DESTDIR/res$$escape_expand(\n\t))
 
 
 macx: QMAKE_CXXFLAGS += -x c++ -stdlib=libc++ -w -arch x86_64

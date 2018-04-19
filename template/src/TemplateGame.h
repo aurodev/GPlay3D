@@ -1,7 +1,7 @@
 #ifndef TemplateGame_H_
 #define TemplateGame_H_
 
-#include "gameplay.h"
+#include "gplay3d.h"
 
 using namespace gameplay;
 
@@ -57,7 +57,6 @@ private:
     bool drawScene(Node* node);
 
     Scene* _scene;
-    bool _wireframe;
 };
 
 #endif

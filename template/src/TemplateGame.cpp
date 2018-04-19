@@ -4,14 +4,14 @@
 TemplateGame game;
 
 TemplateGame::TemplateGame()
-    : _scene(NULL), _wireframe(false)
+    : _scene(NULL)
 {
 }
 
 void TemplateGame::initialize()
 {
     // Load game scene from file
-    _scene = Scene::load("res/demo.scene");
+    _scene = Scene::load("res/data/scenes/demo.scene");
 
     // Get the box model and initialize its material parameter values and bindings
     Node* boxNode = _scene->findNode("box");
@@ -47,7 +47,7 @@ bool TemplateGame::drawScene(Node* node)
     // If the node visited contains a drawable object, draw it
     Drawable* drawable = node->getDrawable(); 
     if (drawable)
-        drawable->draw(_wireframe);
+        drawable->draw();
 
     return true;
 }
@@ -70,7 +70,6 @@ void TemplateGame::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int 
     switch (evt)
     {
     case Touch::TOUCH_PRESS:
-        _wireframe = !_wireframe;
         break;
     case Touch::TOUCH_RELEASE:
         break;

@@ -149,31 +149,6 @@ if [[ ${gpPathAbs} == ${common_path} ]]; then
 	gpPath=${back}
 fi
 
-#############################################
-# Copy Microsoft Visual Studio project files
-#############################################
-gpPathWin=$(echo $gpPath | sed 's*/*\\\\*g')
-cp "template/template.vcxproj" "$projPath/$projName.vcxproj"
-aliassedinplace "s*TEMPLATE_PROJECT*$projName*g" "$projPath/$projName.vcxproj"
-aliassedinplace "s*TemplateGame*$className*g" "$projPath/$projName.vcxproj"
-aliassedinplace "s*GAMEPLAY_PATH*$gpPathWin*g" "$projPath/$projName.vcxproj"
-cp "template/template.vcxproj.filters" "$projPath/$projName.vcxproj.filters"
-aliassedinplace "s*TemplateGame*$className*g" "$projPath/$projName.vcxproj.filters"
-
-#############################################
-# Copy Apple Xcode project files
-#############################################
-mkdir -p "$projPath/$projName.xcodeproj"
-cp "template/template.xcodeproj/project.pbxproj" "$projPath/$projName.xcodeproj/project.pbxproj"
-aliassedinplace "s*TEMPLATE_PROJECT*$projName*g" "$projPath/$projName.xcodeproj/project.pbxproj"
-aliassedinplace "s*TemplateGame*$className*g" "$projPath/$projName.xcodeproj/project.pbxproj"
-aliassedinplace "s*GAMEPLAY_PATH*$gpPath*g" "$projPath/$projName.xcodeproj/project.pbxproj"
-cp "template/TEMPLATE_PROJECT-macosx.plist" "$projPath/$projName-macosx.plist"
-aliassedinplace "s*TEMPLATE_UUID*$uuid*g" "$projPath/$projName-macosx.plist"
-cp "template/TEMPLATE_PROJECT-ios.plist" "$projPath/$projName-ios.plist"
-cp "template/Default-568h@2x.png" "$projPath/Default-568h@2x.png"
-aliassedinplace "s*TEMPLATE_TITLE*$title*g" "$projPath/$projName-ios.plist"
-aliassedinplace "s*TEMPLATE_UUID*$uuid*g" "$projPath/$projName-ios.plist"
 
 #############################################
 # Copy Android NDK project files
