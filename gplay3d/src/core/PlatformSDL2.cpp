@@ -503,7 +503,10 @@ Platform* Platform::create(Game* game)
 
     sdlSetWindow(__window);
 
-    bgfx::init(bgfx::RendererType::OpenGL);
+    // Init bgfx
+    bgfx::Init init;
+    init.type = bgfx::RendererType::OpenGL;
+    bgfx::init(init);
 
     uint32_t debug = BGFX_DEBUG_TEXT;
     uint32_t reset = BGFX_RESET_VSYNC;
