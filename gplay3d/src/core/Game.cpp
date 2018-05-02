@@ -846,7 +846,10 @@ void Game::bindView(uint16_t viewIndex)
 {
     GP_ASSERT(_views.count(viewIndex));
     _curentViewId = viewIndex;
-    bgfx::touch(_curentViewId);
+    //bgfx::touch(0);
+
+    bgfx::setViewClear(_curentViewId, _views[_curentViewId].clearFlags, _views[_curentViewId].clearColor, _views[_curentViewId].depth, _views[_curentViewId].stencil);
+    bgfx::setViewRect(_curentViewId, _views[_curentViewId].rectangle.x, _views[_curentViewId].rectangle.y, _views[_curentViewId].rectangle.width, _views[_curentViewId].rectangle.height);
 }
 
 }

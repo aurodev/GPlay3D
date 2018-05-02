@@ -771,7 +771,7 @@ void RenderState::StateBlock::apply(Mesh::PrimitiveType primitiveType)
         GP_ERROR("Primitive type undefined");
     }
 
-    bgfxBits |= BGFX_STATE_MSAA;
+   // bgfxBits |= BGFX_STATE_MSAA;
 
     bgfx::setState(bgfxBits);
 }

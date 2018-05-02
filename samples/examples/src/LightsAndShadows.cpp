@@ -353,7 +353,7 @@ public:
     void update(float elapsedTime)
     {
         // show toolbox
-        showToolbox();
+        showToolbox(elapsedTime);
 
         // update camera
         _fpCamera.updateCamera(elapsedTime);
@@ -397,7 +397,7 @@ public:
         return true;
     }
 
-    void showToolbox()
+    void showToolbox(float elapsedTime)
     {
         static float dirLightDirection[3] = { -1.0f, -1.0f, -1.0f };
         static float orthoProj[4] = { -10.0f, 10.0f, -10.0f, 10.0f };
@@ -409,6 +409,13 @@ public:
 
         if(orthoProj[0] < 0 && orthoProj[1] > 0 && orthoProj[2] != orthoProj[3])
             _shadowProjection.set(orthoProj);
+
+
+
+        static float accu = 0;
+        accu += elapsedTime;
+        dirLightDirection[2] = sin(accu * 0.01);
+
 
         _lightManager.getDirectionnalLight(0)->getNode()->setDirection(Vector3(dirLightDirection));
 

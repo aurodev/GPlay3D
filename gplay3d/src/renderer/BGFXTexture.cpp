@@ -45,6 +45,7 @@ bgfx::TextureFormat::Enum BGFXTexture::toBgfxFormat(Texture::Format gp3dFormat)
     case Texture::Format::RGBA5551   : return bgfx::TextureFormat::RGB5A1;
     case Texture::Format::ALPHA      : return bgfx::TextureFormat::R8;
     case Texture::Format::D16        : return bgfx::TextureFormat::D16;
+    case Texture::Format::D24        : return bgfx::TextureFormat::D24;
     case Texture::Format::D32        : return bgfx::TextureFormat::D32;
     default:
         GP_ASSERT(!"gp3d texture format unknown.");
@@ -64,6 +65,7 @@ Texture::Format BGFXTexture::toGp3dFormat(bgfx::TextureFormat::Enum bimgTextureF
     case bgfx::TextureFormat::RGB5A1    : return Texture::Format::RGBA5551;
     case bgfx::TextureFormat::R8        : return Texture::Format::ALPHA;
     case bgfx::TextureFormat::D16       : return Texture::Format::D16;
+    case bgfx::TextureFormat::D24       : return Texture::Format::D24;
     case bgfx::TextureFormat::D32       : return Texture::Format::D32;
 
     case bgfx::TextureFormat::BC2       : return Texture::Format::RGBA;

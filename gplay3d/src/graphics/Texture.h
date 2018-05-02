@@ -37,6 +37,7 @@ public:
         RGBA5551,
         ALPHA,
         D16,
+        D24,
         D32
     };
 
