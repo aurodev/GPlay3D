@@ -93,7 +93,7 @@ void updateWindowSize()
     __windowSize[1] = height;
 }
 
-inline bool sdlSetWindow(SDL_Window* _window)
+inline bool setWindowForBgfx(SDL_Window* _window)
 {
     SDL_SysWMinfo wmi;
     SDL_VERSION(&wmi.version);
@@ -428,7 +428,7 @@ Platform::~Platform()
 {
 }
 
-Platform* Platform::create(Game* game)
+Platform* Platform::create(Game* game, void* externalWindow)
 {
     GP_ASSERT(game);
 
@@ -479,13 +479,21 @@ Platform* Platform::create(Game* game)
         return 0;
     }
 
-    // Create our window centered
-    __window = SDL_CreateWindow(title,
-                                  SDL_WINDOWPOS_CENTERED,
-                                  SDL_WINDOWPOS_CENTERED,
-                                  __width,
-                                  __height,
-                                  SDL_WINDOW_SHOWN);
+    if(externalWindow)
+    {
+        __window = SDL_CreateWindowFrom(externalWindow);
+        SDL_GetWindowSize(__window, &__width, &__height);
+    }
+    else
+    {
+        __window = SDL_CreateWindow(title,
+                                      SDL_WINDOWPOS_CENTERED,
+                                      SDL_WINDOWPOS_CENTERED,
+                                      __width,
+                                      __height,
+                                      SDL_WINDOW_SHOWN);
+
+    }
 
     // Check that everything worked out okay
     if (!__window)
@@ -494,6 +502,7 @@ Platform* Platform::create(Game* game)
         return false;
     }
 
+
     // init bgfx
 
     bgfx::RendererType::Enum supportedTypes[bgfx::RendererType::Count];
@@ -501,7 +510,8 @@ Platform* Platform::create(Game* game)
     for(uint8_t i=0; i<count; i++)
         print("supported type [%d] = %s\n", i, bgfx::getRendererName(supportedTypes[i]));
 
-    sdlSetWindow(__window);
+
+    setWindowForBgfx(__window);
 
     // Init bgfx
     bgfx::Init init;
@@ -532,6 +542,27 @@ Platform* Platform::create(Game* game)
 
     updateWindowSize();
 
+
+
+
+   /* int width;
+    int height;
+    SDL_GetWindowSize(__window, &width, &height);*/
+
+   // Renderer::getInstance().updateWindowSize(width, height);
+
+    /*__windowSize[0] = __width;
+    __windowSize[1] = __height;*/
+
+
+
+
+
+
+
+
+
+
     // Create ImGui context and init
     ImGui::CreateContext();
     ImGui_ImplSdlGL3_Init(__window);
@@ -539,7 +570,7 @@ Platform* Platform::create(Game* game)
     return platform;
 }
 
-int Platform::enterMessagePump()
+void Platform::start()
 {
     GP_ASSERT(_game);
 
@@ -549,190 +580,199 @@ int Platform::enterMessagePump()
 
     // Run the game.
     _game->run();
+}
 
-    bool loop = true;
-    SDL_Event evt;
-
-    while (loop)
-    {
-        while (SDL_PollEvent(&evt))
-        {
-            // Process ImGui events
-            ImGui_ImplSdlGL3_ProcessEvent(&evt);
-
-            // Process SDL2 events
-            switch (evt.type)
-            {
-                case SDL_QUIT:
-                {
-                    _game->exit();
-                    loop = false;
-                }
-                break;
-
-                case SDL_MOUSEWHEEL:
-                {
-                    if(ImGui::GetIO().WantCaptureMouse)
-                        continue;
-
-                    const SDL_MouseWheelEvent& wheelEvent = evt.wheel;
-                    int wheelDelta = wheelEvent.y;
-                    gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_WHEEL, 0, 0, wheelDelta);
-                }
-                break;
-
-                case SDL_MOUSEBUTTONDOWN:
-                {
-                    if(ImGui::GetIO().WantCaptureMouse)
-                        continue;
-
-                    gameplay::Mouse::MouseEvent mouseEvt;
-                    const SDL_MouseButtonEvent& sdlMouseEvent = evt.button;
-
-                    switch (sdlMouseEvent.button)
-                    {
-                    case SDL_BUTTON_LEFT:
-                        mouseEvt = gameplay::Mouse::MOUSE_PRESS_LEFT_BUTTON;
-                        break;
-                    case SDL_BUTTON_RIGHT:
-                        mouseEvt = gameplay::Mouse::MOUSE_PRESS_RIGHT_BUTTON;
-                        break;
-                    case SDL_BUTTON_MIDDLE:
-                        mouseEvt = gameplay::Mouse::MOUSE_PRESS_MIDDLE_BUTTON;
-                        break;
-                    }
-
-                    if (!gameplay::Platform::mouseEventInternal(mouseEvt, sdlMouseEvent.x, sdlMouseEvent.y, 0))
-                    {
-                        gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_PRESS, sdlMouseEvent.x, sdlMouseEvent.y, 0, true);
-                    }
-                }
-                break;
-
-                case SDL_MOUSEBUTTONUP:
-                {
-                    if(ImGui::GetIO().WantCaptureMouse)
-                        continue;
-
-                    gameplay::Mouse::MouseEvent mouseEvt;
-                    const SDL_MouseButtonEvent& sdlMouseEvent = evt.button;
-
-                    switch (sdlMouseEvent.button)
-                    {
-                    case SDL_BUTTON_LEFT:
-                        mouseEvt = gameplay::Mouse::MOUSE_RELEASE_LEFT_BUTTON;
-                        break;
-                    case SDL_BUTTON_RIGHT:
-                        mouseEvt = gameplay::Mouse::MOUSE_RELEASE_RIGHT_BUTTON;
-                        break;
-                    case SDL_BUTTON_MIDDLE:
-                        mouseEvt = gameplay::Mouse::MOUSE_RELEASE_MIDDLE_BUTTON;
-                        break;
-                    }
-
-                    if (!gameplay::Platform::mouseEventInternal(mouseEvt, sdlMouseEvent.x, sdlMouseEvent.y, 0))
-                    {
-                        gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_RELEASE, sdlMouseEvent.x, sdlMouseEvent.y, 0, true);
-                    }
-                }
-                break;
-
-                case SDL_MOUSEMOTION:
-                {
-                    if(ImGui::GetIO().WantCaptureMouse)
-                        continue;
-
-                    const SDL_MouseMotionEvent& motionEvt = evt.motion;
-
-                    int x = motionEvt.x;
-                    int y = motionEvt.y;
-                    if (__mouseCaptured)
-                    {
-                        if (x == __mouseCapturePointX && y == __mouseCapturePointY)
-                        {
-                            // Discard the first MotionNotify following capture since it contains bogus x,y data.
-                            break;
-                        }
-
-                        // Convert to deltas
-                        x -= __mouseCapturePointX;
-                        y -= __mouseCapturePointY;
-
-                        // Warp mouse back to center of screen.
-                        SDL_WarpMouseInWindow(__window, __mouseCapturePointX, __mouseCapturePointY);
-                    }
-
-                    if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_MOVE, x, y, 0))
-                    {
-                        //if (evt.xmotion.state & Button1Mask)
-                        if (evt.button.button == SDL_BUTTON_LEFT)
-                        {
-                            gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_MOVE, x, y, 0, true);
-                        }
-                    }
-                }
-                break;
-
-
-                case SDL_KEYDOWN:
-                {
-                    if(!ImGui::GetIO().WantTextInput)
-                    {
-                        const SDL_KeyboardEvent& keyEvent = evt.key;
-                        Keyboard::Key key = translateKey(keyEvent.keysym.scancode);
-                        gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_PRESS, key);
-
-                        switch (key)
-                        {
-                        case Keyboard::KEY_F1:
-                            Renderer::getInstance().toggleDebugStats();
-                            break;
-                        case Keyboard::KEY_F3:
-                            Renderer::getInstance().toggleWireFrame();
-                            break;
-                        case Keyboard::KEY_F7:
-                            Renderer::getInstance().toggleVSync();
-                            break;
-                        }
-                    }
-                }
-                break;
-
-                case SDL_KEYUP:
-                {
-                    if(!ImGui::GetIO().WantTextInput)
-                    {
-                        const SDL_KeyboardEvent& keyEvent = evt.key;
-                        Keyboard::Key key = translateKey(keyEvent.keysym.scancode);
-                        gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_RELEASE, key);
-                    }
-                }
-                break;
-            }
-        }
-
-        if (_game)
-        {
-            Renderer::getInstance().beginFrame();
-
-            ImGui_ImplSdlGL3_NewFrame(__window);
-
-            _game->frame();
-
-            ImGui::Render();
-            GPImGui::Get()->imguiRender(ImGui::GetDrawData());
-
-            Renderer::getInstance().endFrame();
-        }
-
-    }
-
+void Platform::stop()
+{
+    // shutdow imgui
     ImGui_ImplSdlGL3_Shutdown();
+
+    // shutdow bgfx
     bgfx::shutdown();
+
+    // shutdow sdl
     SDL_DestroyWindow(__window);
     SDL_Quit();
+}
 
-    return 0;
+void Platform::frame()
+{
+    if (_game)
+    {
+        Renderer::getInstance().beginFrame();
+
+        ImGui_ImplSdlGL3_NewFrame(__window);
+
+        _game->frame();
+
+        ImGui::Render();
+        GPImGui::Get()->imguiRender(ImGui::GetDrawData());
+
+        Renderer::getInstance().endFrame();
+    }
+}
+
+int Platform::processEvents()
+{
+    SDL_Event evt;
+
+    while (SDL_PollEvent(&evt))
+    {
+        // Process ImGui events
+        ImGui_ImplSdlGL3_ProcessEvent(&evt);
+
+        // Process SDL2 events
+        switch (evt.type)
+        {
+            case SDL_QUIT:
+            {
+                _game->exit();
+                return 0;
+            }
+            break;
+
+            case SDL_MOUSEWHEEL:
+            {
+                if(ImGui::GetIO().WantCaptureMouse)
+                    continue;
+
+                const SDL_MouseWheelEvent& wheelEvent = evt.wheel;
+                int wheelDelta = wheelEvent.y;
+                gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_WHEEL, 0, 0, wheelDelta);
+            }
+            break;
+
+            case SDL_MOUSEBUTTONDOWN:
+            {
+                if(ImGui::GetIO().WantCaptureMouse)
+                    continue;
+
+                gameplay::Mouse::MouseEvent mouseEvt;
+                const SDL_MouseButtonEvent& sdlMouseEvent = evt.button;
+
+                switch (sdlMouseEvent.button)
+                {
+                case SDL_BUTTON_LEFT:
+                    mouseEvt = gameplay::Mouse::MOUSE_PRESS_LEFT_BUTTON;
+                    break;
+                case SDL_BUTTON_RIGHT:
+                    mouseEvt = gameplay::Mouse::MOUSE_PRESS_RIGHT_BUTTON;
+                    break;
+                case SDL_BUTTON_MIDDLE:
+                    mouseEvt = gameplay::Mouse::MOUSE_PRESS_MIDDLE_BUTTON;
+                    break;
+                }
+
+                if (!gameplay::Platform::mouseEventInternal(mouseEvt, sdlMouseEvent.x, sdlMouseEvent.y, 0))
+                {
+                    gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_PRESS, sdlMouseEvent.x, sdlMouseEvent.y, 0, true);
+                }
+            }
+            break;
+
+            case SDL_MOUSEBUTTONUP:
+            {
+                if(ImGui::GetIO().WantCaptureMouse)
+                    continue;
+
+                gameplay::Mouse::MouseEvent mouseEvt;
+                const SDL_MouseButtonEvent& sdlMouseEvent = evt.button;
+
+                switch (sdlMouseEvent.button)
+                {
+                case SDL_BUTTON_LEFT:
+                    mouseEvt = gameplay::Mouse::MOUSE_RELEASE_LEFT_BUTTON;
+                    break;
+                case SDL_BUTTON_RIGHT:
+                    mouseEvt = gameplay::Mouse::MOUSE_RELEASE_RIGHT_BUTTON;
+                    break;
+                case SDL_BUTTON_MIDDLE:
+                    mouseEvt = gameplay::Mouse::MOUSE_RELEASE_MIDDLE_BUTTON;
+                    break;
+                }
+
+                if (!gameplay::Platform::mouseEventInternal(mouseEvt, sdlMouseEvent.x, sdlMouseEvent.y, 0))
+                {
+                    gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_RELEASE, sdlMouseEvent.x, sdlMouseEvent.y, 0, true);
+                }
+            }
+            break;
+
+            case SDL_MOUSEMOTION:
+            {
+                if(ImGui::GetIO().WantCaptureMouse)
+                    continue;
+
+                const SDL_MouseMotionEvent& motionEvt = evt.motion;
+
+                int x = motionEvt.x;
+                int y = motionEvt.y;
+                if (__mouseCaptured)
+                {
+                    if (x == __mouseCapturePointX && y == __mouseCapturePointY)
+                    {
+                        // Discard the first MotionNotify following capture since it contains bogus x,y data.
+                        break;
+                    }
+
+                    // Convert to deltas
+                    x -= __mouseCapturePointX;
+                    y -= __mouseCapturePointY;
+
+                    // Warp mouse back to center of screen.
+                    SDL_WarpMouseInWindow(__window, __mouseCapturePointX, __mouseCapturePointY);
+                }
+
+                if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_MOVE, x, y, 0))
+                {
+                    //if (evt.xmotion.state & Button1Mask)
+                    if (evt.button.button == SDL_BUTTON_LEFT)
+                    {
+                        gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_MOVE, x, y, 0, true);
+                    }
+                }
+            }
+            break;
+
+
+            case SDL_KEYDOWN:
+            {
+                if(!ImGui::GetIO().WantTextInput)
+                {
+                    const SDL_KeyboardEvent& keyEvent = evt.key;
+                    Keyboard::Key key = translateKey(keyEvent.keysym.scancode);
+                    gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_PRESS, key);
+
+                    switch (key)
+                    {
+                    case Keyboard::KEY_F1:
+                        Renderer::getInstance().toggleDebugStats();
+                        break;
+                    case Keyboard::KEY_F3:
+                        Renderer::getInstance().toggleWireFrame();
+                        break;
+                    case Keyboard::KEY_F7:
+                        Renderer::getInstance().toggleVSync();
+                        break;
+                    }
+                }
+            }
+            break;
+
+            case SDL_KEYUP:
+            {
+                if(!ImGui::GetIO().WantTextInput)
+                {
+                    const SDL_KeyboardEvent& keyEvent = evt.key;
+                    Keyboard::Key key = translateKey(keyEvent.keysym.scancode);
+                    gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_RELEASE, key);
+                }
+            }
+            break;
+        }
+    }
+
+    return 1;
 }
 
 void Platform::swapBuffers()
@@ -984,5 +1024,11 @@ void Platform::pollGamepadState(Gamepad* gamepad)
     GP_ERROR("Fix me !");
 }
 
+void Platform::setWindowSize(int width, int height)
+{
+    SDL_SetWindowSize(__window, width, height);
+    updateWindowSize();
+    resizeEventInternal(width, height);
+}
 
 }

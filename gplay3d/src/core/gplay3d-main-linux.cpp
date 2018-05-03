@@ -15,12 +15,21 @@ int main(int argc, char** argv)
 {
     __app_argc = argc;
     __app_argv = argv;
+
     Game* game = Game::getInstance();
+
     Platform* platform = Platform::create(game);
     GP_ASSERT(platform);
-    int result = platform->enterMessagePump();
+
+    platform->start();
+    while(platform->processEvents())
+    {
+        platform->frame();
+    }
+    platform->stop();
+
     delete platform;
-    return result;
+    return 0;
 }
 
 #endif
