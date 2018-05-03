@@ -41,7 +41,7 @@ public:
     void queryCaps();
     const Caps getCaps() const { return _caps; }
 
-    void updateWindowSize(unsigned int width, unsigned height);
+    void resize(unsigned int width, unsigned height);
     void toggleDebugStats();
 
     void toggleWireFrame();

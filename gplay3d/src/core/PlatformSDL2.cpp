@@ -87,7 +87,7 @@ void updateWindowSize()
     int height;
     SDL_GetWindowSize(__window, &width, &height);
 
-    Renderer::getInstance().updateWindowSize(width, height);
+    Renderer::getInstance().resize(width, height);
 
     __windowSize[0] = width;
     __windowSize[1] = height;

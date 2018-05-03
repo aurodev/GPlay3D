@@ -32,7 +32,7 @@ void BGFXRenderer::initInstance()
     new BGFXRenderer;
 }
 
-void BGFXRenderer::updateWindowSize(unsigned int width, unsigned height)
+void BGFXRenderer::resize(unsigned int width, unsigned height)
 {
     _width = width;
     _height = height;
