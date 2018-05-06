@@ -126,6 +126,12 @@ public:
     static double getAbsoluteTime();
 
     /**
+     * Get elapsed frame time.
+     * @return the time since last frame.
+     */
+    float getFrameTime() { return _frameTime; }
+
+    /**
      * Gets the total game time (in milliseconds). This is the total accumulated game time (unpaused).
      *
      * You would typically use things in your game that you want to stop when the game is paused.
@@ -752,13 +758,6 @@ private:
      * Loads the game configuration.
      */
     void loadConfig();
-
-    /**
-     * Get elapsed frame time.
-     * @return the time since last frame.
-     */
-    float getFrameTime() { return _frameTime; }
-
 
     /**
      * Loads the gamepads from the configuration file.
