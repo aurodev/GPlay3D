@@ -754,6 +754,13 @@ private:
     void loadConfig();
 
     /**
+     * Get elapsed frame time.
+     * @return the time since last frame.
+     */
+    float getFrameTime() { return _frameTime; }
+
+
+    /**
      * Loads the gamepads from the configuration file.
      */
     void loadGamepads();
@@ -776,6 +783,7 @@ private:
     static double _pausedTimeLast;              // The last time paused.
     static double _pausedTimeTotal;             // The total time paused.
     double _frameLastFPS;                       // The last time the frame count was updated.
+    float _frameTime;                           // The elapsed time since last frame.
     unsigned int _frameCount;                   // The current frame count.
     unsigned int _frameRate;                    // The current frame rate.
     unsigned int _width;                        // The game's display width.
@@ -806,6 +814,7 @@ public:
     void insertView(uint16_t index, View view);
     std::map<unsigned short, View> _views;
     unsigned short _curentViewId;
+
 
 };
 

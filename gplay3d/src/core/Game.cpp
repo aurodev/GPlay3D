@@ -387,6 +387,9 @@ void Game::frame()
         float elapsedTime = (frameTime - lastFrameTime);
         lastFrameTime = frameTime;
 
+        // set frame time
+        _frameTime = elapsedTime;
+
         // Update events.
         _eventManager->update();
 
