@@ -55,7 +55,24 @@ private:
 //! helper macro to create listener
 #define GP_EVENT_LISTENER(listener, method) (fastdelegate::MakeDelegate(listener, &method))
 
+//! helper macro to declare event
+//! ex:
+//! GP_EVENT_BEGIN(MouseEvent)
+//!     Vector2 mousePosition;  // mouse pos paremeter
+//!     int button;             // mouse button pressed parameter
+//! GP_EVENT_END()
+//!
+#define GP_EVENT_BEGIN(NAME) \
+class NAME : public EventData \
+{ \
+public: \
+    GP_DECLARE_EVENT(NAME) \
+    static std::shared_ptr<class NAME> create() { return  std::shared_ptr<class NAME>(new NAME); } \
+private: \
+    explicit NAME() : EventData() {} \
+public: \
 
+#define GP_EVENT_END() };
 
 
 
