@@ -45,6 +45,15 @@ Transform::Transform(const Transform& copy)
     set(copy);
 }
 
+Transform::Transform(const Matrix& matrix)
+    : _matrixDirtyBits(0), _listeners(NULL)
+{
+    GP_REGISTER_SCRIPT_EVENTS();
+
+    _targetType = AnimationTarget::TRANSFORM;
+    set(matrix);
+}
+
 Transform::~Transform()
 {
     SAFE_DELETE(_listeners);
@@ -448,6 +457,15 @@ void Transform::set(const Transform& transform)
     _scale.set(transform._scale);
     _rotation.set(transform._rotation);
     _translation.set(transform._translation);
+    dirty(DIRTY_TRANSLATION | DIRTY_ROTATION | DIRTY_SCALE);
+}
+
+void Transform::set(const Matrix& matrix)
+{
+    if (isStatic())
+        return;
+
+    matrix.decompose(&_scale, &_rotation, &_translation);
     dirty(DIRTY_TRANSLATION | DIRTY_ROTATION | DIRTY_SCALE);
 }
 

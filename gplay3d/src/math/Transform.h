@@ -171,6 +171,15 @@ public:
      */
     Transform(const Transform& copy);
 
+
+    /**
+     * Constructs a new transform from the given matrix.
+     *
+     * @param matrix The transformation matrix.
+     */
+    Transform(const Matrix& matrix);
+
+
     /**
      * Destructor.
      */
@@ -503,6 +512,13 @@ public:
      * @param transform The transform to set this transform to.
      */
     void set(const Transform& transform);
+
+    /**
+     * Sets this transform to the specified matrix.
+     *
+     * @param matrix The transformation matrix.
+     */
+    void set(const Matrix& matrix);
 
     /**
      * Sets this transform to the identity transform.
