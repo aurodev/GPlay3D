@@ -1031,4 +1031,9 @@ void Platform::setWindowSize(int width, int height)
     resizeEventInternal(width, height);
 }
 
+void*  Platform::getWindowHandle()
+{
+    return __window;
+}
+
 }

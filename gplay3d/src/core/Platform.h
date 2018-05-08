@@ -49,7 +49,7 @@ public:
     void frame();
     void stop();
     void setWindowSize(int width, int height);
-
+    void* getWindowHandle();
 
     /**
      * Swaps the frame buffer on the device.
