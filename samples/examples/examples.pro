@@ -36,7 +36,8 @@ SOURCES += \
     src/Transparency.cpp \
     src/ShaderReload.cpp \
     src/EventSample.cpp \
-    src/LightsAndShadows.cpp
+    src/LightsAndShadows.cpp \
+    src/Renderer.cpp
 
 HEADERS += \
     src/SamplesGame.h \
