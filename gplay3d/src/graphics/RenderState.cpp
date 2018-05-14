@@ -176,6 +176,9 @@ const char* autoBindingToString(RenderState::AutoBinding autoBinding)
     case RenderState::NONE:
         return NULL;
 
+    case RenderState::WORLD_MATRIX:
+        return "WORLD_MATRIX";
+
     case RenderState::VIEW_MATRIX:
         return "VIEW_MATRIX";
 
