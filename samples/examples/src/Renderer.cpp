@@ -70,10 +70,14 @@ public:
         _matGBuffer->getStateBlock()->setCullFace(true);
         _matGBuffer->getStateBlock()->setDepthTest(true);
         _matGBuffer->getStateBlock()->setDepthWrite(true);
+        _matGBuffer->getStateBlock()->setDepthWrite(true);
         _matGBuffer->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
         _matGBuffer->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
-        _matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_VIEW_MATRIX);
+        _matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
         _matGBuffer->setParameterAutoBinding("u_viewProjectionMatrix", RenderState::VIEW_PROJECTION_MATRIX);
+        _matGBuffer->setParameterAutoBinding("u_viewMatrix", RenderState::VIEW_MATRIX);
+        _matGBuffer->setParameterAutoBinding("u_projectionMatrix", RenderState::PROJECTION_MATRIX);
+        _matGBuffer->setParameterAutoBinding("u_worldViewMatrix", RenderState::WORLD_VIEW_MATRIX);
 
 
         Texture::Sampler* sampler = _matGBuffer->getParameter("s_diffuse")->setValue("res/data/textures/brick.png", true);
@@ -84,24 +88,93 @@ public:
 
 
 
-
+#if 0
         // Load box shape
         Bundle* bundle = Bundle::create("res/data/scenes/shapes.gpb");
-        Model* model = Model::create(bundle->loadMesh("Teapot_Mesh"));
+        //Model* model = Model::create(bundle->loadMesh("Cube_Mesh"));
         //model->setMaterial(material);
-        Node* node = _scene->addNode("Teapot");
-        node->setScale(0.25f);
-        node->setDrawable(model);
-        SAFE_RELEASE(model);
 
+        for(int i=0; i<25; i++)
+            for(int j=0; j<25; j++)
+        {
+        Model* model = Model::create(bundle->loadMesh("Cube_Mesh"));
+        model->setMaterial(_matGBuffer->clone());
+        Node* node = _scene->addNode();
+        node->setScale(1.0f);
+        node->setDrawable(model);
+        node->setTranslation(Vector3(i*3,0,-j*3));
+        }
+
+#else
+
+
+
+
+        // load shapes bundle
+        Bundle* bundle = Bundle::create("res/data/scenes/shapes.gpb");
+
+        // create a plane
+        Model* modelPlane = Model::create(bundle->loadMesh("Plane_Mesh"));
+        modelPlane->setMaterial(_matGBuffer->clone());
+        Node* nodePlane = Node::create("plane");
+        nodePlane->setDrawable(modelPlane);
+        nodePlane->setScale(10.0f);
+        _scene->addNode(nodePlane);
+
+        // create a teapot
+        Model* modelTeapot = Model::create(bundle->loadMesh("Teapot_Mesh"));
+        modelTeapot->setMaterial(_matGBuffer->clone());
+        Node* nodeTeapot = Node::create("teapot");
+        nodeTeapot->setDrawable(modelTeapot);
+        nodeTeapot->setScale(0.5f);
+        _scene->addNode(nodeTeapot);
+
+        // create a torus
+        Model* modelTorus = Model::create(bundle->loadMesh("Torus_Mesh"));
+        modelTorus->setMaterial(_matGBuffer->clone());
+        Node* nodeTorus = Node::create("torus");
+        nodeTorus->setDrawable(modelTorus);
+        nodeTorus->setScale(0.5f);
+        nodeTorus->setTranslation(-2, 0.5, -2);
+        _scene->addNode(nodeTorus);
+
+        // create a torus knot
+        Model* modelTorusKnot = Model::create(bundle->loadMesh("TorusKnot_Mesh"));
+        modelTorusKnot->setMaterial(_matGBuffer->clone());
+        Node* nodeTorusKnot = Node::create("torusKnot");
+        nodeTorusKnot->setDrawable(modelTorusKnot);
+        nodeTorusKnot->setScale(0.25f);
+        nodeTorusKnot->setTranslation(2, 0.5, -2);
+        _scene->addNode(nodeTorusKnot);
+
+        // create a cone
+       Model* modelCone = Model::create(bundle->loadMesh("Cone_Mesh"));
+        modelCone->setMaterial(_matGBuffer->clone());
+        Node* nodeCone = Node::create("cone");
+        nodeCone->setDrawable(modelCone);
+        nodeCone->setScale(0.5f);
+        nodeCone->setTranslation(2, 0.5, 2);
+        _scene->addNode(nodeCone);
+
+        // create suzanne
+        Model* modelMonkey = Model::create(bundle->loadMesh("Monkey_Mesh"));
+        modelMonkey->setMaterial(_matGBuffer->clone());
+        Node* nodeMonkey = Node::create("monkey");
+        nodeMonkey->setDrawable(modelMonkey);
+        nodeMonkey->setScale(0.5f);
+        nodeMonkey->setTranslation(-2, 0.5, 2);
+        _scene->addNode(nodeMonkey);
 
         SAFE_RELEASE(bundle);
 
+#endif
 
 
 
-    #define FRAMEBUFFER_WIDTH 1024
-    #define FRAMEBUFFER_HEIGHT 1024
+
+
+    const int FRAMEBUFFER_WIDTH = getWidth();
+    const int FRAMEBUFFER_HEIGHT = getHeight();
 
         // create views
         Game * game = Game::getInstance();
@@ -132,7 +205,7 @@ public:
         texInfo.width = FRAMEBUFFER_WIDTH;
         texInfo.height = FRAMEBUFFER_HEIGHT;
         texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::RGB;
+        texInfo.format = Texture::Format::RGBA16F;
         texInfo.flags = BGFX_TEXTURE_RT;
         Texture* tex = Texture::create(texInfo);
         textures.push_back(tex);
@@ -145,7 +218,7 @@ public:
         texInfo.width = FRAMEBUFFER_WIDTH;
         texInfo.height = FRAMEBUFFER_HEIGHT;
         texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::RGB;
+        texInfo.format = Texture::Format::RGBA16F;
         texInfo.flags = BGFX_TEXTURE_RT;
         Texture* tex = Texture::create(texInfo);
         textures.push_back(tex);
@@ -186,9 +259,9 @@ public:
 
 
         // Create quads for gbuffer preview
-        for(int i=0; i<3; i++)
+        for(int i=0; i<4; i++)
         {
-            Mesh* meshQuad = Mesh::createQuad(256*i,0,256,256);
+            Mesh* meshQuad = Mesh::createQuad(-1 + i*0.5, -1, 0.5 ,0.5);
             _quadModel[i] = Model::create(meshQuad);
             _quadModel[i]->setMaterial("res/coredata/shaders/debug.vert", "res/coredata/shaders/debug.frag", "SHOW_TEXTURE");
             Texture::Sampler* sampler = Texture::Sampler::create(_gBuffer->getRenderTarget(i));
@@ -209,8 +282,16 @@ public:
         _matDeferred->getStateBlock()->setCullFace(false);
         _matDeferred->getStateBlock()->setDepthTest(true);
         _matDeferred->getStateBlock()->setDepthWrite(true);
-        _matDeferred->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
-        _matDeferred->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
+
+            // NOTE : this does not works because ther is no node attached for node binding
+            _matDeferred->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
+            _matDeferred->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
+
+        _matDeferred->getParameter("viewPos")->bindValue(_fpCamera.getRootNode(), &Node::getTranslationWorld);
+        _matDeferred->getParameter("u_inverseProjectionMatrix")->bindValue(_fpCamera.getRootNode(), &Node::getInverseProjectionMatrix);
+        _matDeferred->getParameter("u_inverseViewMatrix")->bindValue(_fpCamera.getRootNode(), &Node::getInverseViewMatrix);
+
+
 
         Texture::Sampler* sampler1 = Texture::Sampler::create(_gBuffer->getRenderTarget(0));
         _matDeferred->getParameter("gPosition")->setValue(sampler1);
@@ -218,6 +299,8 @@ public:
         _matDeferred->getParameter("gNormal")->setValue(sampler2);
         Texture::Sampler* sampler3 = Texture::Sampler::create(_gBuffer->getRenderTarget(2));
         _matDeferred->getParameter("gAlbedoSpec")->setValue(sampler3);
+        Texture::Sampler* sampler4 = Texture::Sampler::create(_gBuffer->getRenderTarget(3));
+        _matDeferred->getParameter("s_depthBuffer")->setValue(sampler4);
 
 
 
@@ -232,7 +315,10 @@ public:
         SAFE_RELEASE(fullScreenQuadMesh);*/
 
 
-        Mesh* meshQuad = Mesh::createQuad(0,256,512,512);
+
+        Mesh* meshQuad = Mesh::createQuad(-1,-1,2,2);
+        //Mesh* meshQuad = Mesh::createQuadFullscreen();
+
         _screenQuad = Model::create(meshQuad);
         _screenQuad->setMaterial(_matDeferred);
         //Texture::Sampler* sampler = Texture::Sampler::create(_gBuffer->getRenderTarget(i));
@@ -255,28 +341,28 @@ public:
     {
         Game::getInstance()->bindView(1);
         _gBuffer->bind();
-        _scene->visit(this, &NewRenderer::drawScene, (void*)1);
+        _scene->visit(this, &NewRenderer::drawScene);
 
 
         Game::getInstance()->bindView(0);
-        _scene->visit(this, &NewRenderer::drawScene, (void*)0);
+        //_scene->visit(this, &NewRenderer::drawScene, (void*)0);
 
 
         _screenQuad->draw();
 
 
-        for(int i=0; i<3; i++)
+        for(int i=0; i<4; i++)
             _quadModel[i]->draw();
 
         drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());
     }
 
-    bool drawScene(Node* node, void* cookie)
+    bool drawScene(Node* node)
     {
         Drawable* drawable = node->getDrawable();
         if (drawable)
         {
-            Model* model = dynamic_cast<Model*>(drawable);
+            /*Model* model = dynamic_cast<Model*>(drawable);
 
             if((int*)cookie == (int*)1)
             {
@@ -287,7 +373,10 @@ public:
             {
                 //model->getMaterial(0)->setTechnique("forward");
                 model->setMaterial(_matDeferred);
-            }
+            }*/
+
+            /*Model* model = dynamic_cast<Model*>(drawable);
+            model->getMaterial()->getParameter("u_worldMatrix")->setValue(node->getWorldMatrix());*/
 
             drawable->draw();
         }

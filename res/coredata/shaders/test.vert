@@ -7,24 +7,23 @@ uniform mat4 u_worldViewProjectionMatrix;
 uniform mat4 u_inverseTransposeWorldViewMatrix;
 uniform mat4 u_worldMatrix;
 uniform mat4 u_viewProjectionMatrix;
+uniform mat4 u_viewMatrix;
+uniform mat4 u_projectionMatrix;
+uniform mat4 u_worldViewMatrix;
 
-
-varying vec4 v_position;
+varying vec3 v_position;
 varying vec3 v_normal;
 varying vec2 v_texcoord0;
 
+
 void main()
 {
-    gl_Position = u_worldViewProjectionMatrix * a_position;
-    //gl_Position = u_viewProjectionMatrix * a_position;
-
-    // position
-    v_position = u_worldMatrix * a_position;
-
-    // normals
-    mat3 normalMatrix = mat3(u_inverseTransposeWorldViewMatrix);
+    vec4 worldPos = u_worldMatrix * vec4(a_position.xyz, 1.0);
+    v_position = worldPos.xyz; 
+    v_texcoord0 = a_texcoord0;
+    
+    mat3 normalMatrix = transpose(inverse(mat3(u_worldMatrix)));
     v_normal = normalMatrix * a_normal;
 
-    // tex coords
-    v_texcoord0 = a_texcoord0;
+    gl_Position = u_worldViewProjectionMatrix * vec4(a_position.xyz, 1.0);
 }
