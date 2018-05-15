@@ -143,6 +143,16 @@ public:
         INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX,
 
         /**
+         * Binds a node's InverseView matrix.
+         */
+        INVERSE_VIEW_MATRIX,
+
+        /**
+         * Binds a node's InverseProjection matrix.
+         */
+        INVERSE_PROJECTION_MATRIX,
+
+        /**
          * Binds the position (Vector3) of the active camera for the node's scene.
          */
         CAMERA_WORLD_POSITION,
@@ -643,6 +653,8 @@ private:
     const Matrix& autoBindingGetWorldViewProjectionMatrix() const;
     const Matrix& autoBindingGetInverseTransposeWorldMatrix() const;
     const Matrix& autoBindingGetInverseTransposeWorldViewMatrix() const;
+    const Matrix& autoBindingGetInverseViewMatrix() const;
+    const Matrix& autoBindingGetInverseProjectionMatrix() const;
     Vector3 autoBindingGetCameraWorldPosition() const;
     Vector3 autoBindingGetCameraViewPosition() const;
     const Vector4* autoBindingGetMatrixPalette() const;

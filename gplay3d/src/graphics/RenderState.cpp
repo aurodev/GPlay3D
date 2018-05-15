@@ -200,6 +200,12 @@ const char* autoBindingToString(RenderState::AutoBinding autoBinding)
     case RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX:
         return "INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX";
 
+    case RenderState::INVERSE_VIEW_MATRIX:
+        return "INVERSE_VIEW_MATRIX";
+
+    case RenderState::INVERSE_PROJECTION_MATRIX:
+        return "INVERSE_PROJECTION_MATRIX";
+
     case RenderState::CAMERA_WORLD_POSITION:
         return "CAMERA_WORLD_POSITION";
 
@@ -348,6 +354,14 @@ void RenderState::applyAutoBinding(const char* uniformName, const char* autoBind
         {
             param->bindValue(this, &RenderState::autoBindingGetInverseTransposeWorldViewMatrix);
         }
+        else if (strcmp(autoBinding, "INVERSE_VIEW_MATRIX") == 0)
+        {
+            param->bindValue(this, &RenderState::autoBindingGetInverseViewMatrix);
+        }
+        else if (strcmp(autoBinding, "INVERSE_PROJECTION_MATRIX") == 0)
+        {
+            param->bindValue(this, &RenderState::autoBindingGetInverseProjectionMatrix);
+        }
         else if (strcmp(autoBinding, "CAMERA_WORLD_POSITION") == 0)
         {
             param->bindValue(this, &RenderState::autoBindingGetCameraWorldPosition);
@@ -417,6 +431,16 @@ const Matrix& RenderState::autoBindingGetInverseTransposeWorldMatrix() const
 const Matrix& RenderState::autoBindingGetInverseTransposeWorldViewMatrix() const
 {
     return _nodeBinding ? _nodeBinding->getInverseTransposeWorldViewMatrix() : Matrix::identity();
+}
+
+const Matrix& RenderState::autoBindingGetInverseViewMatrix() const
+{
+    return _nodeBinding ? _nodeBinding->getInverseViewMatrix() : Matrix::identity();
+}
+
+const Matrix& RenderState::autoBindingGetInverseProjectionMatrix() const
+{
+    return _nodeBinding ? _nodeBinding->getInverseProjectionMatrix() : Matrix::identity();
 }
 
 Vector3 RenderState::autoBindingGetCameraWorldPosition() const
