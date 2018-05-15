@@ -342,6 +342,14 @@ public:
     const Matrix& getInverseViewProjectionMatrix() const;
 
     /**
+     * Gets the inverse projection matrix corresponding to this node based
+     * on the scene's active camera.
+     *
+     * @return The inverse projection matrix of this node.
+     */
+    const Matrix& getInverseProjectionMatrix() const;
+
+    /**
      * Gets the world * view * projection matrix corresponding to this node based
      * on the scene's active camera.
      *

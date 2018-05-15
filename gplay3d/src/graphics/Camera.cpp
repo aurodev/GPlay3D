@@ -12,10 +12,11 @@
 #define CAMERA_DIRTY_INV_VIEW 8
 #define CAMERA_DIRTY_INV_VIEW_PROJ 16
 #define CAMERA_DIRTY_BOUNDS 32
-#define CAMERA_DIRTY_ALL (CAMERA_DIRTY_VIEW | CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS)
+#define CAMERA_DIRTY_INV_PROJ 64
+#define CAMERA_DIRTY_ALL (CAMERA_DIRTY_VIEW | CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS | CAMERA_DIRTY_INV_PROJ)
 
 // Other misc camera bits
-#define CAMERA_CUSTOM_PROJECTION 64
+#define CAMERA_CUSTOM_PROJECTION 128
 
 namespace gameplay
 {
@@ -135,7 +136,7 @@ void Camera::setFieldOfView(float fieldOfView)
     GP_ASSERT(_type == Camera::PERSPECTIVE);
 
     _fieldOfView = fieldOfView;
-    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS;
+    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_INV_PROJ | CAMERA_DIRTY_BOUNDS;
     cameraChanged();
 }
 
@@ -151,7 +152,7 @@ void Camera::setZoomX(float zoomX)
     GP_ASSERT(_type == Camera::ORTHOGRAPHIC);
 
     _zoom[0] = zoomX;
-    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS;
+    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_INV_PROJ | CAMERA_DIRTY_BOUNDS;
     cameraChanged();
 }
 
@@ -167,7 +168,7 @@ void Camera::setZoomY(float zoomY)
     GP_ASSERT(_type == Camera::ORTHOGRAPHIC);
 
     _zoom[1] = zoomY;
-    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS;
+    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_INV_PROJ | CAMERA_DIRTY_BOUNDS;
     cameraChanged();
 }
 
@@ -179,7 +180,7 @@ float Camera::getAspectRatio() const
 void Camera::setAspectRatio(float aspectRatio)
 {
     _aspectRatio = aspectRatio;
-    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS;
+    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_INV_PROJ | CAMERA_DIRTY_BOUNDS;
     cameraChanged();
 }
 
@@ -191,7 +192,7 @@ float Camera::getNearPlane() const
 void Camera::setNearPlane(float nearPlane)
 {
     _nearPlane = nearPlane;
-    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS;
+    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_INV_PROJ | CAMERA_DIRTY_BOUNDS;
     cameraChanged();
 }
 
@@ -203,7 +204,7 @@ float Camera::getFarPlane() const
 void Camera::setFarPlane(float farPlane)
 {
     _farPlane = farPlane;
-    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS;
+    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_INV_PROJ | CAMERA_DIRTY_BOUNDS;
     cameraChanged();
 }
 
@@ -229,7 +230,7 @@ void Camera::setNode(Node* node)
             _node->addListener(this);
         }
 
-        _bits |= CAMERA_DIRTY_VIEW | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS;
+        _bits |= CAMERA_DIRTY_VIEW | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_INV_PROJ | CAMERA_DIRTY_BOUNDS;
         cameraChanged();
     }
 }
@@ -290,7 +291,7 @@ void Camera::setProjectionMatrix(const Matrix& matrix)
 {
     _projection = matrix;
     _bits |= CAMERA_CUSTOM_PROJECTION;
-    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS;
+    _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_INV_PROJ | CAMERA_DIRTY_BOUNDS;
 
     cameraChanged();
 }
@@ -300,7 +301,7 @@ void Camera::resetProjectionMatrix()
     if (_bits & CAMERA_CUSTOM_PROJECTION)
     {
         _bits &= ~CAMERA_CUSTOM_PROJECTION;
-        _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS;
+        _bits |= CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_INV_PROJ | CAMERA_DIRTY_BOUNDS;
 
         cameraChanged();
     }
@@ -328,6 +329,18 @@ const Matrix& Camera::getInverseViewProjectionMatrix() const
     }
 
     return _inverseViewProjection;
+}
+
+const Matrix& Camera::getInverseProjectionMatrix() const
+{
+    if (_bits & CAMERA_DIRTY_INV_PROJ)
+    {
+        getProjectionMatrix().invert(&_inverseProjection);
+
+        _bits &= ~CAMERA_DIRTY_INV_PROJ;
+    }
+
+    return _inverseProjection;
 }
 
 const Frustum& Camera::getFrustum() const
@@ -452,7 +465,7 @@ Camera* Camera::clone(NodeCloneContext& context)
 
 void Camera::transformChanged(Transform* transform, long cookie)
 {
-    _bits |= CAMERA_DIRTY_VIEW | CAMERA_DIRTY_INV_VIEW | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_BOUNDS;
+    _bits |= CAMERA_DIRTY_VIEW | CAMERA_DIRTY_INV_VIEW | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_PROJ | CAMERA_DIRTY_BOUNDS;
 
     cameraChanged();
 }

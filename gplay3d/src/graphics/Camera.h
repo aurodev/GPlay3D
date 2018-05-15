@@ -243,6 +243,13 @@ public:
     const Matrix& getInverseViewProjectionMatrix() const;
 
     /**
+     * Gets the camera's inverse projection matrix.
+     *
+     * @return The camera inverse projection matrix.
+     */
+    const Matrix& getInverseProjectionMatrix() const;
+
+    /**
      * Gets the view bounding frustum.
      *
      * @return The viewing bounding frustum.
@@ -371,6 +378,7 @@ private:
     mutable Matrix _viewProjection;
     mutable Matrix _inverseView;
     mutable Matrix _inverseViewProjection;
+    mutable Matrix _inverseProjection;
     mutable Frustum _bounds;
     mutable int _bits;
     Node* _node;

@@ -558,6 +558,17 @@ const Matrix& Node::getInverseViewProjectionMatrix() const
     return Matrix::identity();
 }
 
+const Matrix& Node::getInverseProjectionMatrix() const
+{
+    Scene* scene = getScene();
+    Camera* camera = scene ? scene->getActiveCamera() : NULL;
+    if (camera)
+    {
+        return camera->getInverseProjectionMatrix();
+    }
+    return Matrix::identity();
+}
+
 const Matrix& Node::getWorldViewProjectionMatrix() const
 {
     // Always re-calculate worldViewProjection matrix since it's extremely difficult
