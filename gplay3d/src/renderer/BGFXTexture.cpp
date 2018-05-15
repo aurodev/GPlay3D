@@ -43,6 +43,7 @@ bgfx::TextureFormat::Enum BGFXTexture::toBgfxFormat(Texture::Format gp3dFormat)
     case Texture::Format::RGBA       : return bgfx::TextureFormat::RGBA8;
     case Texture::Format::RGBA4444   : return bgfx::TextureFormat::RGBA4;
     case Texture::Format::RGBA5551   : return bgfx::TextureFormat::RGB5A1;
+    case Texture::Format::RGBA16F    : return bgfx::TextureFormat::RGBA16F;
     case Texture::Format::ALPHA      : return bgfx::TextureFormat::R8;
     case Texture::Format::D16        : return bgfx::TextureFormat::D16;
     case Texture::Format::D24        : return bgfx::TextureFormat::D24;
@@ -63,6 +64,7 @@ Texture::Format BGFXTexture::toGp3dFormat(bgfx::TextureFormat::Enum bimgTextureF
     case bgfx::TextureFormat::RGBA8     : return Texture::Format::RGBA;
     case bgfx::TextureFormat::RGBA4     : return Texture::Format::RGBA4444;
     case bgfx::TextureFormat::RGB5A1    : return Texture::Format::RGBA5551;
+    case bgfx::TextureFormat::RGBA16F   : return Texture::Format::RGBA16F;
     case bgfx::TextureFormat::R8        : return Texture::Format::ALPHA;
     case bgfx::TextureFormat::D16       : return Texture::Format::D16;
     case bgfx::TextureFormat::D24       : return Texture::Format::D24;

@@ -28,6 +28,7 @@ public:
     enum Format
     {
         UNKNOWN = 0,
+        RGBA16F,
         RGB,
         RGB888 = RGB,
         RGB565,
