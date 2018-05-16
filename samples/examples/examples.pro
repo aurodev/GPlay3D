@@ -37,7 +37,8 @@ SOURCES += \
     src/ShaderReload.cpp \
     src/EventSample.cpp \
     src/LightsAndShadows.cpp \
-    src/Renderer.cpp
+    src/Renderer.cpp \
+    src/bgfxBench.cpp
 
 HEADERS += \
     src/SamplesGame.h \
