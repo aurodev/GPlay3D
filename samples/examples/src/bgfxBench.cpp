@@ -69,9 +69,9 @@ static const uint16_t s_cubeTriStrip[] =
 };
 
 
-const char* vshPath = "res/core/shaders/cubes.vert";
-const char* fshPath = "res/core/shaders/cubes.frag";
-const char* varyingDef = "res/core/shaders/cubes.io";
+const char* vshPath = "res/core/shaders/test/cubes.vert";
+const char* fshPath = "res/core/shaders/test/cubes.frag";
+const char* varyingDef = "res/core/shaders/test/cubes.io";
 
 
 class BgfxBench : public Example
