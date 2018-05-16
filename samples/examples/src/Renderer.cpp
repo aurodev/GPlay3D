@@ -61,13 +61,6 @@ public:
         _matGBuffer->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
         _matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
 
-        /*_matGBuffer->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
-        _matGBuffer->setParameterAutoBinding("u_viewProjectionMatrix", RenderState::VIEW_PROJECTION_MATRIX);
-        _matGBuffer->setParameterAutoBinding("u_viewMatrix", RenderState::VIEW_MATRIX);
-        _matGBuffer->setParameterAutoBinding("u_projectionMatrix", RenderState::PROJECTION_MATRIX);
-        _matGBuffer->setParameterAutoBinding("u_worldViewMatrix", RenderState::WORLD_VIEW_MATRIX);*/
-
-
         Texture::Sampler* sampler = _matGBuffer->getParameter("s_diffuse")->setValue("res/data/textures/brick.png", true);
         sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
@@ -210,7 +203,7 @@ public:
         texInfo.width = FRAMEBUFFER_WIDTH;
         texInfo.height = FRAMEBUFFER_HEIGHT;
         texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::RGBA;
+        texInfo.format = Texture::Format::RGB;
         texInfo.flags = BGFX_TEXTURE_RT;
         Texture* tex = Texture::create(texInfo);
         textures.push_back(tex);
@@ -271,7 +264,6 @@ public:
         lightingMaterial->getParameter("u_inverseProjectionMatrix")->bindValue(_fpCamera.getRootNode(), &Node::getInverseProjectionMatrix);
         lightingMaterial->getParameter("u_inverseViewMatrix")->bindValue(_fpCamera.getRootNode(), &Node::getInverseViewMatrix);
 
-
         Texture::Sampler* sampler2 = Texture::Sampler::create(_gBuffer->getRenderTarget("NormalBuffer"));
         lightingMaterial->getParameter("gNormal")->setValue(sampler2);
         Texture::Sampler* sampler3 = Texture::Sampler::create(_gBuffer->getRenderTarget("AlbedoSpecBuffer"));
@@ -327,7 +319,7 @@ public:
         //--------
 
 
-        _lightBuffer = FrameBuffer::create("LightBuffer", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::RGBA);
+        _lightBuffer = FrameBuffer::create("LightBuffer", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::RGB);
 
         Mesh* fullScreenQuad = Mesh::createQuadFullscreen();
         _lightQuad = Model::create(fullScreenQuad);
@@ -339,9 +331,9 @@ public:
 
             Material* _matCombine;
             _matCombine = Material::create("res/core/shaders/gbuffer/viewport.vert", "res/core/shaders/gbuffer/viewport.frag");
-            //_matCombine->getStateBlock()->setCullFace(false);
-            //_matCombine->getStateBlock()->setDepthTest(false); //false
-            //_matCombine->getStateBlock()->setDepthWrite(false);
+            _matCombine->getStateBlock()->setCullFace(true);
+            _matCombine->getStateBlock()->setDepthTest(false); //false
+            _matCombine->getStateBlock()->setDepthWrite(false);
             /*_matCombine->getStateBlock()->setBlend(true);
             _matCombine->getStateBlock()->setBlendSrc(RenderState::BLEND_ONE);
             _matCombine->getStateBlock()->setBlendDst(RenderState::BLEND_ONE);*/
