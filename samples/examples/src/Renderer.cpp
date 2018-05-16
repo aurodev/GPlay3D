@@ -52,30 +52,20 @@ public:
 
 
 
+        // create GBuffer
 
-
-
-
-
-
-
-
-
-
-
-
-        _matGBuffer = Material::create("res/coredata/shaders/test.vert", "res/coredata/shaders/test.frag");
+        _matGBuffer = Material::create("res/core/shaders/gbuffer/gbuffer.vert", "res/core/shaders/gbuffer/gbuffer.frag");
         _matGBuffer->getStateBlock()->setCullFace(true);
         _matGBuffer->getStateBlock()->setDepthTest(true);
         _matGBuffer->getStateBlock()->setDepthWrite(true);
-        _matGBuffer->getStateBlock()->setDepthWrite(true);
         _matGBuffer->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
-        _matGBuffer->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
         _matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
+
+        /*_matGBuffer->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
         _matGBuffer->setParameterAutoBinding("u_viewProjectionMatrix", RenderState::VIEW_PROJECTION_MATRIX);
         _matGBuffer->setParameterAutoBinding("u_viewMatrix", RenderState::VIEW_MATRIX);
         _matGBuffer->setParameterAutoBinding("u_projectionMatrix", RenderState::PROJECTION_MATRIX);
-        _matGBuffer->setParameterAutoBinding("u_worldViewMatrix", RenderState::WORLD_VIEW_MATRIX);
+        _matGBuffer->setParameterAutoBinding("u_worldViewMatrix", RenderState::WORLD_VIEW_MATRIX);*/
 
 
         Texture::Sampler* sampler = _matGBuffer->getParameter("s_diffuse")->setValue("res/data/textures/brick.png", true);
@@ -211,38 +201,25 @@ public:
 
 
 
-        std::vector<Texture*> textures;
+        std::vector<Texture*> textures;      
 
         {
-        // - position color buffer
-        Texture::TextureInfo texInfo;
-        texInfo.id = "PositionBuffer";
-        texInfo.width = FRAMEBUFFER_WIDTH;
-        texInfo.height = FRAMEBUFFER_HEIGHT;
-        texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::RGBA16F;
-        texInfo.flags = BGFX_TEXTURE_RT;
-        Texture* tex = Texture::create(texInfo);
-        textures.push_back(tex);
-        }
-
-        {
-        // - normal color buffer
+        // - normal buffer
         Texture::TextureInfo texInfo;
         texInfo.id = "NormalBuffer";
         texInfo.width = FRAMEBUFFER_WIDTH;
         texInfo.height = FRAMEBUFFER_HEIGHT;
         texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::RGBA16F;
+        texInfo.format = Texture::Format::RGBA;
         texInfo.flags = BGFX_TEXTURE_RT;
         Texture* tex = Texture::create(texInfo);
         textures.push_back(tex);
         }
 
         {
-        // - color + specular color buffer
+        // - color + specular buffer
         Texture::TextureInfo texInfo;
-        texInfo.id = "AlbedoSpec";
+        texInfo.id = "AlbedoSpecBuffer";
         texInfo.width = FRAMEBUFFER_WIDTH;
         texInfo.height = FRAMEBUFFER_HEIGHT;
         texInfo.type = Texture::TEXTURE_RT;
@@ -254,9 +231,9 @@ public:
 
 
         {
-        // - color + specular color buffer
+        // - depth buffer
         Texture::TextureInfo texInfo;
-        texInfo.id = "Depth";
+        texInfo.id = "DepthBuffer";
         texInfo.width = FRAMEBUFFER_WIDTH;
         texInfo.height = FRAMEBUFFER_HEIGHT;
         texInfo.type = Texture::TEXTURE_RT;
@@ -274,26 +251,39 @@ public:
 
 
         // Create quads for gbuffer preview
-        for(int i=0; i<4; i++)
+        for(int i=0; i<3; i++)
         {
             Mesh* meshQuad = Mesh::createQuad(-1 + i*0.5, -1, 0.5 ,0.5);
             _quadModel[i] = Model::create(meshQuad);
-            _quadModel[i]->setMaterial("res/coredata/shaders/debug.vert", "res/coredata/shaders/debug.frag", "SHOW_TEXTURE");
+            _quadModel[i]->setMaterial("res/core/shaders/debug/texture.vert", "res/core/shaders/debug/texture.frag");
             Texture::Sampler* sampler = Texture::Sampler::create(_gBuffer->getRenderTarget(i));
-            _quadModel[i]->getMaterial()->getParameter("u_texture")->setValue(sampler);
+            _quadModel[i]->getMaterial()->getParameter("s_texture")->setValue(sampler);
             SAFE_RELEASE(meshQuad);
         }
 
 
 
 
+        // TODO: implement methods to create material with pass and technique at runtime.
+
+        Material* lightingMaterial = Material::create("res/core/materials/lighting.material");
+        lightingMaterial->getParameter("u_viewPos")->bindValue(_fpCamera.getRootNode(), &Node::getTranslationWorld);
+        lightingMaterial->getParameter("u_inverseProjectionMatrix")->bindValue(_fpCamera.getRootNode(), &Node::getInverseProjectionMatrix);
+        lightingMaterial->getParameter("u_inverseViewMatrix")->bindValue(_fpCamera.getRootNode(), &Node::getInverseViewMatrix);
+
+
+        Texture::Sampler* sampler2 = Texture::Sampler::create(_gBuffer->getRenderTarget("NormalBuffer"));
+        lightingMaterial->getParameter("gNormal")->setValue(sampler2);
+        Texture::Sampler* sampler3 = Texture::Sampler::create(_gBuffer->getRenderTarget("AlbedoSpecBuffer"));
+        lightingMaterial->getParameter("gAlbedoSpec")->setValue(sampler3);
+        Texture::Sampler* sampler4 = Texture::Sampler::create(_gBuffer->getRenderTarget("DepthBuffer"));
+        lightingMaterial->getParameter("gDepth")->setValue(sampler4);
 
 
 
+        /*
 
-
-
-        _matDeferred = Material::create("res/coredata/shaders/deferred.vert", "res/coredata/shaders/deferred.frag");
+        _matDeferred = Material::create("res/core/shaders/deferred.vert", "res/core/shaders/deferred.frag");
         _matDeferred->getStateBlock()->setCullFace(false);
         _matDeferred->getStateBlock()->setDepthTest(true);
         _matDeferred->getStateBlock()->setDepthWrite(true);
@@ -325,7 +315,7 @@ public:
         Texture::Sampler* sampler4 = Texture::Sampler::create(_gBuffer->getRenderTarget(3));
         _matDeferred->getParameter("s_depthBuffer")->setValue(sampler4);
 
-
+*/
 
 
 
@@ -337,18 +327,18 @@ public:
         //--------
 
 
-        _lightBuffer = FrameBuffer::create("lightBuffer", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::RGBA);
+        _lightBuffer = FrameBuffer::create("LightBuffer", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::RGBA);
 
         Mesh* fullScreenQuad = Mesh::createQuadFullscreen();
         _lightQuad = Model::create(fullScreenQuad);
-        _lightQuad->setMaterial(_matDeferred);
+        _lightQuad->setMaterial(lightingMaterial);
 
 
 
         // combine
 
             Material* _matCombine;
-            _matCombine = Material::create("res/coredata/shaders/def_combine.vert", "res/coredata/shaders/def_combine.frag");
+            _matCombine = Material::create("res/core/shaders/gbuffer/viewport.vert", "res/core/shaders/gbuffer/viewport.frag");
             //_matCombine->getStateBlock()->setCullFace(false);
             //_matCombine->getStateBlock()->setDepthTest(false); //false
             //_matCombine->getStateBlock()->setDepthWrite(false);
@@ -359,7 +349,7 @@ public:
             _matCombine->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
 
             {
-            Texture::Sampler* sampler1 = Texture::Sampler::create(_gBuffer->getRenderTarget(2));
+            Texture::Sampler* sampler1 = Texture::Sampler::create(_gBuffer->getRenderTarget("AlbedoSpecBuffer"));
             _matCombine->getParameter("s_albedo")->setValue(sampler1);
 
             Texture::Sampler* sampler2 = Texture::Sampler::create(_lightBuffer->getRenderTarget(0));
@@ -415,30 +405,44 @@ public:
 
     void render(float elapsedTime)
     {
+        // Geometry pass ---------
+
         Game::getInstance()->bindView(0);
         _gBuffer->bind();
         _scene->visit(this, &NewRenderer::drawScene);
 
 
+        // Lighting pass ---------
 
         Game::getInstance()->bindView(1);
         _lightBuffer->bind();
-        for(int i=0; i<30; i++)
-            for(int j=0; j<30; j++)
+
+        // if point lighting, activate point light shader technique
+        _lightQuad->getMaterial()->setTechnique("PointLight");
+
+        // for each point lights
+        for(int i=0; i<3; i++)
+            for(int j=0; j<3; j++)
         {
             // light pos
-            _lightQuad->getMaterial()->getParameter("uu_lightPos")->setValue(Vector3(-8 + i*2, 0.2, -8 + j*2));
-            _lightQuad->getMaterial()->getParameter("uu_lightColor")->setValue(Vector3(1, 1, 1));
+            _lightQuad->getMaterial()->getParameter("u_lightPos")->setValue(Vector3(-8 + i*4, 0.2, -8 + j*4));
+            _lightQuad->getMaterial()->getParameter("u_lightColor")->setValue(Vector3(1, 1, 1));
 
             _lightQuad->draw();
         }
 
+        // if directionnal lighting, activate directionnal light shader technique
+        // for each directionnal lights
+        // ...
 
+
+
+        // Final pass, render to viewport ---------
 
         Game::getInstance()->bindView(2);
         _screenQuad->draw();
 
-        for(int i=0; i<4; i++)
+        for(int i=0; i<3; i++)
             _quadModel[i]->draw();
 
         drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());

@@ -1,0 +1,23 @@
+material DeferredLighting
+{
+    // render state
+    renderState
+    {
+        cullFace = true
+        depthTest = false
+        depthWrite = false
+        blend = true
+        blendSrc = ONE
+        blendDst = ONE
+    }
+
+    technique PointLight
+    {
+        pass 0
+        {
+            // shaders
+            vertexShader = res/core/shaders/lighting/pointLight.vert
+            fragmentShader = res/core/shaders/lighting/pointLight.frag
+        }
+    }
+}
