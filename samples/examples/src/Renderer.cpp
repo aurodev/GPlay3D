@@ -12,16 +12,14 @@ class NewRenderer : public Example
     Font* _font;
     Scene* _scene;
 
-
-
     FrameBuffer* _gBuffer;
     Material* _matDeferred;
     Material* _matGBuffer;
-
-
     Model* _quadModel[4];
-
     Model* _screenQuad;
+
+    FrameBuffer* _lightBuffer;
+    Model* _lightQuad;
 
 public:
 
@@ -196,6 +194,23 @@ public:
         game->insertView(1, secondView);
 
 
+        View view3;
+        view3.clearColor = 0x303030ff;
+        view3.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
+        view3.depth = 1.0f;
+        view3.stencil = 0;
+        view3.rectangle = Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
+        game->insertView(2, view3);
+
+
+
+
+
+
+
+
+
+
         std::vector<Texture*> textures;
 
         {
@@ -283,6 +298,14 @@ public:
         _matDeferred->getStateBlock()->setDepthTest(true);
         _matDeferred->getStateBlock()->setDepthWrite(true);
 
+        _matDeferred->getStateBlock()->setCullFace(false);
+        _matDeferred->getStateBlock()->setDepthTest(false); //false
+        _matDeferred->getStateBlock()->setDepthWrite(false);
+        _matDeferred->getStateBlock()->setBlend(true);
+        _matDeferred->getStateBlock()->setBlendSrc(RenderState::BLEND_ONE);
+        _matDeferred->getStateBlock()->setBlendDst(RenderState::BLEND_ONE);
+
+
             // NOTE : this does not works because ther is no node attached for node binding
             _matDeferred->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
             _matDeferred->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
@@ -307,23 +330,76 @@ public:
 
 
 
-        /*Mesh* fullScreenQuadMesh = Mesh::createQuadFullscreen();
-        _screenQuad = Model::create(fullScreenQuadMesh);
-        _screenQuad->setMaterial(_matDeferred);
-        //Texture::Sampler* sampler = Texture::Sampler::create(_gBuffer->getRenderTarget(i));
-        //_quadModel[i]->getMaterial()->getParameter("u_texture")->setValue(sampler);
-        SAFE_RELEASE(fullScreenQuadMesh);*/
 
 
 
-        Mesh* meshQuad = Mesh::createQuad(-1,-1,2,2);
-        //Mesh* meshQuad = Mesh::createQuadFullscreen();
+
+        //--------
+
+
+        _lightBuffer = FrameBuffer::create("lightBuffer", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::RGBA);
+
+        Mesh* fullScreenQuad = Mesh::createQuadFullscreen();
+        _lightQuad = Model::create(fullScreenQuad);
+        _lightQuad->setMaterial(_matDeferred);
+
+
+
+        // combine
+
+            Material* _matCombine;
+            _matCombine = Material::create("res/coredata/shaders/def_combine.vert", "res/coredata/shaders/def_combine.frag");
+            //_matCombine->getStateBlock()->setCullFace(false);
+            //_matCombine->getStateBlock()->setDepthTest(false); //false
+            //_matCombine->getStateBlock()->setDepthWrite(false);
+            /*_matCombine->getStateBlock()->setBlend(true);
+            _matCombine->getStateBlock()->setBlendSrc(RenderState::BLEND_ONE);
+            _matCombine->getStateBlock()->setBlendDst(RenderState::BLEND_ONE);*/
+            _matCombine->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
+            _matCombine->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
+
+            {
+            Texture::Sampler* sampler1 = Texture::Sampler::create(_gBuffer->getRenderTarget(2));
+            _matCombine->getParameter("s_albedo")->setValue(sampler1);
+
+            Texture::Sampler* sampler2 = Texture::Sampler::create(_lightBuffer->getRenderTarget(0));
+            _matCombine->getParameter("s_light")->setValue(sampler2);
+            }
+
+            //_matCombine->getParameter("u_projectionMatrix")->setValue(uporj);
+
+
+        //--------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //Mesh* meshQuad = Mesh::createQuad(-1,-1,2,2);
+        Mesh* meshQuad = Mesh::createQuadFullscreen();
 
         _screenQuad = Model::create(meshQuad);
-        _screenQuad->setMaterial(_matDeferred);
+        _screenQuad->setMaterial(_matCombine);
         //Texture::Sampler* sampler = Texture::Sampler::create(_gBuffer->getRenderTarget(i));
         //_quadModel[i]->getMaterial()->getParameter("u_texture")->setValue(sampler);
         SAFE_RELEASE(meshQuad);
+
+
+
+
+
+
+
+
 
 
     }
@@ -339,17 +415,28 @@ public:
 
     void render(float elapsedTime)
     {
-        Game::getInstance()->bindView(1);
+        Game::getInstance()->bindView(0);
         _gBuffer->bind();
         _scene->visit(this, &NewRenderer::drawScene);
 
 
-        Game::getInstance()->bindView(0);
-        //_scene->visit(this, &NewRenderer::drawScene, (void*)0);
+
+        Game::getInstance()->bindView(1);
+        _lightBuffer->bind();
+        for(int i=0; i<30; i++)
+            for(int j=0; j<30; j++)
+        {
+            // light pos
+            _lightQuad->getMaterial()->getParameter("uu_lightPos")->setValue(Vector3(-8 + i*2, 0.2, -8 + j*2));
+            _lightQuad->getMaterial()->getParameter("uu_lightColor")->setValue(Vector3(1, 1, 1));
+
+            _lightQuad->draw();
+        }
 
 
+
+        Game::getInstance()->bindView(2);
         _screenQuad->draw();
-
 
         for(int i=0; i<4; i++)
             _quadModel[i]->draw();
