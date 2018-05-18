@@ -356,7 +356,7 @@ const Frustum& Camera::getFrustum() const
     return _bounds;
 }
 
-void Camera::project(const Rectangle& viewport, const Vector3& position, float* x, float* y, float* depth) const
+bool Camera::project(const Rectangle& viewport, const Vector3& position, float* x, float* y, float* depth) const
 {
     GP_ASSERT(x);
     GP_ASSERT(y);
@@ -366,7 +366,9 @@ void Camera::project(const Rectangle& viewport, const Vector3& position, float* 
     getViewProjectionMatrix().transformVector(Vector4(position.x, position.y, position.z, 1.0f), &clipPos);
 
     // Compute normalized device coordinates.
-    GP_ASSERT(clipPos.w != 0.0f);
+    if(clipPos.w == 0.0f)
+        return false;
+
     float ndcX = clipPos.x / clipPos.w;
     float ndcY = clipPos.y / clipPos.w;
 
@@ -378,22 +380,34 @@ void Camera::project(const Rectangle& viewport, const Vector3& position, float* 
         float ndcZ = clipPos.z / clipPos.w;
         *depth = (ndcZ + 1.0f) / 2.0f;
     }
+
+    return true;
 }
 
-void Camera::project(const Rectangle& viewport, const Vector3& position, Vector2* out) const
+bool Camera::project(const Rectangle& viewport, const Vector3& position, Vector2* out) const
 {
     GP_ASSERT(out);
     float x, y;
-    project(viewport, position, &x, &y);
-    out->set(x, y);
+    if(project(viewport, position, &x, &y))
+    {
+        out->set(x, y);
+        return true;
+    }
+
+    return false;
 }
 
-void Camera::project(const Rectangle& viewport, const Vector3& position, Vector3* out) const
+bool Camera::project(const Rectangle& viewport, const Vector3& position, Vector3* out) const
 {
     GP_ASSERT(out);
     float x, y, depth;
-    project(viewport, position, &x, &y, &depth);
-    out->set(x, y, depth);
+    if(project(viewport, position, &x, &y, &depth))
+    {
+        out->set(x, y, depth);
+        return true;
+    }
+
+    return false;
 }
 
 void Camera::unproject(const Rectangle& viewport, float x, float y, float depth, Vector3* dst) const
