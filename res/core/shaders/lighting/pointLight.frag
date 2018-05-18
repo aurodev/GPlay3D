@@ -13,7 +13,7 @@ uniform mat4 u_inverseViewMatrix;
 uniform vec4 u_viewPos;
 uniform vec4 u_lightPos;
 uniform vec4 u_lightColor;
-
+uniform vec4 u_lightRadius;
 
 
 
@@ -119,8 +119,8 @@ void main()
     Light light;
     light.Position = u_lightPos.xyz;
     light.Color = u_lightColor.rgb;
-    light.Linear = 0.07;
-    light.Quadratic = 0.022;
+    light.Linear = 0.045;
+    light.Quadratic = 0.0075;
 
 
      // then calculate lighting as usual
@@ -137,9 +137,23 @@ void main()
         float spec = pow(max(dot(v_normal, halfwayDir), 0.0), 16.0);
         vec3 specular = light.Color * spec * Specular;
 
+
+
+
         // attenuation
-        float distance = length(light.Position - FragPos);
-        float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance);
+        //float distance = length(light.Position - FragPos);
+        //float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance);
+        
+        //float attenuation = clamp(1.0 - dot(lightDir, lightDir), 0.0, 1.0);
+        
+        //vec3 distance = (light.Position - FragPos) / u_lightRadius.x;
+        //float attenuation = 1.0f - dot(distance, distance);
+
+        float attenuation = smoothstep(u_lightRadius.x, 0, length(light.Position - FragPos));
+
+      
+
+        // result
         diffuse *= attenuation;
         specular *= attenuation;
         lighting += diffuse + specular;        
