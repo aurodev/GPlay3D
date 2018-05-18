@@ -39,7 +39,10 @@ public:
         ALPHA,
         D16,
         D24,
-        D32
+        D32,
+        D16F,
+        D24F,
+        D32F,
     };
 
     /**
