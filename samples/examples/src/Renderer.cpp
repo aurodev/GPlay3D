@@ -21,6 +21,8 @@ class NewRenderer : public Example
     FrameBuffer* _lightBuffer;
     Model* _lightQuad;
 
+    SpriteBatch* _spriteBatch;
+
 public:
 
     NewRenderer()
@@ -260,6 +262,11 @@ public:
         // TODO: implement methods to create material with pass and technique at runtime.
 
         Material* lightingMaterial = Material::create("res/core/materials/lighting.material");
+
+        lightingMaterial->getStateBlock()->setCullFace(true);
+        lightingMaterial->getStateBlock()->setDepthTest(false);
+        lightingMaterial->getStateBlock()->setDepthWrite(false);
+
         lightingMaterial->getParameter("u_viewPos")->bindValue(_fpCamera.getRootNode(), &Node::getTranslationWorld);
         lightingMaterial->getParameter("u_inverseProjectionMatrix")->bindValue(_fpCamera.getRootNode(), &Node::getInverseProjectionMatrix);
         lightingMaterial->getParameter("u_inverseViewMatrix")->bindValue(_fpCamera.getRootNode(), &Node::getInverseViewMatrix);
@@ -379,12 +386,35 @@ public:
 
 
 
+        // create quad mesh lines
+        {
+            float vertices[] =
+            {
+                -1.0f, -1.0f, 0.0f,
+                -1.0f,  1.0f, 0.0f,
+                 1.0f,  1.0f, 0.0f,
+                 1.0f, -1.0f, 0.0f
+            };
+
+            VertexFormat::Element elements[] =
+            {
+                VertexFormat::Element(VertexFormat::POSITION, 3)
+            };
+            Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 1), 4, false);
+            mesh->setPrimitiveType(Mesh::LINES);
+            mesh->setVertexData(&vertices[0], 0, 4);
+
+        }
 
 
 
+
+         _spriteBatch = SpriteBatch::create("res/data/textures/logo.png");
 
 
     }
+
+
 
     void update(float elapsedTime)
     {
@@ -395,16 +425,82 @@ public:
         _fpCamera.updateCamera(elapsedTime);
     }
 
+
+
+
+
+    Rectangle getScissorRegion(BoundingBox bbox)
+    {
+        Camera* camera = _scene->getActiveCamera();
+        Game* game = Game::getInstance();
+        Rectangle vp = game->getViewport();
+
+        Vector3 corners[8];
+        Vector2 min(FLT_MAX, FLT_MAX);
+        Vector2 max(-FLT_MAX, -FLT_MAX);
+        bbox.getCorners(corners);
+        for (unsigned int i = 0; i < 8; ++i)
+        {
+            const Vector3& corner = corners[i];
+            float x, y;
+            camera->project(vp, corner, &x, &y);
+            if (x < min.x)
+                min.x = x;
+            if (y < min.y)
+                min.y = y;
+            if (x > max.x)
+                max.x = x;
+            if (y > max.y)
+                max.y = y;
+        }
+
+        // define final rectangle
+        float x = min.x;
+        float y = min.y;
+        float width = max.x - min.x;
+        float height = max.y - min.y;
+
+        // clamp origin to viewport
+        if(x < 0.0f)
+        {
+            width += x;
+            x = 0.0f;
+        }
+        if(y < 0.0f)
+        {
+            height += y;
+            y = 0.0f;
+        }
+
+        return Rectangle(x,y,width,height);
+    }
+
+
+
+
+
     void render(float elapsedTime)
     {
-        // Geometry pass ---------
+        static float pointlightRadius = 5.0f;
+        static float pointLightPosition[3] = { 0.0, 3.0f, 0.0f };
+        static float pointLightColor[3] = { 1.0f, 1.0f, 1.0f };
+
+        ImGui::Begin("Toolbox");
+        ImGui::SliderFloat4("position", pointLightPosition, -10.0f, 10.0f);
+        ImGui::SliderFloat3("color", pointLightColor, 0.0f, 10.0f);
+        ImGui::SliderFloat("radius", &pointlightRadius, -10.0f, 100.0f);
+        ImGui::End();
+
+
+
+        // 1. Geometry pass ---------
 
         Game::getInstance()->bindView(0);
         _gBuffer->bind();
         _scene->visit(this, &NewRenderer::drawScene);
 
 
-        // Lighting pass ---------
+        // 2. Lighting pass ---------
 
         Game::getInstance()->bindView(1);
         _lightBuffer->bind();
@@ -412,15 +508,49 @@ public:
         // if point lighting, activate point light shader technique
         _lightQuad->getMaterial()->setTechnique("PointLight");
 
-        // for each point lights
-        for(int i=0; i<3; i++)
-            for(int j=0; j<3; j++)
-        {
-            // light pos
-            _lightQuad->getMaterial()->getParameter("u_lightPos")->setValue(Vector3(-8 + i*4, 0.2, -8 + j*4));
-            _lightQuad->getMaterial()->getParameter("u_lightColor")->setValue(Vector3(1, 1, 1));
 
-            _lightQuad->draw();
+        _spriteBatch->start();
+        Rectangle src(0, 0, 256, 256);
+
+
+        // for each point lights
+        for(int i=0; i<4; i++)
+            for(int j=0; j<4; j++)
+        {
+            pointLightPosition[0] = -8 + i*5;
+            pointLightPosition[1] = 3;
+            pointLightPosition[2] = -8 + j*5;
+
+
+
+            // compute bounding sphere of point light
+            BoundingBox bounds;
+            bounds.set(BoundingSphere(pointLightPosition, pointlightRadius));
+
+            // perform frustum culling with light bounds
+            if(bounds.intersects(_scene->getActiveCamera()->getFrustum()))
+            {
+                // get 2D rectangle region of light influence
+                Rectangle region = getScissorRegion(bounds);
+
+                // set scissor on light region
+                bgfx::setScissor(region.x, region.y, region.width, region.height);
+
+
+                // show scissor region for debug
+                //_spriteBatch->draw(region, src, Vector4::fromColor(0xffffff11));
+
+
+                // pass to shader light parameters
+                _lightQuad->getMaterial()->getParameter("u_lightPos")->setValue(Vector3(pointLightPosition));
+                _lightQuad->getMaterial()->getParameter("u_lightColor")->setValue(Vector3(pointLightColor));
+                _lightQuad->getMaterial()->getParameter("u_lightRadius")->setValue(pointlightRadius);
+
+
+                // draw quad of light influence
+                _lightQuad->draw();
+
+            }
         }
 
         // if directionnal lighting, activate directionnal light shader technique
@@ -429,10 +559,12 @@ public:
 
 
 
-        // Final pass, render to viewport ---------
+        // 3. Final pass, render to viewport, combine light buffer and diffuse
 
         Game::getInstance()->bindView(2);
         _screenQuad->draw();
+
+        _spriteBatch->finish();
 
         for(int i=0; i<3; i++)
             _quadModel[i]->draw();
@@ -468,8 +600,7 @@ public:
 
     void showToolbox()
     {
-        ImGui::Begin("Toolbox");
-        ImGui::End();
+
     }
 
     void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
