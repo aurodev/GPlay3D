@@ -1,15 +1,23 @@
 # GPlay3D
 GPlay3D is C++ cross-platform game engine for creating 2D/3D games.
 
-GPlay3D is a fork of the [GamePlay engine](http://www.gameplay3d.io/) v3.0 and based on the [BGFX](https://github.com/bkaradzic/bgfx) graphics framework. Goal of this fork is to continue evolution of this engine by integrating new features and modern rendering techniques.
+GPlay3D is based on the [GamePlay 3D engine](http://www.gameplay3d.io/) v3.0.
+This engine version principally replace the OpenGL 2.x backend to use the [BGFX](https://github.com/bkaradzic/bgfx) graphic framework.
+The purpose of this fork is also to continue the active development of this engine by fixing old issues, integrating new features and modern rendering techniques like deferred, PBR, screen space reflection, advanced post-processing effects, ...
+
+## Screenshots
+<img src="https://i.imgur.com/u3arwg3.png" width="50%" height="%"><img src="https://i.imgur.com/IZKGhDb.jpg" width="50%" height="%">
+<img src="https://i.imgur.com/0ei9Y28.png" width="50%" height="%"><img src="https://i.imgur.com/mXvz27x.jpg" width="50%" height="%">
+<img src="https://i.imgur.com/nRpTNIm.jpg" width="50%" height="%"><img src="https://i.imgur.com/SDIgTkt.png" width="50%" height="%">
 
 
-## Status
-- bgfx integration is completed however it currently only works with bgfx opengl because it use the old glsl shaders. It needs a pass on shaders to use the bgfx shaderc syntax to be compatible with others bgfx renderers. 
+## Current status
+- bgfx integration is completed and replace opengl calls.
+- bgfx is currently forced to use the opengl driver because engine still use the old glsl shaders. A pass on shaders is planned to use the bgfx shader syntax to be fully compatible with others bgfx backends.
 - Engine now use SDL2 by default to manage windows and inputs. Gamepad are not yet implanted.
-- Lua is temporarily disabled to speed up the compilation.
+- Lua is temporarily disabled to speed up the compilation during core dev phase.
 - All previous samples and demo are now working with the new renderer.
-- Tested on Linux and Windows.
+- Only tested on Linux and Windows for now.
 
 
 ## Building
@@ -18,12 +26,6 @@ GPlay3D is a fork of the [GamePlay engine](http://www.gameplay3d.io/) v3.0 and b
 * [Qt Creator (Linux, Windows, MacOS)](https://github.com/fredakilla/GPlay3D/wiki/QtCreator-Setup)
 
 See [wiki](https://github.com/fredakilla/GPlay3D/wiki) for more detailed build instructions.
-
-
-## Screenshots
-<img src="https://i.imgur.com/u3arwg3.png" width="50%" height="%"><img src="https://i.imgur.com/IZKGhDb.jpg" width="50%" height="%">
-<img src="https://i.imgur.com/0ei9Y28.png" width="50%" height="%"><img src="https://i.imgur.com/mXvz27x.jpg" width="50%" height="%">
-<img src="https://i.imgur.com/nRpTNIm.jpg" width="50%" height="%"><img src="https://i.imgur.com/SDIgTkt.png" width="50%" height="%">
 
 
 ## Features
@@ -52,8 +54,3 @@ See [wiki](https://github.com/fredakilla/GPlay3D/wiki) for more detailed build i
 - Image supported format (DDS, KTX, PVR, JPG, PNG, TGA, BMP, PSD, GIF, HDR, PIC)
 - 3D model supported format (FBX)
 
-## Todo
-- Add assimp library to support new 3D file formats
-- Deferred rendering.
-- Shadow mapping.
-- Editor.
