@@ -232,7 +232,7 @@ public:
         texInfo.width = FRAMEBUFFER_WIDTH;
         texInfo.height = FRAMEBUFFER_HEIGHT;
         texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::D16;
+        texInfo.format = Texture::Format::D24F;
         texInfo.flags = BGFX_TEXTURE_RT;
         Texture* tex = Texture::create(texInfo);
         textures.push_back(tex);
@@ -481,11 +481,15 @@ public:
 
     void render(float elapsedTime)
     {
+        static int dim = 5;
+        static float offset = 1.0f;
         static float pointlightRadius = 5.0f;
         static float pointLightPosition[3] = { 0.0, 3.0f, 0.0f };
         static float pointLightColor[3] = { 1.0f, 1.0f, 1.0f };
 
         ImGui::Begin("Toolbox");
+        ImGui::SliderInt("Dim", &dim, 1, 100);
+        ImGui::SliderFloat("Offset", &offset, -20.0f, 20.0f);
         ImGui::SliderFloat4("position", pointLightPosition, -10.0f, 10.0f);
         ImGui::SliderFloat3("color", pointLightColor, 0.0f, 10.0f);
         ImGui::SliderFloat("radius", &pointlightRadius, -10.0f, 100.0f);
@@ -514,12 +518,12 @@ public:
 
 
         // for each point lights
-        for(int i=0; i<4; i++)
-            for(int j=0; j<4; j++)
+        for(int i=0; i<dim; i++)
+            for(int j=0; j<dim; j++)
         {
-            pointLightPosition[0] = -8 + i*5;
-            pointLightPosition[1] = 3;
-            pointLightPosition[2] = -8 + j*5;
+            pointLightPosition[0] = -8 + i*offset;
+            pointLightPosition[1] = pointLightPosition[1];
+            pointLightPosition[2] = -8 + j*offset;
 
 
 
