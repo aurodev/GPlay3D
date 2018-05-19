@@ -49,7 +49,7 @@ float CalcLinearZ(float depth)
 }
 
 // this is supposed to get the world position from the depth buffer
-vec3 WorldPosFromDepth(float depth)
+vec3 worldPosFromDepth(float depth)
 {
     /*float ViewZ = CalcLinearZ(depth);
 
@@ -103,17 +103,16 @@ void main()
 
     // methode 1
     float depth = texture2D(gDepth, v_texcoord0).x;
-    vec4 p = u_inverseProjectionMatrix * (vec4(v_texcoord0, depth, 1.0) * 2.0 - 1.0);
+    /*vec4 p = u_inverseProjectionMatrix * (vec4(v_texcoord0, depth, 1.0) * 2.0 - 1.0);
     vec3 viewspace_position = p.xyz / p.w;
     //FragPos = vec4(viewspace_position, 1).xyz;
     vec4 wpos = u_inverseViewMatrix * vec4(viewspace_position, 1);
-    vec3 FragPos = wpos.xyz;
+    vec3 FragPos = wpos.xyz;*/
 
     // methode 2
     // get world pos from depth buffer
-    /*float Depth = texture2D(gDepth, v_texcoord0).x;
-    vec3 FragWorldPos = WorldPosFromDepth(Depth);
-    FragPos = FragWorldPos;*/
+    //float Depth = texture2D(gDepth, v_texcoord0).x;
+    vec3 FragPos = worldPosFromDepth(depth);
 
     
     Light light;
@@ -124,7 +123,7 @@ void main()
 
 
      // then calculate lighting as usual
-    vec3 lighting  = Diffuse * 0.01; // hard-coded ambient component
+    vec3 lighting  = Diffuse * 0.0; // hard-coded ambient component
     vec3 viewDir  = normalize(u_viewPos.xyz - FragPos);
     
 

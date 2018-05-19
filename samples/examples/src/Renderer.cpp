@@ -472,6 +472,12 @@ public:
             y = 0.0f;
         }
 
+        if(width > vp.width)
+            width = vp.width;
+        if(height > vp.height)
+            height = vp.height;
+
+
         return Rectangle(x,y,width,height);
     }
 
@@ -486,6 +492,8 @@ public:
         static float pointlightRadius = 5.0f;
         static float pointLightPosition[3] = { 0.0, 3.0f, 0.0f };
         static float pointLightColor[3] = { 1.0f, 1.0f, 1.0f };
+        static bool showScissorRect = false;
+        static bool useScissor = true;
 
         ImGui::Begin("Toolbox");
         ImGui::SliderInt("Dim", &dim, 1, 100);
@@ -493,6 +501,8 @@ public:
         ImGui::SliderFloat4("position", pointLightPosition, -10.0f, 10.0f);
         ImGui::SliderFloat3("color", pointLightColor, 0.0f, 10.0f);
         ImGui::SliderFloat("radius", &pointlightRadius, -10.0f, 100.0f);
+        ImGui::Checkbox("show scissor rect", &showScissorRect);
+        ImGui::Checkbox("apply scissor", &useScissor);
         ImGui::End();
 
 
@@ -538,11 +548,13 @@ public:
                 Rectangle region = getScissorRegion(bounds);
 
                 // set scissor on light region
-                bgfx::setScissor(region.x, region.y, region.width, region.height);
+                if(useScissor)
+                    bgfx::setScissor(region.x, region.y, region.width, region.height);
 
 
                 // show scissor region for debug
-                //_spriteBatch->draw(region, src, Vector4::fromColor(0xffffff11));
+                if(showScissorRect)
+                    _spriteBatch->draw(region, src, Vector4::fromColor(0xffffffff));
 
 
                 // pass to shader light parameters
