@@ -32,7 +32,7 @@ bool BGFXGpuProgram::set(const char* vshPath, const char* fshPath, const char* d
     std::string varyingFile = basename + ".io";
     bool useCustomVaryingDef = FileSystem::fileExists(varyingFile.c_str());
     if(!useCustomVaryingDef)
-        varyingFile = FileSystem::getDirectoryName(vshPath) + "varying.def.sc";
+        varyingFile = "res/core/shaders/common/varying.def.sc";
 
     // store files path for hot reloading
     _vshFile = vshPath;
