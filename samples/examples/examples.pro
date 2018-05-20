@@ -38,7 +38,8 @@ SOURCES += \
     src/EventSample.cpp \
     src/LightsAndShadows.cpp \
     src/Renderer.cpp \
-    src/bgfxBench.cpp
+    src/bgfxBench.cpp \
+    src/DeferredTest.cpp
 
 HEADERS += \
     src/SamplesGame.h \

@@ -20,4 +20,14 @@ material DeferredLighting
             fragmentShader = res/core/shaders/lighting/pointLight.frag
         }
     }
+
+    technique DirectionnalLight
+    {
+        pass 0
+        {
+            // shaders
+            vertexShader = res/core/shaders/lighting/pointLight.vert
+            fragmentShader = res/core/shaders/lighting/directionnalLight.frag
+        }
+    }
 }
