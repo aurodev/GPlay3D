@@ -63,7 +63,7 @@ public:
         _matGBuffer->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
         _matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
 
-        Texture::Sampler* sampler = _matGBuffer->getParameter("s_diffuse")->setValue("res/data/textures/brick.png", true);
+        Texture::Sampler* sampler = _matGBuffer->getParameter("u_diffuseTexture")->setValue("res/data/textures/brick.png", true);
         sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
         Texture::Sampler* specSampler = _matGBuffer->getParameter("s_specular")->setValue("res/data/textures/spec.png", true);

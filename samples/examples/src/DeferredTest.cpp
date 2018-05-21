@@ -87,7 +87,7 @@ public:
         texInfo.width = viewRect.width;
         texInfo.height = viewRect.height;
         texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::RGB;
+        texInfo.format = Texture::Format::RGBA16F;
         texInfo.flags = BGFX_TEXTURE_RT;
         Texture* tex = Texture::create(texInfo);
         textures.push_back(tex);
@@ -133,8 +133,8 @@ public:
         _matGBuffer->getStateBlock()->setCullFace(true);
         _matGBuffer->getStateBlock()->setDepthTest(true);
         _matGBuffer->getStateBlock()->setDepthWrite(true);
-        _matGBuffer->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
-        _matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
+        //_matGBuffer->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
+        //_matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
 
         Texture::Sampler* sampler = _matGBuffer->getParameter("s_diffuse")->setValue("res/data/textures/grey.png", true);
         sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
@@ -531,7 +531,7 @@ public:
         // Create the font for drawing the framerate.
         _font = Font::create("res/coredata/ui/arial.gpb");
 
-        // Create a new empty scene.
+        /*// Create a new empty scene.
         _scene = Scene::create();
 
         // set fps camera
@@ -540,10 +540,10 @@ public:
         _fpCamera.setPosition(cameraPosition);
         _scene->addNode(_fpCamera.getRootNode());
         _scene->setActiveCamera(_fpCamera.getCamera());
-        _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
+        _scene->getActiveCamera()->setAspectRatio(getAspectRatio());*/
 
 
-#if 0
+#if 1
         // Load box shape
        /* Bundle* bundle = Bundle::create("res/data/scenes/shapes.gpb");
         //Model* model = Model::create(bundle->loadMesh("Cube_Mesh"));
@@ -570,7 +570,25 @@ public:
         _scene->setActiveCamera(_fpCamera.getCamera());
         _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
 
+        Node* node = _scene->findNode("Point");
+        _scene->removeNode(node);
+
 #else
+
+
+        // Create a new empty scene.
+        _scene = Scene::create();
+
+        // set fps camera
+        Vector3 cameraPosition(0, 1, 5);
+        _fpCamera.initialize(0.1f, 10000.0f);
+        _fpCamera.setPosition(cameraPosition);
+        _scene->addNode(_fpCamera.getRootNode());
+        _scene->setActiveCamera(_fpCamera.getCamera());
+        _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
+
+
+
 
 
         // load shapes bundle
@@ -627,29 +645,42 @@ public:
 #endif
 
 
-        for(int i=0; i<25; i++)
-            for(int j=0; j<25; j++)
+
+
+        /*for(int i=0; i<1; i++)
+            for(int j=0; j<0; j++)
         {
             float r = MATH_RANDOM_0_1();
             float g = MATH_RANDOM_0_1();
             float b = MATH_RANDOM_0_1();
 
-            Light* pointLight = Light::createPoint(Vector3(r,g,b), 1.0f);
+            Light* pointLight = Light::createPoint(Vector3(r,g,b), 20.0f);
             Node* pointLightNode = Node::create("pointLight");
             pointLightNode->setLight(pointLight);
-            pointLightNode->setTranslation(Vector3(-20 + i*1.2, 0.5, -20 + j*1.2));
+            pointLightNode->setTranslation(Vector3(-40+i*15, 5, -40+j*15));
             _scene->addNode(pointLightNode);
             SAFE_RELEASE(pointLight);
-        }
+        }*/
 
-        {
+
+        Light* pointLight = Light::createPoint(Vector3(1,0,0), 200.0f);
+        Node* pointLightNode = Node::create("pointLight");
+        pointLightNode->setLight(pointLight);
+        pointLightNode->setTranslation(Vector3(0, 100, 0));
+        _scene->addNode(pointLightNode);
+        SAFE_RELEASE(pointLight);
+
+
+
+
+        /*{
         Light* dirLight = Light::createDirectional(Vector3(0.7, 0.7, 0.7));
         Node* dirLightNode = Node::create("dirLight");
         dirLightNode->setLight(dirLight);
-        dirLightNode->setDirection(Vector3(-1,-1,0));
+        dirLightNode->setDirection(Vector3(-1,-1,-1));
         _scene->addNode(dirLightNode);
         SAFE_RELEASE(dirLight);
-        }
+        }*/
 
 
 
