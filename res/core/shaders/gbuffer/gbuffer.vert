@@ -22,7 +22,8 @@ void main()
 {
     vec4 worldPos = u_worldMatrix * vec4(a_position.xyz, 1.0);
     v_position = worldPos.xyz; 
-    v_texcoord0 = a_texcoord0;
+    //v_texcoord0 = a_texcoord0;
+    v_texcoord0 = vec2(a_texcoord0.x, 1.0 - a_texcoord0.y);
     
     mat3 normalMatrix = transpose(inverse(mat3(u_worldMatrix)));
     v_normal = normalMatrix * a_normal;

@@ -133,13 +133,13 @@ public:
         _matGBuffer->getStateBlock()->setCullFace(true);
         _matGBuffer->getStateBlock()->setDepthTest(true);
         _matGBuffer->getStateBlock()->setDepthWrite(true);
-        //_matGBuffer->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
-        //_matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
+        _matGBuffer->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
+        _matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
 
-        Texture::Sampler* sampler = _matGBuffer->getParameter("s_diffuse")->setValue("res/data/textures/grey.png", true);
+        Texture::Sampler* sampler = _matGBuffer->getParameter("u_diffuseTexture")->setValue("res/data/textures/grey.png", true);
         sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
-        Texture::Sampler* specSampler = _matGBuffer->getParameter("s_specular")->setValue("res/data/textures/spec.png", true);
+        Texture::Sampler* specSampler = _matGBuffer->getParameter("u_specularTexture")->setValue("res/data/textures/spec.png", true);
         specSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
 
@@ -543,7 +543,7 @@ public:
         _scene->getActiveCamera()->setAspectRatio(getAspectRatio());*/
 
 
-#if 1
+#if 0
         // Load box shape
        /* Bundle* bundle = Bundle::create("res/data/scenes/shapes.gpb");
         //Model* model = Model::create(bundle->loadMesh("Cube_Mesh"));
@@ -663,10 +663,10 @@ public:
         }*/
 
 
-        Light* pointLight = Light::createPoint(Vector3(1,0,0), 200.0f);
+        Light* pointLight = Light::createPoint(Vector3(1,0,0), 10.0f);
         Node* pointLightNode = Node::create("pointLight");
         pointLightNode->setLight(pointLight);
-        pointLightNode->setTranslation(Vector3(0, 100, 0));
+        pointLightNode->setTranslation(Vector3(2, 3, 3));
         _scene->addNode(pointLightNode);
         SAFE_RELEASE(pointLight);
 
