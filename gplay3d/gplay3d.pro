@@ -581,7 +581,10 @@ linux: INCLUDEPATH += /usr/lib/x86_64-linux-gnu/glib-2.0/include
 linux: INCLUDEPATH += /usr/include/pixman-1
 linux: INCLUDEPATH += /usr/include/libpng12
 linux: INCLUDEPATH += /usr/include/harfbuzz
-linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../res $$DESTDIR$$escape_expand(\n\t))
+# copy res
+#linux: QMAKE_POST_LINK += $$quote(rsync -rau $$PWD/../res $$DESTDIR$$escape_expand(\n\t))
+# symbolic link res
+linux: QMAKE_POST_LINK += $$quote(ln -sfn $$PWD/../res $$DESTDIR/res$$escape_expand(\n\t))
 
 macx: OBJECTIVE_SOURCES += src/PlatformMacOSX.mm
 macx: OBJECTIVE_SOURCES += src/gplay3d-main-macosx.mm
@@ -608,3 +611,22 @@ PWD_WIN ~= s,/,\\,g
 PWD_DEST_WIN = $$DESTDIR
 PWD_DEST_WIN ~= s,/,\\,g
 win32: QMAKE_POST_LINK += $$quote(xcopy $$PWD_WIN\..\res $$PWD_DEST_WIN\res\ /s /y /d$$escape_expand(\n\t))
+
+DISTFILES += \
+    ../res/core/shaders/common/bgfx_shader.sh \
+    ../res/core/shaders/common/common.sh \
+    ../res/core/shaders/common/gplay.sh \
+    ../res/core/shaders/common/shaderlib.sh \
+    ../res/core/shaders/common/varying.def.sc \
+    ../res/core/shaders/test/cubes.io \
+    ../res/core/shaders/debug/texture.frag \
+    ../res/core/shaders/gbuffer/gbuffer.frag \
+    ../res/core/shaders/gbuffer/viewport.frag \
+    ../res/core/shaders/lighting/directionnalLight.frag \
+    ../res/core/shaders/lighting/pointLight.frag \
+    ../res/core/shaders/test/cubes.frag \
+    ../res/core/shaders/debug/texture.vert \
+    ../res/core/shaders/gbuffer/gbuffer.vert \
+    ../res/core/shaders/gbuffer/viewport.vert \
+    ../res/core/shaders/lighting/pointLight.vert \
+    ../res/core/shaders/test/cubes.vert
