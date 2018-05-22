@@ -38,18 +38,18 @@ material textured
         depthTest = true
     }
     
-    technique mytech1
+    technique
     {
         u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
+        u_worldMatrix = WORLD_MATRIX
         pass 
         {
-            vertexShader = res/coredata/shaders/forward.vert
-            fragmentShader = res/coredata/shaders/forward.frag
-            defines = DIRECTIONAL_LIGHT_COUNT=1
+            vertexShader = res/core/shaders/gbuffer/gbuffer.vert
+            fragmentShader = res/core/shaders/gbuffer/gbuffer.frag
         }
     }
 
-    technique mytech2
+    /*technique mytech2
     {
         u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
         pass 
@@ -57,7 +57,7 @@ material textured
             vertexShader = res/coredata/shaders/shadow.vert
             fragmentShader = res/coredata/shaders/shadow.frag
         }
-    }
+    }*/
 }
 
 material colored
