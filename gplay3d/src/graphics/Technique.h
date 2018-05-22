@@ -28,6 +28,14 @@ class Technique : public RenderState
 public:
 
     /**
+     * Create a new technique.
+     *
+     * @param id The technique id.
+     * @return The new created technique.
+     */
+    static Technique* create(const char* id = nullptr);
+
+    /**
      * Gets the id of this technique.
      *
      * @return The Id of this technique.
@@ -62,6 +70,13 @@ public:
 
 
     bool reload();
+
+    /**
+     * Add a pass to this technique.
+     *
+     * @param pass The pass to add.
+     */
+    void addPass(Pass* pass);
 
 private:
 

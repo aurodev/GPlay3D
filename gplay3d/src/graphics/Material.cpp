@@ -25,6 +25,19 @@ Material::~Material()
     }
 }
 
+void Material::addTechnique(Technique* technique)
+{
+    GP_ASSERT(technique);
+    technique->_parent = this;
+    _techniques.push_back(technique);
+}
+
+Material* Material::create()
+{
+    Material* material = new Material();
+    return material;
+}
+
 Material* Material::create(const char* url)
 {
     return create(url, (PassCallback)NULL, NULL);

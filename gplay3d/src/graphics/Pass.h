@@ -55,6 +55,16 @@ public:
 
     bool reload();
 
+    /**
+     * Create a new Pass.
+     *
+     * @param id The pass id.
+     * @param effect The effect to attach to this pass.
+     *
+     * @return The new created pass.
+     */
+    static Pass* create(Effect* effect, const char* id = nullptr);
+
 private:
 
     /**

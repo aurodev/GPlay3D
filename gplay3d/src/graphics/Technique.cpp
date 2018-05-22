@@ -21,6 +21,19 @@ Technique::~Technique()
     }
 }
 
+void Technique::addPass(Pass* pass)
+{
+    GP_ASSERT(pass);
+    pass->_parent = this;
+    _passes.push_back(pass);
+}
+
+Technique* Technique::create(const char* id)
+{
+    Technique* technique = new Technique(id, nullptr);
+    return technique;
+}
+
 const char* Technique::getId() const
 {
     return _id.c_str();

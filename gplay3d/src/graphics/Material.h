@@ -35,6 +35,14 @@ public:
     typedef std::string(*PassCallback)(Pass*, void*);
 
     /**
+     * Create an empty material.
+     * This is usefull to construct a material from scratch.
+     *
+     * @return A new Material.
+     */
+    static Material* create();
+
+    /**
      * Creates a material using the data from the Properties object defined at the specified URL, 
      * where the URL is of the format "<file-path>.<extension>#<namespace-id>/<namespace-id>/.../<namespace-id>"
      * (and "#<namespace-id>/<namespace-id>/.../<namespace-id>" is optional). 
@@ -102,6 +110,13 @@ public:
      * @script{create}
      */
     static Material* create(const char* vshPath, const char* fshPath, const char* defines = NULL);
+
+    /**
+     * Add a technique to the material.
+     *
+     * @param technique The technique to add.
+     */
+    void addTechnique(Technique* technique);
 
     /**
      * Returns the number of techniques in the material.

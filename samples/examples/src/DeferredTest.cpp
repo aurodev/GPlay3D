@@ -147,19 +147,29 @@ public:
 
 
 
+        // load material from file
+        //Material* lightingMaterial = Material::create("res/core/materials/lighting.material");
+        // or create material from code
+        Material* lightingMaterial = Material::create();
+        {
+        Effect* effectPointLight = Effect::createFromFile("res/core/shaders/lighting/pointLight.vert", "res/core/shaders/lighting/pointLight.frag");
+        Technique* techPointLight = Technique::create("PointLight");
+        techPointLight->addPass(Pass::create(effectPointLight, "pass0"));
 
+        Effect* effectDirLight = Effect::createFromFile("res/core/shaders/lighting/pointLight.vert", "res/core/shaders/lighting/directionnalLight.frag");
+        Technique* techDirectionnalLight = Technique::create("DirectionnalLight");
+        techDirectionnalLight->addPass(Pass::create(effectDirLight, "pass0"));
 
-
-
-
-
-
-
-        Material* lightingMaterial = Material::create("res/core/materials/lighting.material");
+        lightingMaterial->addTechnique(techPointLight);
+        lightingMaterial->addTechnique(techDirectionnalLight);
+        }
 
         lightingMaterial->getStateBlock()->setCullFace(true);
         lightingMaterial->getStateBlock()->setDepthTest(false);
         lightingMaterial->getStateBlock()->setDepthWrite(false);
+        lightingMaterial->getStateBlock()->setBlend(true);
+        lightingMaterial->getStateBlock()->setBlendSrc(RenderState::BLEND_ONE);
+        lightingMaterial->getStateBlock()->setBlendDst(RenderState::BLEND_ONE);
 
         lightingMaterial->getParameter("u_viewPos")->bindValue(_scene->getActiveCamera()->getNode(), &Node::getTranslationWorld);
         lightingMaterial->getParameter("u_inverseProjectionMatrix")->bindValue(_scene->getActiveCamera()->getNode(), &Node::getInverseProjectionMatrix);
@@ -171,6 +181,7 @@ public:
         lightingMaterial->getParameter("gAlbedoSpec")->setValue(sampler3);
         Texture::Sampler* sampler4 = Texture::Sampler::create(_gBuffer->getRenderTarget("DepthBuffer"));
         lightingMaterial->getParameter("gDepth")->setValue(sampler4);
+
 
 
 
@@ -673,14 +684,14 @@ public:
 
 
 
-        /*{
+        {
         Light* dirLight = Light::createDirectional(Vector3(0.7, 0.7, 0.7));
         Node* dirLightNode = Node::create("dirLight");
         dirLightNode->setLight(dirLight);
         dirLightNode->setDirection(Vector3(-1,-1,-1));
         _scene->addNode(dirLightNode);
         SAFE_RELEASE(dirLight);
-        }*/
+        }
 
 
 

@@ -18,6 +18,17 @@ Pass::~Pass()
     SAFE_RELEASE(_effect);
 }
 
+Pass* Pass::create(Effect* effect, const char* id)
+{
+    GP_ASSERT(effect);
+
+    Pass* pass = new Pass(id, nullptr);
+    pass->_effect = effect;
+    effect->addRef();
+
+    return pass;
+}
+
 bool Pass::initialize(const char* vshPath, const char* fshPath, const char* defines)
 {
     GP_ASSERT(vshPath);
