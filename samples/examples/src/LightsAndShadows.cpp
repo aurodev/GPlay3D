@@ -207,7 +207,7 @@ public:
         defaultView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
         defaultView.depth = 1.0f;
         defaultView.stencil = 0;
-        defaultView.rectangle = Rectangle(game->getWidth(), game->getHeight());
+        defaultView.rectangle = Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
         game->insertView(0, defaultView);
 
         View secondView;
@@ -215,7 +215,8 @@ public:
         secondView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
         secondView.depth = 1.0f;
         secondView.stencil = 0;
-        secondView.rectangle = Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
+
+        secondView.rectangle = Rectangle(game->getWidth(), game->getHeight());
         game->insertView(1, secondView);
 
 
@@ -232,7 +233,7 @@ public:
         std::vector<Texture*> textures;
         textures.push_back(texDepth);
         //_frameBuffer2 = FrameBuffer::create("ShadowFrameBuffer", textures);
-        _frameBuffer = FrameBuffer::create("ShadowFrameBuffer", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::D16);
+        _frameBuffer = FrameBuffer::create("ShadowFrameBuffer", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT, Texture::Format::D24);
 
 
 
@@ -241,9 +242,9 @@ public:
         // material
 
         Material* material = Material::create("res/data/materials/test.material");
-        material->getStateBlock()->setCullFace(false);
+        /*material->getStateBlock()->setCullFace(false);
         material->getStateBlock()->setDepthTest(true);
-        material->getStateBlock()->setDepthWrite(true);
+        material->getStateBlock()->setDepthWrite(true);*/
 
         Texture::Sampler* sampler = material->getParameter("u_diffuseTexture")->setValue("res/data/textures/brick.png", true);
         sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
@@ -274,11 +275,12 @@ public:
         _scene->addNode(nodePlane);
 
         // create a teapot
-        Model* modelTeapot = Model::create(bundle->loadMesh("Teapot_Mesh"));
+        Model* modelTeapot = Model::create(bundle->loadMesh("Cube_Mesh"));
         modelTeapot->setMaterial(material->clone());
-        Node* nodeTeapot = Node::create("teapot");
+        Node* nodeTeapot = Node::create("cube");
         nodeTeapot->setDrawable(modelTeapot);
-        nodeTeapot->setScale(0.5f);
+        nodeTeapot->setScale(1.0f);
+        nodeTeapot->setTranslation(0, 1, 0);
         _scene->addNode(nodeTeapot);
 
         // create a torus
@@ -361,11 +363,11 @@ public:
 
     void render(float elapsedTime)
     {
-        Game::getInstance()->bindView(1);
+        Game::getInstance()->bindView(0);
         _frameBuffer->bind();
         _scene->visit(this, &LightsAndShadows::drawScene, (void*)1);
 
-        Game::getInstance()->bindView(0);
+        Game::getInstance()->bindView(1);
         _scene->visit(this, &LightsAndShadows::drawScene, (void*)0);
         _quadModel->draw();
 

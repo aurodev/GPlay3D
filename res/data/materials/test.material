@@ -2,6 +2,14 @@ material
 {
     technique shadowmap
     {
+        renderState
+        {
+            cullFace = true
+            cullFaceSide = FRONT
+            depthTest = true
+            depthWrite = true
+        }
+
         pass
         {
             vertexShader = res/coredata/shaders/shadow.vert
@@ -32,7 +40,8 @@ material
             // render state
             renderState
             {
-                cullFace = false
+                cullFace = true
+                cullFaceSide = BACK
                 depthTest = true
             }
         }
