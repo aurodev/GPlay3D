@@ -125,7 +125,11 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     vec3 tex_coords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     tex_coords = tex_coords * 0.5 + 0.5;
     float depth = texture2D(s_shadowMap, tex_coords.xy).r;
-    float inShadow = (depth < tex_coords.z) ? 1.0 : 0.0;
+    //float inShadow = (depth < tex_coords.z) ? 1.0 : 0.0;
+    float currentDepth = tex_coords.z;
+    float bias = 0.005;
+    float inShadow = (currentDepth - bias > depth) ? 1.0 : 0.0;
+
     return inShadow;
 }
 
@@ -155,7 +159,7 @@ vec3 computeDirLight(DirLight light, vec3 normal, vec3 viewDir)
     float spec = computeSpecular(lightDir, normal, viewDir);
 #endif
 
-#if defined(SHADOW)
+#if defined(SHADOW) 
     float shadow = 1.0 - ShadowCalculation(v_shadowcoord);
     diff *= shadow;
     spec *= shadow;

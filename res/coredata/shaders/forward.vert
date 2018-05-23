@@ -36,8 +36,8 @@ void main()
 	// shadow
 	const float shadowMapOffset = 0.005;
 	vec3 posOffset = a_position.xyz + v_normal.xyz * shadowMapOffset;
-	v_shadowcoord = mul(u_lightSpaceMatrix, mul(u_worldMatrix, vec4(posOffset, 1.0)) );
-	//v_shadowcoord =   u_lightSpaceMatrix * u_worldMatrix * a_position;
+	//v_shadowcoord = mul(u_lightSpaceMatrix, mul(u_worldMatrix, vec4(posOffset, 1.0)) );
+	v_shadowcoord = u_lightSpaceMatrix * u_worldMatrix * a_position;
 
 
     gl_Position = position;
