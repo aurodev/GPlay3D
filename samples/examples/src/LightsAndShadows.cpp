@@ -350,6 +350,13 @@ public:
         _quadModel->setMaterial("res/coredata/shaders/debug.vert", "res/coredata/shaders/debug.frag", "SHOW_DEPTH");
         Texture::Sampler* samplerDepth = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
         _quadModel->getMaterial()->getParameter("u_texture")->setValue(samplerDepth);
+
+        Matrix proj;
+        Matrix::createOrthographicOffCenter(0, game->getViewport().width, game->getViewport().height, 0, -1, 1, &proj);
+        _quadModel->getMaterial()->getParameter("u_projectionMatrix")->setValue(proj);
+
+
+
     }
 
     void update(float elapsedTime)
@@ -416,7 +423,7 @@ public:
 
         static float accu = 0;
         accu += elapsedTime;
-        dirLightDirection[2] = sin(accu * 0.01);
+        //dirLightDirection[2] = sin(accu * 0.01);
 
 
         _lightManager.getDirectionnalLight(0)->getNode()->setDirection(Vector3(dirLightDirection));
