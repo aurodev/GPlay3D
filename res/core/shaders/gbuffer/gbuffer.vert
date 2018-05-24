@@ -19,11 +19,6 @@ varying vec2 v_texcoord0;
 
 
 
-uniform mat4 u_lightSpaceMatrix;
-//uniform mat4 u_worldMatrix;
-varying vec4 v_shadowcoord;
-
-
 void main()
 {
     vec4 worldPos = u_worldMatrix * vec4(a_position.xyz, 1.0);
@@ -35,8 +30,4 @@ void main()
     v_normal = normalMatrix * a_normal;
 
     gl_Position = u_worldViewProjectionMatrix * vec4(a_position.xyz, 1.0);
-
-
-
-    v_shadowcoord = u_lightSpaceMatrix * u_worldMatrix * a_position;
 }

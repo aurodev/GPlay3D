@@ -43,7 +43,7 @@ struct DirLight
 
 
 
-
+uniform mat4 u_lightSpaceMatrix;
 uniform sampler2D s_shadowMap;
 varying vec4 v_shadowcoord;
 float ShadowCalculation(vec4 fragPosLightSpace)
@@ -53,11 +53,22 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     float depth = texture2D(s_shadowMap, tex_coords.xy).r;
     //float inShadow = (depth < tex_coords.z) ? 1.0 : 0.0;
     float currentDepth = tex_coords.z;
-    float bias = 0.005;
+    float bias = 0.001;
     float inShadow = (currentDepth - bias > depth) ? 1.0 : 0.0;
 
     return inShadow;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 void main()
 {
@@ -91,7 +102,11 @@ void main()
 
     //float shadow = 1.0 - ShadowCalculation(v_shadowcoord);
     //float shadow = texture2D(s_shadowMap, v_shadowcoord.xy).r;
-    float shadow = texture2D(s_shadowMap, v_texcoord0).r;
+    //float shadow = texture2D(s_shadowMap, v_texcoord0).r;
+    //float shadow = 1.0 - ShadowCalculation(v_texcoord0);
+
+    vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(fragPos, 1.0);
+    float shadow = 1.0 - ShadowCalculation(fragPosLightSpace);
     diffuse *= shadow;
     specular *= shadow;
 

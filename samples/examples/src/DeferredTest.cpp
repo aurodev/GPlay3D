@@ -122,20 +122,6 @@ public:
         textures.push_back(tex);
         }
 
-
-        {
-        // shadow buffer
-        Texture::TextureInfo texInfo;
-        texInfo.id = "ShadowBuffer";
-        texInfo.width = viewRect.width;
-        texInfo.height = viewRect.height;
-        texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::RGB;
-        texInfo.flags = BGFX_TEXTURE_RT;
-        Texture* tex = Texture::create(texInfo);
-        textures.push_back(tex);
-        }
-
         {
         // depth buffer
         Texture::TextureInfo texInfo;
@@ -268,7 +254,7 @@ public:
 
 
         // Create quads for gbuffer preview
-        for(int i=0; i<4; i++)
+        for(int i=0; i<3; i++)
         {
             Mesh* meshQuad = Mesh::createQuad(-1 + i*0.5, -1, 0.5 ,0.5);
             _quadModel[i] = Model::create(meshQuad);
@@ -294,7 +280,7 @@ public:
 
         Technique* tech = Technique::create("shadow");
         tech->addPass(Pass::create(Effect::createFromFile("res/coredata/shaders/shadow.vert", "res/coredata/shaders/shadow.frag")));
-       /* tech->getStateBlock()->setCullFace(false);
+        /*tech->getStateBlock()->setCullFace(false);
         tech->getStateBlock()->setCullFaceSide(RenderState::CULL_FACE_SIDE_FRONT);
         tech->getStateBlock()->setDepthTest(true);
         tech->getStateBlock()->setDepthWrite(true);*/
@@ -304,14 +290,21 @@ public:
 
         Texture::Sampler* shadowSampler = Texture::Sampler::create(_shadowBuffer->getRenderTarget(0));
         shadowSampler->setWrapMode(Texture::BORDER, Texture::BORDER);
-        _matGBuffer->getParameter("s_shadowMap")->setSampler(shadowSampler);
+        lightingMaterial->getParameter("s_shadowMap")->setSampler(shadowSampler);
+
+
+        // preview shadow
+        {
+        Mesh* meshQuad = Mesh::createQuad(-1 + 3*0.5, -1, 0.5 ,0.5);
+        _quadModel[3] = Model::create(meshQuad);
+        _quadModel[3]->setMaterial("res/core/shaders/debug/texture.vert", "res/core/shaders/debug/texture.frag");
+        _quadModel[3]->getMaterial()->getParameter("s_texture")->setValue(shadowSampler);
+        }
 
 
 
-
-
-        Texture::Sampler* shadowSampler45456 = Texture::Sampler::create(_gBuffer->getRenderTarget(2));
-        _lightQuad->getMaterial()->getParameter("s_shadowMap")->setValue(shadowSampler45456);
+        /*Texture::Sampler* shadowSampler45456 = Texture::Sampler::create(_gBuffer->getRenderTarget(2));
+        _lightQuad->getMaterial()->getParameter("s_shadowMap")->setValue(shadowSampler45456);*/
         ///_lightQuad->getMaterial()->getParameter("s_shadowMap")->setValue(shadowSampler);
 
         //--------------------
@@ -386,8 +379,8 @@ public:
             model->getMaterial()->setTechnique("");
             drawable->draw();
 
-            model->getMaterial()->getParameter("u_worldMatrix")->setValue(model->getNode()->getWorldMatrix());
-            model->getMaterial()->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
+            //model->getMaterial()->getParameter("u_worldMatrix")->setValue(model->getNode()->getWorldMatrix());
+            //model->getMaterial()->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
 
         }
         return true;
