@@ -46,14 +46,14 @@ struct DirLight
 uniform mat4 u_lightSpaceMatrix;
 uniform sampler2D s_shadowMap;
 varying vec4 v_shadowcoord;
-float ShadowCalculation(vec4 fragPosLightSpace)
+float ShadowCalculation(vec4 fragPosLightSpace, float bias)
 {   
     vec3 tex_coords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     tex_coords = tex_coords * 0.5 + 0.5;
     float depth = texture2D(s_shadowMap, tex_coords.xy).r;
     //float inShadow = (depth < tex_coords.z) ? 1.0 : 0.0;
     float currentDepth = tex_coords.z;
-    float bias = 0.001;
+    //float bias = 0.001;
     float inShadow = (currentDepth - bias > depth) ? 1.0 : 0.0;
 
     return inShadow;
@@ -100,15 +100,29 @@ void main()
 
 
 
+
+
+    // shadow
+
     //float shadow = 1.0 - ShadowCalculation(v_shadowcoord);
     //float shadow = texture2D(s_shadowMap, v_shadowcoord.xy).r;
     //float shadow = texture2D(s_shadowMap, v_texcoord0).r;
     //float shadow = 1.0 - ShadowCalculation(v_texcoord0);
 
+    //float bias = max(0.05 * (1.0 - dot(Normal, lightDir)), 0.005);
+
+    float cosTheta = clamp(dot(Normal, lightDir), 0.0, 1.0);
+    float bias = 0.005*tan(acos(cosTheta)); // cosTheta is dot( n,l ), clamped between 0 and 1
+    bias = clamp(bias, 0, 0.01);
+
     vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(fragPos, 1.0);
-    float shadow = 1.0 - ShadowCalculation(fragPosLightSpace);
+    float shadow = 1.0 - ShadowCalculation(fragPosLightSpace, bias);
     diffuse *= shadow;
     specular *= shadow;
+
+
+
+
 
 
 

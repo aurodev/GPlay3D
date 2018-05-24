@@ -280,16 +280,17 @@ public:
 
         Technique* tech = Technique::create("shadow");
         tech->addPass(Pass::create(Effect::createFromFile("res/coredata/shaders/shadow.vert", "res/coredata/shaders/shadow.frag")));
-        /*tech->getStateBlock()->setCullFace(false);
+        tech->getStateBlock()->setCullFace(true);
         tech->getStateBlock()->setCullFaceSide(RenderState::CULL_FACE_SIDE_FRONT);
         tech->getStateBlock()->setDepthTest(true);
-        tech->getStateBlock()->setDepthWrite(true);*/
+        tech->getStateBlock()->setDepthWrite(true);
         _matGBuffer->addTechnique(tech);
 
 
 
         Texture::Sampler* shadowSampler = Texture::Sampler::create(_shadowBuffer->getRenderTarget(0));
         shadowSampler->setWrapMode(Texture::BORDER, Texture::BORDER);
+        shadowSampler->setFilterMode(Texture::NEAREST, Texture::NEAREST);
         lightingMaterial->getParameter("s_shadowMap")->setSampler(shadowSampler);
 
 
