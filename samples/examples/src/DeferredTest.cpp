@@ -13,9 +13,10 @@ class DeferredRenderer
 private:
 
     static const int PASS_GEOMETRY_ID   = 0;
-    static const int PASS_LIGHT_ID      = 1;
-    static const int PASS_COMBINE_ID    = 2;
-    static const int PASS_DEBUG_ID      = 3;
+    static const int PASS_LIGHT_ID      = 2;
+    static const int PASS_SHADOW_ID     = 1;
+    static const int PASS_COMBINE_ID    = 3;
+    static const int PASS_DEBUG_ID      = 4;
 
     FrameBuffer* _gBuffer;
     FrameBuffer* _lightBuffer;
@@ -35,6 +36,12 @@ private:
 
     Model* _quadModel[4];
     SpriteBatch* _spriteBatch;
+
+
+
+    FrameBuffer* _shadowBuffer;
+    Matrix _lightSpaceMatrix;
+
 
 public:
     void create(Scene* scene)
@@ -74,6 +81,15 @@ public:
         game->insertView(PASS_COMBINE_ID, viewCombine);
 
 
+        View viewShadow;
+        viewShadow.clearColor = 0x303030ff;
+        viewShadow.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
+        viewShadow.depth = 1.0f;
+        viewShadow.stencil = 0;
+        viewShadow.rectangle = Rectangle(viewRect.width, viewRect.height);
+        game->insertView(PASS_SHADOW_ID, viewShadow);
+
+
 
 
         // create the gbuffer
@@ -106,6 +122,20 @@ public:
         textures.push_back(tex);
         }
 
+
+        {
+        // shadow buffer
+        Texture::TextureInfo texInfo;
+        texInfo.id = "ShadowBuffer";
+        texInfo.width = viewRect.width;
+        texInfo.height = viewRect.height;
+        texInfo.type = Texture::TEXTURE_RT;
+        texInfo.format = Texture::Format::RGB;
+        texInfo.flags = BGFX_TEXTURE_RT;
+        Texture* tex = Texture::create(texInfo);
+        textures.push_back(tex);
+        }
+
         {
         // depth buffer
         Texture::TextureInfo texInfo;
@@ -118,6 +148,9 @@ public:
         Texture* tex = Texture::create(texInfo);
         textures.push_back(tex);
         }
+
+
+
 
         // create gbuffer mrt
         _gBuffer = FrameBuffer::create("GBuffer", textures);
@@ -136,7 +169,7 @@ public:
         _matGBuffer->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
         _matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
 
-        Texture::Sampler* sampler = _matGBuffer->getParameter("u_diffuseTexture")->setValue("res/data/textures/grey.png", true);
+        Texture::Sampler* sampler = _matGBuffer->getParameter("u_diffuseTexture")->setValue("res/data/textures/brick.png", true);
         sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
         Texture::Sampler* specSampler = _matGBuffer->getParameter("u_specularTexture")->setValue("res/data/textures/spec.png", true);
@@ -235,7 +268,7 @@ public:
 
 
         // Create quads for gbuffer preview
-        for(int i=0; i<3; i++)
+        for(int i=0; i<4; i++)
         {
             Mesh* meshQuad = Mesh::createQuad(-1 + i*0.5, -1, 0.5 ,0.5);
             _quadModel[i] = Model::create(meshQuad);
@@ -246,6 +279,44 @@ public:
         }
 
         _spriteBatch = SpriteBatch::create("res/data/textures/logo.png");
+
+
+
+
+
+
+        // --------- SHADOW
+
+
+
+        _shadowBuffer = FrameBuffer::create("ShadowBuffer", viewRect.width, viewRect.height, Texture::Format::D24);
+
+
+        Technique* tech = Technique::create("shadow");
+        tech->addPass(Pass::create(Effect::createFromFile("res/coredata/shaders/shadow.vert", "res/coredata/shaders/shadow.frag")));
+       /* tech->getStateBlock()->setCullFace(false);
+        tech->getStateBlock()->setCullFaceSide(RenderState::CULL_FACE_SIDE_FRONT);
+        tech->getStateBlock()->setDepthTest(true);
+        tech->getStateBlock()->setDepthWrite(true);*/
+        _matGBuffer->addTechnique(tech);
+
+
+
+        Texture::Sampler* shadowSampler = Texture::Sampler::create(_shadowBuffer->getRenderTarget(0));
+        shadowSampler->setWrapMode(Texture::BORDER, Texture::BORDER);
+        _matGBuffer->getParameter("s_shadowMap")->setSampler(shadowSampler);
+
+
+
+        _quadModel[0]->getMaterial()->getParameter("s_texture")->setValue(shadowSampler);
+
+
+        _lightQuad->getMaterial()->getParameter("s_shadowMap")->setValue(shadowSampler);
+
+        //--------------------
+
+
+
 
 
 
@@ -310,7 +381,28 @@ public:
         Drawable* drawable = node->getDrawable();
         if (drawable)
         {
+            Model* model = dynamic_cast<Model*>(drawable);
+            model->getMaterial()->setTechnique("");
             drawable->draw();
+
+            model->getMaterial()->getParameter("u_worldMatrix")->setValue(model->getNode()->getWorldMatrix());
+            model->getMaterial()->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
+
+        }
+        return true;
+    }
+
+    bool drawNodeShadow(Node* node)
+    {
+        Drawable* drawable = node->getDrawable();
+        if (drawable)
+        {
+            Model* model = dynamic_cast<Model*>(drawable);
+            model->getMaterial()->setTechnique("shadow");
+            drawable->draw();
+
+            model->getMaterial()->getParameter("u_worldMatrix")->setValue(model->getNode()->getWorldMatrix());
+            model->getMaterial()->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
         }
         return true;
     }
@@ -323,7 +415,7 @@ public:
         static int dim = 5;
         static float offset = 1.0f;
         static float pointlightRadius = 5.0f;
-        static float pointLightPosition[3] = { 0.0, 3.0f, 0.0f };
+        static float pointLightPosition[3] = { -1.0, -1.0f, -1.0f };
         static float pointLightColor[3] = { 1.0f, 1.0f, 1.0f };
         static bool showDebugScissorRect = false;
         static bool useScissor = true;
@@ -331,7 +423,7 @@ public:
         ImGui::Begin("Toolbox");
         ImGui::SliderInt("Dim", &dim, 1, 100);
         ImGui::SliderFloat("Offset", &offset, -20.0f, 20.0f);
-        ImGui::SliderFloat4("position", pointLightPosition, -500.0f, 500.0f);
+        ImGui::SliderFloat4("position", pointLightPosition, -1.0f, 1.0f);
         ImGui::SliderFloat3("color", pointLightColor, 0.0f, 10.0f);
         ImGui::SliderFloat("radius", &pointlightRadius, 0.0f, 1000.0f);
         ImGui::Checkbox("show scissor rect", &showDebugScissorRect);
@@ -348,11 +440,38 @@ public:
 
 
 
+
+
+
+        // set light matrix for shadows
+        Vector4 _shadowProjection = Vector4(-10.0f, 10.0f, -10.0f, 10.0f);
+        Vector3 lightDir = Vector3(pointLightPosition); //_dirLights[0]->getNode()->getForwardVector();
+        Matrix lightProjection, lightView;
+        Matrix::createOrthographic(_shadowProjection.x, _shadowProjection.y, _shadowProjection.z, _shadowProjection.w, &lightProjection);
+        Matrix::createLookAt(Vector3(0.0, 0.0, 0.0), lightDir, Vector3(0.0, 1.0, 0.0), &lightView);
+        _lightSpaceMatrix = lightProjection * lightView;
+
+
+
+
+
+
+
+
         // 1. Geometry pass ---------
 
         Game::getInstance()->bindView(PASS_GEOMETRY_ID);
         _gBuffer->bind();
         _scene->visit(this, &DeferredRenderer::drawNode);
+
+
+
+        Game::getInstance()->bindView(PASS_SHADOW_ID);
+        _shadowBuffer->bind();
+        _scene->visit(this, &DeferredRenderer::drawNodeShadow);
+
+
+
 
 
         // 2. Lighting pass ---------
@@ -431,7 +550,7 @@ public:
 
 
                 // show gbuffer for debug
-        for(int i=0; i<3; i++)
+        for(int i=0; i<4; i++)
             _quadModel[i]->draw();
 
 
