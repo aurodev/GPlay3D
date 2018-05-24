@@ -308,10 +308,11 @@ public:
 
 
 
-        _quadModel[0]->getMaterial()->getParameter("s_texture")->setValue(shadowSampler);
 
 
-        _lightQuad->getMaterial()->getParameter("s_shadowMap")->setValue(shadowSampler);
+        Texture::Sampler* shadowSampler45456 = Texture::Sampler::create(_gBuffer->getRenderTarget(2));
+        _lightQuad->getMaterial()->getParameter("s_shadowMap")->setValue(shadowSampler45456);
+        ///_lightQuad->getMaterial()->getParameter("s_shadowMap")->setValue(shadowSampler);
 
         //--------------------
 
@@ -804,7 +805,7 @@ public:
 
 
         {
-        Light* dirLight = Light::createDirectional(Vector3(0.7, 0.7, 0.7));
+        Light* dirLight = Light::createDirectional(Vector3(0.7, 10.7, 0.7));
         Node* dirLightNode = Node::create("dirLight");
         dirLightNode->setLight(dirLight);
         dirLightNode->setDirection(Vector3(-1,-1,-1));

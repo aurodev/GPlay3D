@@ -91,9 +91,9 @@ void main()
 
     //float shadow = 1.0 - ShadowCalculation(v_shadowcoord);
     //float shadow = texture2D(s_shadowMap, v_shadowcoord.xy).r;
-    /*float shadow = texture2D(s_shadowMap, v_texcoord0).r;
+    float shadow = texture2D(s_shadowMap, v_texcoord0).r;
     diffuse *= shadow;
-    specular *= shadow;*/
+    specular *= shadow;
 
 
 
