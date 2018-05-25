@@ -275,7 +275,7 @@ public:
 
 
 
-        _shadowBuffer = FrameBuffer::create("ShadowBuffer", viewRect.width, viewRect.height, Texture::Format::D24);
+        _shadowBuffer = FrameBuffer::create("ShadowBuffer", viewRect.width, viewRect.height, Texture::Format::D16);
 
 
         Technique* tech = Technique::create("shadow");
@@ -439,6 +439,9 @@ public:
 
 
 
+
+
+        _dirLights[0]->getNode()->setDirection(Vector3(pointLightPosition));
 
 
         // set light matrix for shadows
@@ -730,10 +733,11 @@ public:
         _scene->addNode(nodePlane);
 
         // create a teapot
-        Model* modelTeapot = Model::create(bundle->loadMesh("Teapot_Mesh"));
+        Model* modelTeapot = Model::create(bundle->loadMesh("Cube_Mesh"));
         Node* nodeTeapot = Node::create("teapot");
         nodeTeapot->setDrawable(modelTeapot);
         nodeTeapot->setScale(0.5f);
+        nodeTeapot->setTranslation(0,0.5,0);
         _scene->addNode(nodeTeapot);
 
         // create a torus

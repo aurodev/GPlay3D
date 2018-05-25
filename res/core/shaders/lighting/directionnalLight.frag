@@ -23,7 +23,7 @@ uniform vec4 u_lightDirection;
 
 
 
-#include "../common/gplay.sh"
+#include "../common/common.sh"
 
 
 struct Light 
@@ -43,31 +43,173 @@ struct DirLight
 
 
 
-uniform mat4 u_lightSpaceMatrix;
-uniform sampler2D s_shadowMap;
-varying vec4 v_shadowcoord;
-float ShadowCalculation(vec4 fragPosLightSpace, float bias)
-{   
-    vec3 tex_coords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    tex_coords = tex_coords * 0.5 + 0.5;
-    float depth = texture2D(s_shadowMap, tex_coords.xy).r;
-    //float inShadow = (depth < tex_coords.z) ? 1.0 : 0.0;
-    float currentDepth = tex_coords.z;
-    //float bias = 0.001;
-    float inShadow = (currentDepth - bias > depth) ? 1.0 : 0.0;
 
-    if(tex_coords.z > 1.0)
-        inShadow = 0.0;
 
-    return inShadow;
+
+
+
+
+vec2 poissonDisk[16] = vec2[]( 
+   vec2( -0.94201624, -0.39906216 ), 
+   vec2( 0.94558609, -0.76890725 ), 
+   vec2( -0.094184101, -0.92938870 ), 
+   vec2( 0.34495938, 0.29387760 ), 
+   vec2( -0.91588581, 0.45771432 ), 
+   vec2( -0.81544232, -0.87912464 ), 
+   vec2( -0.38277543, 0.27676845 ), 
+   vec2( 0.97484398, 0.75648379 ), 
+   vec2( 0.44323325, -0.97511554 ), 
+   vec2( 0.53742981, -0.47373420 ), 
+   vec2( -0.26496911, -0.41893023 ), 
+   vec2( 0.79197514, 0.19090188 ), 
+   vec2( -0.24188840, 0.99706507 ), 
+   vec2( -0.81409955, 0.91437590 ), 
+   vec2( 0.19984126, 0.78641367 ), 
+   vec2( 0.14383161, -0.14100790 ) 
+);
+
+float random(vec3 seed, int i){
+    vec4 seed4 = vec4(seed,i);
+    float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
+    return fract(sin(dot_product) * 43758.5453);
 }
 
 
 
 
 
+uniform mat4 u_lightSpaceMatrix;
+//uniform sampler2D s_shadowMap;
+SAMPLER2DSHADOW(s_shadowMap, 3);
+varying vec4 v_shadowcoord;
+#if 0
+float ShadowCalculation(vec4 fragPosLightSpace, float bias)
+{   
+    vec3 tex_coords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    tex_coords = tex_coords * 0.5 + 0.5;
+    float depth = texture2D(s_shadowMap, tex_coords.xy).r;
+    //float inShadow = (depth < tex_coords.z) ? 1.0 : 0.0;
+    /*float currentDepth = tex_coords.z;
+    float bias = 0.005;
+    float inShadow = (currentDepth - bias > depth) ? 1.0 : 0.0;
+
+    if(tex_coords.z > 1.0)
+        inShadow = 0.0;*/
+
+    //float bias = 0.005;
+    float visibility = 1.0;
+    /*if ( texture2D( s_shadowMap, tex_coords.xy ).r  <  tex_coords.z - bias)
+    {
+        visibility = 0.0;
+    }*/
+
+    for (int i=0;i<16;i++)
+    {
+       if ( texture2D( s_shadowMap, tex_coords.xy + poissonDisk[i]/400.0 ).r  <  tex_coords.z - bias)
+        {
+            visibility-=0.05;
+        }
+    }
 
 
+    if(tex_coords.z > 1.0)
+        visibility = 1.0;
+
+
+    return visibility;
+}
+#endif
+
+
+float NewShadow(vec4 fragPosLightSpace)
+{
+    vec3 projCoord = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoord = projCoord * 0.5 + 0.5;
+
+
+    const float kTransparency = 0.1;
+
+    vec3 shadowUV = projCoord; //projCoord.xyz / projCoord.w;
+    float mapScale = 1.0 / 512.0;
+
+    shadowUV -= 0.005;
+
+    float shadowColor = shadow2D(s_shadowMap, shadowUV);
+
+    shadowColor += shadow2D(s_shadowMap, shadowUV.xyz + vec3( mapScale,  mapScale, 0));
+    shadowColor += shadow2D(s_shadowMap, shadowUV.xyz + vec3( mapScale, -mapScale, 0));
+    shadowColor += shadow2D(s_shadowMap, shadowUV.xyz + vec3( mapScale,     0, 0));
+    shadowColor += shadow2D(s_shadowMap, shadowUV.xyz + vec3(-mapScale,  mapScale, 0));
+    shadowColor += shadow2D(s_shadowMap, shadowUV.xyz + vec3(-mapScale, -mapScale, 0));
+    shadowColor += shadow2D(s_shadowMap, shadowUV.xyz + vec3(-mapScale,     0, 0));
+    shadowColor += shadow2D(s_shadowMap, shadowUV.xyz + vec3(        0,  mapScale, 0));
+    shadowColor += shadow2D(s_shadowMap, shadowUV.xyz + vec3(        0, -mapScale, 0));
+
+    shadowColor = shadowColor / 9.0;
+
+    shadowColor += kTransparency;
+    shadowColor = clamp(shadowColor, 0.0, 1.0);
+
+    if(shadowUV.x >= 0.0 && shadowUV.y >= 0.0 && shadowUV.x <= 1.0 && shadowUV.y <= 1.0 )
+    {
+        return shadowColor;
+    }
+    else
+    {
+        return 1.0;
+    }
+    
+}
+
+
+#define Sampler sampler2DShadow
+float hardShadow(Sampler _sampler, vec4 _shadowCoord, float _bias)
+{
+    vec3 texCoord = _shadowCoord.xyz/_shadowCoord.w;
+    texCoord = texCoord * 0.5 + 0.5;
+    return shadow2D(_sampler, vec3(texCoord.xy, texCoord.z-_bias) );
+}
+
+
+float PCF(Sampler _sampler, vec4 _shadowCoord, float _bias, vec2 _texelSize)
+{
+    vec3 texCoord = _shadowCoord.xyz/_shadowCoord.w;
+    texCoord = texCoord * 0.5 + 0.5;
+
+    bool outside = any(greaterThan(texCoord, vec3_splat(1.0)))
+                || any(lessThan   (texCoord, vec3_splat(0.0)))
+                 ;
+
+    if (outside)
+    {
+        return 1.0;
+    }
+
+    float result = 0.0;
+    vec2 offset = _texelSize * _shadowCoord.w;
+
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(-1.5, -1.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(-1.5, -0.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(-1.5,  0.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(-1.5,  1.5) * offset, 0.0, 0.0), _bias);
+
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(-0.5, -1.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(-0.5, -0.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(-0.5,  0.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(-0.5,  1.5) * offset, 0.0, 0.0), _bias);
+
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(0.5, -1.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(0.5, -0.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(0.5,  0.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(0.5,  1.5) * offset, 0.0, 0.0), _bias);
+
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(1.5, -1.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(1.5, -0.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(1.5,  0.5) * offset, 0.0, 0.0), _bias);
+    result += hardShadow(_sampler, _shadowCoord + vec4(vec2(1.5,  1.5) * offset, 0.0, 0.0), _bias);
+
+    return result / 16.0;
+}
 
 
 
@@ -112,21 +254,33 @@ void main()
     //float shadow = texture2D(s_shadowMap, v_texcoord0).r;
     //float shadow = 1.0 - ShadowCalculation(v_texcoord0);
 
-    //float bias = max(0.05 * (1.0 - dot(Normal, lightDir)), 0.005);
+    
 
     float cosTheta = clamp(dot(Normal, lightDir), 0.0, 1.0);
     float bias = 0.005*tan(acos(cosTheta)); // cosTheta is dot( n,l ), clamped between 0 and 1
     bias = clamp(bias, 0, 0.01);
 
+
+    //float bias = 0.005;
+
+   /* vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(fragPos, 1.0);
+    float shadow = ShadowCalculation(fragPosLightSpace, bias);
+    diffuse *= shadow;
+    specular *= shadow;*/
+
+
     vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(fragPos, 1.0);
-    float shadow = 1.0 - ShadowCalculation(fragPosLightSpace, bias);
+    float shadow = NewShadow(fragPosLightSpace);
     diffuse *= shadow;
     specular *= shadow;
 
 
 
-
-
+    /*vec2 texelSize = vec2_splat(1.0/512.0);
+    vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(fragPos, 1.0);
+    float visibility = PCF(s_shadowMap, fragPosLightSpace, bias, texelSize);
+    diffuse *= visibility;
+    specular *= visibility;*/
 
 
     // result
