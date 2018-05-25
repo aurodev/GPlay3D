@@ -287,10 +287,13 @@ public:
         _matGBuffer->addTechnique(tech);
 
 
+        Renderer::getInstance().setPaletteColor(0, Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
 
         Texture::Sampler* shadowSampler = Texture::Sampler::create(_shadowBuffer->getRenderTarget(0));
         shadowSampler->setWrapMode(Texture::BORDER, Texture::BORDER);
         shadowSampler->setFilterMode(Texture::NEAREST, Texture::NEAREST);
+        shadowSampler->setBorderColorFromPalette(0);
         lightingMaterial->getParameter("s_shadowMap")->setSampler(shadowSampler);
 
 

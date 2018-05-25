@@ -21,7 +21,9 @@ Texture::Texture() :
     _wrapT(Texture::REPEAT),
     _wrapR(Texture::REPEAT),
     _minFilter(Texture::NEAREST_MIPMAP_LINEAR),
-    _magFilter(Texture::LINEAR)
+    _magFilter(Texture::LINEAR),
+    _useBorderColorFromPalette(false),
+    _paletteIndex(255)
 {
 }
 
@@ -247,7 +249,12 @@ bool Texture::isCompressed() const
 //-------------------------------------------------------------------------
 
 Texture::Sampler::Sampler(Texture* texture)
-    : _texture(texture), _wrapS(Texture::REPEAT), _wrapT(Texture::REPEAT), _wrapR(Texture::REPEAT)
+    : _texture(texture),
+      _wrapS(Texture::REPEAT),
+      _wrapT(Texture::REPEAT),
+      _wrapR(Texture::REPEAT),
+      _useBorderColorFromPalette(false),
+      _paletteIndex(255)
 {
     GP_ASSERT( texture );
     _minFilter = texture->_minFilter;
@@ -286,6 +293,12 @@ void Texture::Sampler::setFilterMode(Filter minificationFilter, Filter magnifica
     _magFilter = magnificationFilter;
 }
 
+void Texture::Sampler::setBorderColorFromPalette(unsigned char paletteIndex)
+{
+    _useBorderColorFromPalette = true;
+    _paletteIndex = paletteIndex;
+}
+
 Texture* Texture::Sampler::getTexture() const
 {
     return _texture;
@@ -314,6 +327,15 @@ void Texture::Sampler::bind(Uniform * uniform)
     if (_texture->_wrapR != _wrapR)
     {
         _texture->_wrapR = _wrapR;
+    }
+
+    if (_texture->_useBorderColorFromPalette != _useBorderColorFromPalette)
+    {
+        _texture->_useBorderColorFromPalette = _useBorderColorFromPalette;
+    }
+    if (_texture->_paletteIndex != _paletteIndex)
+    {
+        _texture->_paletteIndex = _paletteIndex;
     }
 
     _texture->_gpuTtexture->bind(uniform, _texture);

@@ -163,6 +163,9 @@ public:
          */
         void setFilterMode(Filter minificationFilter, Filter magnificationFilter);
 
+
+        void setBorderColorFromPalette(unsigned char paletteIndex);
+
         /**
          * Gets the texture for this sampler.
          *
@@ -193,6 +196,8 @@ public:
         Wrap _wrapR;
         Filter _minFilter;
         Filter _magFilter;
+        bool _useBorderColorFromPalette;
+        unsigned char _paletteIndex;
     };
 
     /**
@@ -366,6 +371,9 @@ private:
     Filter _minFilter;
     Filter _magFilter;
     size_t _bpp;
+
+    bool _useBorderColorFromPalette;
+    unsigned char _paletteIndex;
 };
 
 }

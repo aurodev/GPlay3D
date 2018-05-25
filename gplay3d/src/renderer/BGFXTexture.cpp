@@ -336,6 +336,9 @@ void BGFXTexture::bind(Uniform * uniform, Texture * texture)
             | WRAP_T[texture->_wrapT]
             | WRAP_R[texture->_wrapR];
 
+    if(texture->_useBorderColorFromPalette)
+        flags |= BGFX_TEXTURE_BORDER_COLOR(texture->_paletteIndex);
+
     BGFXUniform * bgfxUniform = static_cast<BGFXUniform*>(uniform);
     bgfx::setTexture(bgfxUniform->getIndex(), bgfxUniform->getHandle(), _handle, flags);
 }

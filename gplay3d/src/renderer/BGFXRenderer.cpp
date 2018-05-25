@@ -80,6 +80,11 @@ void BGFXRenderer::setVSync(bool enable)
     bgfx::reset(_width, _height, _reset_flags);
 }
 
+void BGFXRenderer::setPaletteColor(unsigned char index, Vector4 color)
+{
+    bgfx::setPaletteColor(index, color.x, color.y, color.z, color.w);
+}
+
 void BGFXRenderer::queryCaps()
 {
     // Query caps and limits.

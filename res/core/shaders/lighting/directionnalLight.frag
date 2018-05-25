@@ -56,6 +56,9 @@ float ShadowCalculation(vec4 fragPosLightSpace, float bias)
     //float bias = 0.001;
     float inShadow = (currentDepth - bias > depth) ? 1.0 : 0.0;
 
+    if(tex_coords.z > 1.0)
+        inShadow = 0.0;
+
     return inShadow;
 }
 

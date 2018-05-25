@@ -8,6 +8,7 @@ namespace gameplay
 
 class Matrix;
 class BGFXGpuProgram;
+class Vector4;
 
 #define DRAW_DEBUG_TEXT bgfx::dbgTextPrintf
 
@@ -55,6 +56,9 @@ public:
     void beginFrame();
     void endFrame();
 
+
+
+    void setPaletteColor(unsigned char index, Vector4 color);
 
 protected:
     BGFXRenderer();
