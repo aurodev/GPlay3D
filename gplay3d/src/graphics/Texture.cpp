@@ -21,9 +21,7 @@ Texture::Texture() :
     _wrapT(Texture::REPEAT),
     _wrapR(Texture::REPEAT),
     _minFilter(Texture::NEAREST_MIPMAP_LINEAR),
-    _magFilter(Texture::LINEAR),
-    _useBorderColorFromPalette(false),
-    _paletteIndex(255)
+    _magFilter(Texture::LINEAR)
 {
 }
 
@@ -253,8 +251,7 @@ Texture::Sampler::Sampler(Texture* texture)
       _wrapS(Texture::REPEAT),
       _wrapT(Texture::REPEAT),
       _wrapR(Texture::REPEAT),
-      _useBorderColorFromPalette(false),
-      _paletteIndex(255)
+      _bgfxFlags(0)
 {
     GP_ASSERT( texture );
     _minFilter = texture->_minFilter;
@@ -293,10 +290,9 @@ void Texture::Sampler::setFilterMode(Filter minificationFilter, Filter magnifica
     _magFilter = magnificationFilter;
 }
 
-void Texture::Sampler::setBorderColorFromPalette(unsigned char paletteIndex)
+void Texture::Sampler::setCustomFlags(unsigned int bgfxFlags)
 {
-    _useBorderColorFromPalette = true;
-    _paletteIndex = paletteIndex;
+    _bgfxFlags = bgfxFlags;
 }
 
 Texture* Texture::Sampler::getTexture() const
@@ -329,16 +325,7 @@ void Texture::Sampler::bind(Uniform * uniform)
         _texture->_wrapR = _wrapR;
     }
 
-    if (_texture->_useBorderColorFromPalette != _useBorderColorFromPalette)
-    {
-        _texture->_useBorderColorFromPalette = _useBorderColorFromPalette;
-    }
-    if (_texture->_paletteIndex != _paletteIndex)
-    {
-        _texture->_paletteIndex = _paletteIndex;
-    }
-
-    _texture->_gpuTtexture->bind(uniform, _texture);
+    _texture->_gpuTtexture->bind(uniform, _texture, _bgfxFlags);
 }
 
 }

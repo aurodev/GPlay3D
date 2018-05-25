@@ -163,8 +163,13 @@ public:
          */
         void setFilterMode(Filter minificationFilter, Filter magnificationFilter);
 
-
-        void setBorderColorFromPalette(unsigned char paletteIndex);
+        /**
+         * Specify custom flags for this sampler using the bgfx syntax.
+         * see: BGFX_TEXTURE_ flags syntax.
+         *
+         * @param bgfxFlags The bgfx texture flags.
+         */
+        void setCustomFlags(unsigned int bgfxFlags);
 
         /**
          * Gets the texture for this sampler.
@@ -196,8 +201,7 @@ public:
         Wrap _wrapR;
         Filter _minFilter;
         Filter _magFilter;
-        bool _useBorderColorFromPalette;
-        unsigned char _paletteIndex;
+        unsigned int _bgfxFlags;
     };
 
     /**
@@ -371,9 +375,6 @@ private:
     Filter _minFilter;
     Filter _magFilter;
     size_t _bpp;
-
-    bool _useBorderColorFromPalette;
-    unsigned char _paletteIndex;
 };
 
 }

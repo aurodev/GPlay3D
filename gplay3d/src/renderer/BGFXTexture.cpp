@@ -327,8 +327,9 @@ Texture* BGFXTexture::createFromData(Texture::TextureInfo info, const unsigned c
     return texture;
 }
 
-void BGFXTexture::bind(Uniform * uniform, Texture * texture)
+void BGFXTexture::bind(Uniform * uniform, Texture * texture, uint32_t customFlags)
 {
+    // set texture flags using gplay filter and wrap modes
     uint32_t flags = BGFX_TEXTURE_NONE
             | MIN_FILTER[texture->_minFilter]
             | MAG_FILTER[texture->_magFilter]
@@ -336,8 +337,8 @@ void BGFXTexture::bind(Uniform * uniform, Texture * texture)
             | WRAP_T[texture->_wrapT]
             | WRAP_R[texture->_wrapR];
 
-    if(texture->_useBorderColorFromPalette)
-        flags |= BGFX_TEXTURE_BORDER_COLOR(texture->_paletteIndex);
+    // add custom flags, if specified. (note: filter and wrap can be directly specified using the customFlags)
+    flags |= customFlags;
 
     BGFXUniform * bgfxUniform = static_cast<BGFXUniform*>(uniform);
     bgfx::setTexture(bgfxUniform->getIndex(), bgfxUniform->getHandle(), _handle, flags);
