@@ -6,7 +6,7 @@
 
 using namespace gameplay;
 
-
+#define SHADOW_RES 2048
 
 class DeferredRenderer
 {
@@ -86,7 +86,7 @@ public:
         viewShadow.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
         viewShadow.depth = 1.0f;
         viewShadow.stencil = 0;
-        viewShadow.rectangle = Rectangle(viewRect.width, viewRect.height);
+        viewShadow.rectangle = Rectangle(SHADOW_RES, SHADOW_RES);
         game->insertView(PASS_SHADOW_ID, viewShadow);
 
 
@@ -275,7 +275,7 @@ public:
 
 
 
-        _shadowBuffer = FrameBuffer::create("ShadowBuffer", viewRect.width, viewRect.height, Texture::Format::D16);
+        _shadowBuffer = FrameBuffer::create("ShadowBuffer", SHADOW_RES, SHADOW_RES, Texture::Format::D16);
 
 
         Technique* tech = Technique::create("shadow");
