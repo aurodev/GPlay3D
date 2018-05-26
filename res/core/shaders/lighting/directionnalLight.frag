@@ -132,7 +132,7 @@ float NewShadow(vec4 fragPosLightSpace)
     vec3 shadowUV = projCoord; //projCoord.xyz / projCoord.w;
     float mapScale = 1.0 / 512.0;
 
-    shadowUV -= 0.005;
+    shadowUV -= 0.001;
 
     float shadowColor = shadow2D(s_shadowMap, shadowUV);
 

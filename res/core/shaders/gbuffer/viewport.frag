@@ -37,5 +37,19 @@ void main()
 {
     vec4 albedo = toLinear(texture2D(s_albedo, v_texcoord0));
     vec4 light = toLinear(texture2D(s_light, v_texcoord0));
-    gl_FragColor = toGamma(albedo*light);
+    //gl_FragColor = toGamma(albedo*light);
+    //return;
+
+    vec3 hdrColor = vec3(albedo*light).rgb;
+    const float gamma = 3.5;
+    float exposure = 0.6;
+
+    // Exposure tone mapping
+    vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
+
+    // Gamma correction 
+    mapped = pow(mapped, vec3(1.0 / gamma));
+
+    gl_FragColor = vec4(mapped, 1.0);
+
 }

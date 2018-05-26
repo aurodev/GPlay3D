@@ -204,7 +204,7 @@ public:
 
 
 
-        _lightBuffer = FrameBuffer::create("LightBuffer", viewRect.width, viewRect.height, Texture::Format::RGB);
+        _lightBuffer = FrameBuffer::create("LightBuffer", viewRect.width, viewRect.height, Texture::Format::RGBA16F);
 
 
         Mesh* fullScreenQuad = Mesh::createQuadFullscreen();
@@ -780,34 +780,34 @@ public:
 
 
 
-        /*for(int i=0; i<1; i++)
-            for(int j=0; j<0; j++)
+        /*for(int i=0; i<50; i++)
+            for(int j=0; j<50; j++)
         {
-            float r = MATH_RANDOM_0_1();
-            float g = MATH_RANDOM_0_1();
-            float b = MATH_RANDOM_0_1();
+            float r = MATH_RANDOM_0_1() * 10;
+            float g = MATH_RANDOM_0_1() * 10;
+            float b = MATH_RANDOM_0_1() * 10;
 
-            Light* pointLight = Light::createPoint(Vector3(r,g,b), 20.0f);
+            Light* pointLight = Light::createPoint(Vector3(r,g,b), 1.5f);
             Node* pointLightNode = Node::create("pointLight");
             pointLightNode->setLight(pointLight);
-            pointLightNode->setTranslation(Vector3(-40+i*15, 5, -40+j*15));
+            pointLightNode->setTranslation(Vector3(-40+i*2, 1, -40+j*2));
             _scene->addNode(pointLightNode);
             SAFE_RELEASE(pointLight);
         }*/
 
 
-        Light* pointLight = Light::createPoint(Vector3(1,0,0), 10.0f);
+        /*Light* pointLight = Light::createPoint(Vector3(1,0,0), 10.0f);
         Node* pointLightNode = Node::create("pointLight");
         pointLightNode->setLight(pointLight);
         pointLightNode->setTranslation(Vector3(2, 3, 3));
         _scene->addNode(pointLightNode);
-        SAFE_RELEASE(pointLight);
+        SAFE_RELEASE(pointLight);*/
 
 
 
 
         {
-        Light* dirLight = Light::createDirectional(Vector3(0.7, 10.7, 0.7));
+        Light* dirLight = Light::createDirectional(Vector3(8.0, 8.0, 8.0));
         Node* dirLightNode = Node::create("dirLight");
         dirLightNode->setLight(dirLight);
         dirLightNode->setDirection(Vector3(-1,-1,-1));
