@@ -127,12 +127,12 @@ float NewShadow(vec4 fragPosLightSpace)
     projCoord = projCoord * 0.5 + 0.5;
 
 
-    const float kTransparency = 0.1;
+    const float kTransparency = 0.0;
 
     vec3 shadowUV = projCoord; //projCoord.xyz / projCoord.w;
-    float mapScale = 1.0 / 512.0;
+    float mapScale = 1.0 / 2048.0;
 
-    shadowUV -= 0.001;
+    shadowUV -= 0.0005; // bias
 
     float shadowColor = shadow2D(s_shadowMap, shadowUV);
 
@@ -247,7 +247,7 @@ void main()
 
 
 
-    // shadow
+    // shadow begin
 
     //float shadow = 1.0 - ShadowCalculation(v_shadowcoord);
     //float shadow = texture2D(s_shadowMap, v_shadowcoord.xy).r;
@@ -257,30 +257,44 @@ void main()
     
 
     float cosTheta = clamp(dot(Normal, lightDir), 0.0, 1.0);
-    float bias = 0.005*tan(acos(cosTheta)); // cosTheta is dot( n,l ), clamped between 0 and 1
-    bias = clamp(bias, 0, 0.01);
-
+    float bias = 0.005 * tan(acos(cosTheta)); // cosTheta is dot( n,l ), clamped between 0 and 1
+    bias = clamp(bias, 0, 0.1);
 
     //float bias = 0.005;
+
+
 
    /* vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(fragPos, 1.0);
     float shadow = ShadowCalculation(fragPosLightSpace, bias);
     diffuse *= shadow;
     specular *= shadow;*/
 
+    // normal offset
+    //vec3 normalOffsetScale = vec3(0.05);
+    float cosLight = dot(Normal, lightDir);
+    float slopeScale = clamp(1.0 - cosLight, 0.0, 1.0);
+    float normalOffsetScale =  0.05 * slopeScale;
+    vec4 shadowOffset = u_lightSpaceMatrix * vec4(fragPos + Normal * normalOffsetScale, 1.0);
 
+    // pcf 9x
     vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(fragPos, 1.0);
-    float shadow = NewShadow(fragPosLightSpace);
+    float shadow = NewShadow(shadowOffset);  //fragPosLightSpace);
     diffuse *= shadow;
     specular *= shadow;
 
 
-
+    // bgfx pcf
     /*vec2 texelSize = vec2_splat(1.0/512.0);
-    vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(fragPos, 1.0);
-    float visibility = PCF(s_shadowMap, fragPosLightSpace, bias, texelSize);
+    vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(fragPos + Normal * normalOffsetScale, 1.0);
+    //float visibility = PCF(s_shadowMap, fragPosLightSpace, bias, texelSize);
+    float visibility = PCF(s_shadowMap, fragPosLightSpace, 0.000, texelSize);
     diffuse *= visibility;
     specular *= visibility;*/
+
+
+    // -- end shadow
+
+
 
 
     // result
