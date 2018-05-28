@@ -24,6 +24,8 @@ varying vec2 v_texcoord0;
 
 
 varying mat3 v_tbnViewSpace;
+varying vec3           Tangent;                          // tangent
+varying vec3           Binormal;                         // binormal
 
 void main()
 {
@@ -39,10 +41,17 @@ void main()
 
 
 
-    mat3 inverseTransposeWorldViewMatrix = mat3(u_worldMatrix);
-    vec3 N = normalize(inverseTransposeWorldViewMatrix * a_normal);
-    vec3 T = normalize(inverseTransposeWorldViewMatrix * a_tangent);
+
+  
+
+    mat3 NMAT = transpose(inverse(mat3(u_worldMatrix)));
+    vec3 N = normalize(NMAT * a_normal);
+    vec3 T = normalize(NMAT * a_tangent);
     vec3 B = cross(T,N);
-    v_tbnViewSpace = mat3(T,B,N);
+    v_tbnViewSpace = (mat3(T,B,N));
+
+
+    Tangent = normalize(normalMatrix[0]);
+    Binormal = normalize(normalMatrix[1]);
 
 }

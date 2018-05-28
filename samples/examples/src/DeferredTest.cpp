@@ -124,13 +124,13 @@ public:
 
 
         {
-        // color + specular buffer
+        // bump map
         Texture::TextureInfo texInfo;
         texInfo.id = "BumpMap";
         texInfo.width = viewRect.width;
         texInfo.height = viewRect.height;
         texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::RGB;
+        texInfo.format = Texture::Format::RGBA;
         texInfo.flags = BGFX_TEXTURE_RT;
         Texture* tex = Texture::create(texInfo);
         textures.push_back(tex);
@@ -176,7 +176,7 @@ public:
         Texture::Sampler* specSampler = _matGBuffer->getParameter("u_specularTexture")->setValue("res/data/textures/spec.png", true);
         specSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);        
 
-        Texture::Sampler* bumpSampler = _matGBuffer->getParameter("u_bumpTexture")->setValue("res/data/textures/brickn.png", true);
+        Texture::Sampler* bumpSampler = _matGBuffer->getParameter("u_normalTexture")->setValue("res/data/textures/brickn.png", true);
         bumpSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
 

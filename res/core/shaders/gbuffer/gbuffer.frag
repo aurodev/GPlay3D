@@ -9,7 +9,8 @@ uniform sampler2D u_normalTexture;
 
 
 varying mat3 v_tbnViewSpace;
-
+varying vec3           Tangent;                          // tangent
+varying vec3           Binormal;                         // binormal
 
 void main()
 {
@@ -24,8 +25,29 @@ void main()
     gl_FragData[1].a = texture2D(u_specularTexture, v_texcoord0).r;
 
 
+#if 1
 
-    vec4 normalMap = texture2D(u_normalTexture, v_texcoord0) * 2 - 1;
-    vec3 normalVector = v_tbnViewSpace * normalMap.rgb;
-    gl_FragData[2] = vec4(normalize(normalVector), 1.0);
+    // bump map
+    vec3 normalMap = texture2D(u_normalTexture, v_texcoord0).rgb * 2.0 - 1.0;
+    normalMap = normalize(normalMap);
+    normalMap = v_tbnViewSpace * normalMap;
+    gl_FragData[2] = vec4(normalMap, 1.0);
+
+
+#else
+    
+
+    vec3 Normal = normalize(v_normal);
+
+ mat3 tangentToView = mat3(Tangent.x, Binormal.x, Normal.x,
+                            Tangent.y, Binormal.y, Normal.y,
+                            Tangent.z, Binormal.z, Normal.z);                            
+  vec3 adjNormal = (texture2D(u_normalTexture, v_texcoord0).rgb * 2.0 - 1.0) * tangentToView;
+  //adjNormal = adjNormal * tangentToView;
+
+  gl_FragData[2] = vec4((adjNormal), 1.0);
+
+#endif
+
+
 }
