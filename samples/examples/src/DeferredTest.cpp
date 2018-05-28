@@ -122,6 +122,21 @@ public:
         textures.push_back(tex);
         }
 
+
+        {
+        // color + specular buffer
+        Texture::TextureInfo texInfo;
+        texInfo.id = "BumpMap";
+        texInfo.width = viewRect.width;
+        texInfo.height = viewRect.height;
+        texInfo.type = Texture::TEXTURE_RT;
+        texInfo.format = Texture::Format::RGB;
+        texInfo.flags = BGFX_TEXTURE_RT;
+        Texture* tex = Texture::create(texInfo);
+        textures.push_back(tex);
+        }
+
+
         {
         // depth buffer
         Texture::TextureInfo texInfo;
@@ -159,7 +174,10 @@ public:
         sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
         Texture::Sampler* specSampler = _matGBuffer->getParameter("u_specularTexture")->setValue("res/data/textures/spec.png", true);
-        specSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+        specSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);        
+
+        Texture::Sampler* bumpSampler = _matGBuffer->getParameter("u_bumpTexture")->setValue("res/data/textures/brickn.png", true);
+        bumpSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
 
 
@@ -200,6 +218,8 @@ public:
         lightingMaterial->getParameter("gAlbedoSpec")->setValue(sampler3);
         Texture::Sampler* sampler4 = Texture::Sampler::create(_gBuffer->getRenderTarget("DepthBuffer"));
         lightingMaterial->getParameter("gDepth")->setValue(sampler4);
+        Texture::Sampler* sampler5 = Texture::Sampler::create(_gBuffer->getRenderTarget("BumpMap"));
+        lightingMaterial->getParameter("gBump")->setValue(sampler5);
 
 
 

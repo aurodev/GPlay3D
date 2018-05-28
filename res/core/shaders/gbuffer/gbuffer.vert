@@ -2,6 +2,10 @@ attribute vec4 a_position;
 attribute vec3 a_normal;
 attribute vec2 a_texcoord0;
 
+attribute vec3 a_tangent;
+attribute vec3 v_binormal;
+
+
 
 uniform mat4 u_worldViewProjectionMatrix;
 uniform mat4 u_worldMatrix;
@@ -19,6 +23,8 @@ varying vec2 v_texcoord0;
 
 
 
+varying mat3 v_tbnViewSpace;
+
 void main()
 {
     vec4 worldPos = u_worldMatrix * vec4(a_position.xyz, 1.0);
@@ -30,4 +36,13 @@ void main()
     v_normal = normalMatrix * a_normal;
 
     gl_Position = u_worldViewProjectionMatrix * vec4(a_position.xyz, 1.0);
+
+
+
+    mat3 inverseTransposeWorldViewMatrix = mat3(u_worldMatrix);
+    vec3 N = normalize(inverseTransposeWorldViewMatrix * a_normal);
+    vec3 T = normalize(inverseTransposeWorldViewMatrix * a_tangent);
+    vec3 B = cross(T,N);
+    v_tbnViewSpace = mat3(T,B,N);
+
 }

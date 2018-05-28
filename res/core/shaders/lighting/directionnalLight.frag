@@ -4,6 +4,7 @@ varying vec2 v_texcoord0;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D gDepth;
+uniform sampler2D gBump;
 
 uniform mat4 u_inverseTransposeWorldViewMatrix;
 uniform mat4 u_projectionMatrix;
@@ -222,6 +223,14 @@ void main()
     vec3 Diffuse = texture2D(gAlbedoSpec, v_texcoord0).rgb;
     float Specular = texture2D(gAlbedoSpec, v_texcoord0).a;
     float Depth = texture2D(gDepth, v_texcoord0).r;
+
+
+
+     // bump
+    vec3 Bump = texture2D(gBump, v_texcoord0).rgb;
+    Normal = Bump;
+
+
     
     // get world pos from depth buffer
     vec3 fragPos = worldPosFromDepth(Depth);    
@@ -293,6 +302,11 @@ void main()
 
 
     // -- end shadow
+
+
+
+   
+
 
 
 

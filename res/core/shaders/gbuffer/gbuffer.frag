@@ -8,7 +8,7 @@ uniform sampler2D u_specularTexture;
 uniform sampler2D u_normalTexture;
 
 
-
+varying mat3 v_tbnViewSpace;
 
 
 void main()
@@ -22,4 +22,10 @@ void main()
     // and the diffuse per-fragment color
     gl_FragData[1].rgb = texture2D(u_diffuseTexture, v_texcoord0).rgb;
     gl_FragData[1].a = texture2D(u_specularTexture, v_texcoord0).r;
+
+
+
+    vec4 normalMap = texture2D(u_normalTexture, v_texcoord0) * 2 - 1;
+    vec3 normalVector = v_tbnViewSpace * normalMap.rgb;
+    gl_FragData[2] = vec4(normalize(normalVector), 1.0);
 }
