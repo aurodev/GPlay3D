@@ -227,16 +227,9 @@ void main()
 
 
      // bump
-    //vec3 Bump = texture2D(gBump, v_texcoord0).rgb;
-    //vec3 Bump = normalize(2.0*texture2D(gBump, v_texcoord0).xyz - 1.0);
-    //Bump = normalize(Bump); 
-    //vec3 Bump = texture2D(gNormal, v_texcoord0).xyz;
-    
-    //vec3 Bump = texture2D(gBump, v_texcoord0).xyz * 2.0 - 1.0;
-    vec3 Bump = texture2D(gBump, v_texcoord0).xyz  ;
-    //Bump = normalize(Bump); 
-    Normal = (Bump.xyz);
-    //vec3 NormalNormalized = normalize(Normal); 
+    Normal = texture2D(gBump, v_texcoord0).xyz  ;
+
+
 
 
 
@@ -259,7 +252,7 @@ void main()
 
     // specular
     vec3 reflectDir = reflect(-lightDir, Normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 16.0);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 2.0);
     vec3 specular = light.color * spec * Specular;
       
 

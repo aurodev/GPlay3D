@@ -130,7 +130,7 @@ public:
         texInfo.width = viewRect.width;
         texInfo.height = viewRect.height;
         texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::RGBA;
+        texInfo.format = Texture::Format::RGBA16F;
         texInfo.flags = BGFX_TEXTURE_RT;
         Texture* tex = Texture::create(texInfo);
         textures.push_back(tex);

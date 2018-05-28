@@ -53,28 +53,4 @@ void main()
 
 
 
-    mat4 u_view = transpose(inverse(u_worldMatrix));
-
-    vec4 normal = vec4(a_normal * 2.0 - 1.0, 0.0);
-    vec3 wnormal = (u_worldMatrix * vec4(normal.xyz, 0.0) ).xyz;
-
-    vec4 tangent = vec4(a_tangent * 2.0 - 1.0, 0.0);
-    vec3 wtangent = (u_worldMatrix * vec4(tangent.xyz, 0.0) ).xyz;
-
-    vec3 viewNormal = normalize((u_view * vec4(wnormal, 0.0) ).xyz);
-    vec3 viewTangent = normalize((u_view * vec4(wtangent, 0.0) ).xyz);
-    vec3 viewBitangent = cross(viewNormal, viewTangent) * tangent.w;
-    v_tbnViewSpace = mat3(viewTangent, viewBitangent, viewNormal);
-
-    v_normal = viewNormal;
-    Tangent = viewTangent;
-    Binormal = viewBitangent;
-
-
-
-
-
-    Tangent = normalize(normalMatrix[0]);
-    Binormal = normalize(normalMatrix[1]);
-
 }
