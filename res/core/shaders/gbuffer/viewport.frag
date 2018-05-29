@@ -5,6 +5,7 @@ varying vec2 v_texcoord0;
 
 uniform sampler2D s_albedo;
 uniform sampler2D s_light;
+uniform sampler2D s_bloom;
 
 
 vec3 toLinear(vec3 _rgb)
@@ -33,6 +34,43 @@ vec4 toGamma(vec4 _rgba)
 }
 
 
+
+
+
+
+vec4 blur(sampler2D image, vec2 tc)
+{
+    vec4 sum = vec4(0.0);   
+    
+    //the amount to blur, i.e. how far off center to sample from 
+    //1.0 -> blur by one pixel
+    //2.0 -> blur by two pixels, etc.
+    float blur = 1.0 / 1024.0; //radius/resolution; 
+    
+    //the direction of our blur
+    //(1.0, 0.0) -> x-axis blur
+    //(0.0, 1.0) -> y-axis blur
+    float hstep = 0.5; //dir.x;
+    float vstep = 0.5; //dir.y;
+    
+    //apply blurring, using a 9-tap filter with predefined gaussian weights
+    
+    sum += texture2D(image, vec2(tc.x - 4.0*blur*hstep, tc.y - 4.0*blur*vstep)) * 0.0162162162;
+    sum += texture2D(image, vec2(tc.x - 3.0*blur*hstep, tc.y - 3.0*blur*vstep)) * 0.0540540541;
+    sum += texture2D(image, vec2(tc.x - 2.0*blur*hstep, tc.y - 2.0*blur*vstep)) * 0.1216216216;
+    sum += texture2D(image, vec2(tc.x - 1.0*blur*hstep, tc.y - 1.0*blur*vstep)) * 0.1945945946;
+    
+    sum += texture2D(image, vec2(tc.x, tc.y)) * 0.2270270270;
+    
+    sum += texture2D(image, vec2(tc.x + 1.0*blur*hstep, tc.y + 1.0*blur*vstep)) * 0.1945945946;
+    sum += texture2D(image, vec2(tc.x + 2.0*blur*hstep, tc.y + 2.0*blur*vstep)) * 0.1216216216;
+    sum += texture2D(image, vec2(tc.x + 3.0*blur*hstep, tc.y + 3.0*blur*vstep)) * 0.0540540541;
+    sum += texture2D(image, vec2(tc.x + 4.0*blur*hstep, tc.y + 4.0*blur*vstep)) * 0.0162162162;
+
+    return sum;
+}
+
+
 void main()
 {
     /*vec4 albedo = toLinear(texture2D(s_albedo, v_texcoord0));
@@ -42,12 +80,20 @@ void main()
 
 
 
-    vec4 albedo = toLinear(texture2D(s_albedo, v_texcoord0));
-    vec4 light = toLinear(texture2D(s_light, v_texcoord0));
+
+
+
+    vec4 albedo = (texture2D(s_albedo, v_texcoord0));
+    vec4 light = (texture2D(s_light, v_texcoord0));
+    //vec4 bloom = texture2D(s_bloom, v_texcoord0);
+    vec4 bloom = blur(s_bloom, v_texcoord0);
 
     vec3 hdrColor = vec3(albedo*light).rgb;
     const float gamma = 3.2;
     float exposure = 1.5;
+
+
+    hdrColor += vec3(bloom.rgb);
 
     // Exposure tone mapping
     vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);

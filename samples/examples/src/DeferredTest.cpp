@@ -66,7 +66,7 @@ public:
         game->insertView(PASS_GEOMETRY_ID, viewGeometry);
 
         View viewLight;
-        viewLight.clearColor = 0x22222200;
+        viewLight.clearColor = 0x00000000;
         viewLight.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
         viewLight.depth = 1.0f;
         viewLight.stencil = 0;
@@ -206,11 +206,50 @@ public:
 
 
 
-        _lightBuffer = FrameBuffer::create("LightBuffer", viewRect.width, viewRect.height, Texture::Format::RGBA16F);
+
+
+
+
+
+
+
+        std::vector<Texture*> lightBufferTextures;
+
+        {
+        // light buffer
+        Texture::TextureInfo texInfo;
+        texInfo.id = "LightBuffer";
+        texInfo.width = viewRect.width;
+        texInfo.height = viewRect.height;
+        texInfo.type = Texture::TEXTURE_RT;
+        texInfo.format = Texture::Format::RGBA16F;
+        texInfo.flags = BGFX_TEXTURE_RT;
+        Texture* tex = Texture::create(texInfo);
+        lightBufferTextures.push_back(tex);
+        }
+
+        {
+        // bright buffer
+        Texture::TextureInfo texInfo;
+        texInfo.id = "BrightBuffer";
+        texInfo.width = viewRect.width;
+        texInfo.height = viewRect.height;
+        texInfo.type = Texture::TEXTURE_RT;
+        texInfo.format = Texture::Format::RGBA16F;
+        texInfo.flags = BGFX_TEXTURE_RT;
+        Texture* tex = Texture::create(texInfo);
+        lightBufferTextures.push_back(tex);
+        }
+
+        // create gbuffer mrt
+        _lightBuffer = FrameBuffer::create("LightBuffer", lightBufferTextures);
+        //_lightBuffer = FrameBuffer::create("LightBuffer", viewRect.width, viewRect.height, Texture::Format::RGBA16F);
 
         Mesh* fullScreenQuad = Mesh::createQuadFullscreen();
         _lightQuad = Model::create(fullScreenQuad);
         _lightQuad->setMaterial(lightingMaterial);
+
+
 
 
 
@@ -230,6 +269,9 @@ public:
 
         Texture::Sampler* sampler2 = Texture::Sampler::create(_lightBuffer->getRenderTarget(0));
         _matCombine->getParameter("s_light")->setValue(sampler2);
+
+        Texture::Sampler* sampler3 = Texture::Sampler::create(_lightBuffer->getRenderTarget(1));
+        _matCombine->getParameter("s_bloom")->setValue(sampler3);
         }
 
 
@@ -301,7 +343,8 @@ public:
         Mesh* meshQuad = Mesh::createQuad(-1 + 3*0.5, -1, 0.5 ,0.5);
         _quadModel[3] = Model::create(meshQuad);
         _quadModel[3]->setMaterial("res/core/shaders/debug/texture.vert", "res/core/shaders/debug/texture.frag");
-        _quadModel[3]->getMaterial()->getParameter("s_texture")->setValue(shadowSampler);
+        Texture::Sampler* sampler = Texture::Sampler::create(_lightBuffer->getRenderTarget(1));
+        _quadModel[3]->getMaterial()->getParameter("s_texture")->setValue(sampler);
         }
 
         //--------------------
@@ -355,8 +398,21 @@ public:
                 model->setMaterial(_matGBuffer->clone());
             }
 
-
+            if(std::string("LightCubeNode") == node->getId())
+            {
+                Model* model = dynamic_cast<Model*>(drawable);
+                Material* material = Material::create("res/coredata/shaders/color.vert", "res/coredata/shaders/color.frag");
+                material->getParameter("u_color")->setValue(Vector3(1,1,1));
+                material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
+                material->getStateBlock()->setCullFace(true);
+                material->getStateBlock()->setDepthTest(true);
+                material->getStateBlock()->setDepthWrite(true);
+                model->setMaterial(material);
+            }
         }
+
+
+
 
 
         return true;
@@ -406,7 +462,7 @@ public:
         static int dim = 5;
         static float offset = 1.0f;
         static float pointlightRadius = 5.0f;
-        static float pointLightPosition[3] = { -1.0, -1.0f, -1.0f };
+        static float pointLightPosition[4] = { 0.0, 0.0f, 0.0f, 5.0f };
         static float pointLightColor[3] = { 1.0f, 1.0f, 1.0f };
         static bool showDebugScissorRect = false;
         static bool useScissor = true;
@@ -414,7 +470,7 @@ public:
         ImGui::Begin("Toolbox");
         ImGui::SliderInt("Dim", &dim, 1, 100);
         ImGui::SliderFloat("Offset", &offset, -20.0f, 20.0f);
-        ImGui::SliderFloat4("position", pointLightPosition, -1.0f, 1.0f);
+        ImGui::SliderFloat4("position", pointLightPosition, -10.0f, 10.0f);
         ImGui::SliderFloat3("color", pointLightColor, 0.0f, 10.0f);
         ImGui::SliderFloat("radius", &pointlightRadius, 0.0f, 1000.0f);
         ImGui::Checkbox("show scissor rect", &showDebugScissorRect);
@@ -432,9 +488,16 @@ public:
 
 
 
+        // move light node with gui
+        /*if(_dirLights.size() > 0)
+            _dirLights[0]->getNode()->setDirection(Vector3(pointLightPosition));*/
+        if(_pointLights.size() > 0) {
+            _pointLights[0]->getNode()->setTranslation(Vector3(pointLightPosition));
+            _pointLights[0]->setRange(pointLightPosition[3]);
+        }
 
-        if(_dirLights.size() > 0)
-            _dirLights[0]->getNode()->setDirection(Vector3(pointLightPosition));
+
+
 
 
         // set light matrix for shadows
@@ -541,7 +604,7 @@ public:
             _spriteBatch->finish();
 
         // show gbuffer for debug
-        for(int i=0; i<3; i++)
+        for(int i=0; i<4; i++)
             _quadModel[i]->draw();
 
     }
@@ -746,7 +809,7 @@ public:
         _scene->addNode(nodeTorusKnot);
 
         // create a cone
-       Model* modelCone = Model::create(bundle->loadMesh("Cone_Mesh"));
+        Model* modelCone = Model::create(bundle->loadMesh("Cone_Mesh"));
         Node* nodeCone = Node::create("cone");
         nodeCone->setDrawable(modelCone);
         nodeCone->setScale(0.5f);
@@ -761,7 +824,11 @@ public:
         nodeMonkey->setTranslation(-2, 0.5, 2);
         _scene->addNode(nodeMonkey);
 
-        SAFE_RELEASE(bundle);
+
+
+
+        //SAFE_RELEASE(bundle);
+
 
 #endif
 
@@ -784,24 +851,44 @@ public:
         }*/
 
 
-        /*Light* pointLight = Light::createPoint(Vector3(1,0,0), 10.0f);
+        Light* pointLight = Light::createPoint(Vector3(10,10,10), 5.0f);
         Node* pointLightNode = Node::create("pointLight");
         pointLightNode->setLight(pointLight);
         pointLightNode->setTranslation(Vector3(2, 3, 3));
         _scene->addNode(pointLightNode);
-        SAFE_RELEASE(pointLight);*/
+        SAFE_RELEASE(pointLight);
+
+
+
+
+        // light cube
+        {
+        Model* modelCubeLight = Model::create(bundle->loadMesh("Cube_Mesh"));
+        /*Material* material = Material::create("res/coredata/shaders/color.vert", "res/coredata/shaders/color.frag");
+        //material->getParameter("u_color")->setValue(pointLight->getColor());
+        modelCubeLight->setMaterial(material);*/
+        Node* pointLightNodeCube = Node::create("LightCubeNode");
+        pointLightNodeCube->setScale(0.25);
+        pointLightNodeCube->setDrawable(modelCubeLight);
+        pointLightNode->addChild(pointLightNodeCube);
+        }
+
 
 
 
 
         {
-        Light* dirLight = Light::createDirectional(Vector3(8.0, 8.0, 8.0));
+        Light* dirLight = Light::createDirectional(Vector3(1.0, 1.0, 1.0));
         Node* dirLightNode = Node::create("dirLight");
         dirLightNode->setLight(dirLight);
         dirLightNode->setDirection(Vector3(-1,-1,-1));
         _scene->addNode(dirLightNode);
         SAFE_RELEASE(dirLight);
         }
+
+
+
+
 
 
 

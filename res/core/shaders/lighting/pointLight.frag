@@ -27,6 +27,12 @@ struct Light
 };
 
 
+
+
+
+
+
+
 void main()
 {
     // retrieve data from gbuffer
@@ -74,5 +80,22 @@ void main()
     specular *= attenuation;
     lighting += diffuse + specular;
 
-    gl_FragColor = vec4(lighting, 1.0);
+    vec4 lightResult = vec4(lighting, 1.0);
+    gl_FragData[0] = lightResult;
+
+
+
+
+     // write to bright buffer
+
+    vec4 brightResult;
+
+    // check whether fragment output is higher than threshold, if so output as brightness color
+    float brightness = dot(lightResult.rgb, vec3(0.2126, 0.7152, 0.0722));
+    if(brightness > 1.0)
+        brightResult = vec4(lightResult.rgb, 1.0);
+    else
+        brightResult = vec4(0.0, 0.0, 0.0, 1.0);
+
+    gl_FragData[1] = brightResult;
 }
