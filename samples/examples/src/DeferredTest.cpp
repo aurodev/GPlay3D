@@ -13,10 +13,11 @@ class DeferredRenderer
 private:
 
     static const int PASS_GEOMETRY_ID   = 0;
-    static const int PASS_LIGHT_ID      = 2;
     static const int PASS_SHADOW_ID     = 1;
+    static const int PASS_LIGHT_ID      = 2;    
     static const int PASS_COMBINE_ID    = 3;
     static const int PASS_DEBUG_ID      = 4;
+
 
     FrameBuffer* _gBuffer;
     FrameBuffer* _lightBuffer;
@@ -57,7 +58,7 @@ public:
         // create views
 
         View viewGeometry;
-        viewGeometry.clearColor = 0x111122ff;
+        viewGeometry.clearColor = 0x112233FF;
         viewGeometry.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
         viewGeometry.depth = 1.0f;
         viewGeometry.stencil = 0;
@@ -65,7 +66,7 @@ public:
         game->insertView(PASS_GEOMETRY_ID, viewGeometry);
 
         View viewLight;
-        viewLight.clearColor = 0x303030ff;
+        viewLight.clearColor = 0x22222200;
         viewLight.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
         viewLight.depth = 1.0f;
         viewLight.stencil = 0;
@@ -73,16 +74,15 @@ public:
         game->insertView(PASS_LIGHT_ID, viewLight);
 
         View viewCombine;
-        viewCombine.clearColor = 0x303030ff;
+        viewCombine.clearColor = 0x00000000;
         viewCombine.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
         viewCombine.depth = 1.0f;
         viewCombine.stencil = 0;
         viewCombine.rectangle = Rectangle(viewRect.width, viewRect.height);
         game->insertView(PASS_COMBINE_ID, viewCombine);
 
-
         View viewShadow;
-        viewShadow.clearColor = 0x303030ff;
+        viewShadow.clearColor = 0x00000000;
         viewShadow.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
         viewShadow.depth = 1.0f;
         viewShadow.stencil = 0;
@@ -95,6 +95,18 @@ public:
         // create the gbuffer
 
         std::vector<Texture*> textures;
+        {
+        // color + specular buffer
+        Texture::TextureInfo texInfo;
+        texInfo.id = "AlbedoSpecBuffer";
+        texInfo.width = viewRect.width;
+        texInfo.height = viewRect.height;
+        texInfo.type = Texture::TEXTURE_RT;
+        texInfo.format = Texture::Format::RGBA;
+        texInfo.flags = BGFX_TEXTURE_RT;
+        Texture* tex = Texture::create(texInfo);
+        textures.push_back(tex);
+        }
 
         {
         // normal buffer
@@ -110,34 +122,6 @@ public:
         }
 
         {
-        // color + specular buffer
-        Texture::TextureInfo texInfo;
-        texInfo.id = "AlbedoSpecBuffer";
-        texInfo.width = viewRect.width;
-        texInfo.height = viewRect.height;
-        texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::RGBA;
-        texInfo.flags = BGFX_TEXTURE_RT;
-        Texture* tex = Texture::create(texInfo);
-        textures.push_back(tex);
-        }
-
-
-        {
-        // bump map
-        Texture::TextureInfo texInfo;
-        texInfo.id = "BumpMap";
-        texInfo.width = viewRect.width;
-        texInfo.height = viewRect.height;
-        texInfo.type = Texture::TEXTURE_RT;
-        texInfo.format = Texture::Format::RGBA16F;
-        texInfo.flags = BGFX_TEXTURE_RT;
-        Texture* tex = Texture::create(texInfo);
-        textures.push_back(tex);
-        }
-
-
-        {
         // depth buffer
         Texture::TextureInfo texInfo;
         texInfo.id = "DepthBuffer";
@@ -150,9 +134,6 @@ public:
         textures.push_back(tex);
         }
 
-
-
-
         // create gbuffer mrt
         _gBuffer = FrameBuffer::create("GBuffer", textures);
 
@@ -163,21 +144,22 @@ public:
 
 
 
-        _matGBuffer = Material::create("res/core/shaders/gbuffer/gbuffer.vert", "res/core/shaders/gbuffer/gbuffer.frag");
+        _matGBuffer = Material::create("res/core/shaders/gbuffer/gbuffer.vert", "res/core/shaders/gbuffer/gbuffer.frag", "NORMAL_MAP");
         _matGBuffer->getStateBlock()->setCullFace(true);
         _matGBuffer->getStateBlock()->setDepthTest(true);
         _matGBuffer->getStateBlock()->setDepthWrite(true);
         _matGBuffer->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
         _matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
+        _matGBuffer->setParameterAutoBinding("u_inverseTransposeWorldMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_MATRIX);
 
-        Texture::Sampler* sampler = _matGBuffer->getParameter("u_diffuseTexture")->setValue("res/data/textures/brick.png", true);
-        sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+        Texture::Sampler* diffuseSampler = _matGBuffer->getParameter("s_diffuseTexture")->setValue("res/data/textures/brick.png", true);
+        diffuseSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
-        Texture::Sampler* specSampler = _matGBuffer->getParameter("u_specularTexture")->setValue("res/data/textures/spec.png", true);
-        specSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);        
+        Texture::Sampler* specularSampler = _matGBuffer->getParameter("s_specularTexture")->setValue("res/data/textures/spec.png", true);
+        specularSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
-        Texture::Sampler* bumpSampler = _matGBuffer->getParameter("u_normalTexture")->setValue("res/data/textures/brickn.png", true);
-        bumpSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+        Texture::Sampler* normalSampler = _matGBuffer->getParameter("s_normalTexture")->setValue("res/data/textures/brickn.png", true);
+        normalSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
 
 
@@ -212,20 +194,19 @@ public:
         lightingMaterial->getParameter("u_inverseProjectionMatrix")->bindValue(_scene->getActiveCamera()->getNode(), &Node::getInverseProjectionMatrix);
         lightingMaterial->getParameter("u_inverseViewMatrix")->bindValue(_scene->getActiveCamera()->getNode(), &Node::getInverseViewMatrix);
 
-        Texture::Sampler* sampler2 = Texture::Sampler::create(_gBuffer->getRenderTarget("NormalBuffer"));
-        lightingMaterial->getParameter("gNormal")->setValue(sampler2);
-        Texture::Sampler* sampler3 = Texture::Sampler::create(_gBuffer->getRenderTarget("AlbedoSpecBuffer"));
-        lightingMaterial->getParameter("gAlbedoSpec")->setValue(sampler3);
-        Texture::Sampler* sampler4 = Texture::Sampler::create(_gBuffer->getRenderTarget("DepthBuffer"));
-        lightingMaterial->getParameter("gDepth")->setValue(sampler4);
-        Texture::Sampler* sampler5 = Texture::Sampler::create(_gBuffer->getRenderTarget("BumpMap"));
-        lightingMaterial->getParameter("gBump")->setValue(sampler5);
+        Texture::Sampler* samplerAlbedoSpec = Texture::Sampler::create(_gBuffer->getRenderTarget("AlbedoSpecBuffer"));
+        lightingMaterial->getParameter("gAlbedoSpec")->setValue(samplerAlbedoSpec);
+        Texture::Sampler* samplerDepth = Texture::Sampler::create(_gBuffer->getRenderTarget("DepthBuffer"));
+        lightingMaterial->getParameter("gDepth")->setValue(samplerDepth);
+        Texture::Sampler* samplerNormal = Texture::Sampler::create(_gBuffer->getRenderTarget("NormalBuffer"));
+        lightingMaterial->getParameter("gNormal")->setValue(samplerNormal);
+
+
 
 
 
 
         _lightBuffer = FrameBuffer::create("LightBuffer", viewRect.width, viewRect.height, Texture::Format::RGBA16F);
-
 
         Mesh* fullScreenQuad = Mesh::createQuadFullscreen();
         _lightQuad = Model::create(fullScreenQuad);
@@ -238,11 +219,8 @@ public:
         Material* _matCombine;
         _matCombine = Material::create("res/core/shaders/gbuffer/viewport.vert", "res/core/shaders/gbuffer/viewport.frag");
         _matCombine->getStateBlock()->setCullFace(true);
-        _matCombine->getStateBlock()->setDepthTest(false); //false
+        _matCombine->getStateBlock()->setDepthTest(false);
         _matCombine->getStateBlock()->setDepthWrite(false);
-        /*_matCombine->getStateBlock()->setBlend(true);
-        _matCombine->getStateBlock()->setBlendSrc(RenderState::BLEND_ONE);
-        _matCombine->getStateBlock()->setBlendDst(RenderState::BLEND_ONE);*/
         _matCombine->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
         _matCombine->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
 
@@ -325,12 +303,6 @@ public:
         _quadModel[3]->setMaterial("res/core/shaders/debug/texture.vert", "res/core/shaders/debug/texture.frag");
         _quadModel[3]->getMaterial()->getParameter("s_texture")->setValue(shadowSampler);
         }
-
-
-
-        /*Texture::Sampler* shadowSampler45456 = Texture::Sampler::create(_gBuffer->getRenderTarget(2));
-        _lightQuad->getMaterial()->getParameter("s_shadowMap")->setValue(shadowSampler45456);*/
-        ///_lightQuad->getMaterial()->getParameter("s_shadowMap")->setValue(shadowSampler);
 
         //--------------------
 
@@ -461,8 +433,8 @@ public:
 
 
 
-
-        _dirLights[0]->getNode()->setDirection(Vector3(pointLightPosition));
+        if(_dirLights.size() > 0)
+            _dirLights[0]->getNode()->setDirection(Vector3(pointLightPosition));
 
 
         // set light matrix for shadows
@@ -480,24 +452,21 @@ public:
 
 
 
-        // 1. Geometry pass ---------
-
+        // Geometry pass
         Game::getInstance()->bindView(PASS_GEOMETRY_ID);
         _gBuffer->bind();
         _scene->visit(this, &DeferredRenderer::drawNode);
 
 
 
+        // Shadow pass
         Game::getInstance()->bindView(PASS_SHADOW_ID);
         _shadowBuffer->bind();
         _scene->visit(this, &DeferredRenderer::drawNodeShadow);
 
 
 
-
-
-        // 2. Lighting pass ---------
-
+        // Lighting pass
         Game::getInstance()->bindView(PASS_LIGHT_ID);
         _lightBuffer->bind();
 
@@ -517,14 +486,15 @@ public:
                     BoundingBox bbox;
                     bbox.set(boundingSphere);
 
-                    // get 2D rectangle region of light influence
+                    // get 2D rectangle area of light influence
                     Rectangle region = getScissorRegion(bbox);
 
+                    // set scissor to only draw on this area
                     bgfx::setScissor(region.x, region.y, region.width, region.height);
 
-                    // show scissor region for debug
+                    // show scissor rectangle for debug
                     if(showDebugScissorRect)
-                        _spriteBatch->draw(region, src, Vector4::fromColor(0xffffffff));
+                        _spriteBatch->draw(region, src, Vector4::fromColor(0xffffff55));
 
 
                     _lightQuad->getMaterial()->getParameter("u_lightPos")->setValue(pointLight->getNode()->getTranslation());
@@ -558,8 +528,8 @@ public:
         }*/
 
 
-        // 3. Final pass, render to viewport, combine light buffer and diffuse
 
+        // Final pass, render to viewport, combine light buffer + diffuse and apply gamma and tonemapping
         Game::getInstance()->bindView(PASS_COMBINE_ID);
         _finalQuad->draw();
 
@@ -570,11 +540,9 @@ public:
         if(showDebugScissorRect)
             _spriteBatch->finish();
 
-
-                // show gbuffer for debug
-        for(int i=0; i<4; i++)
+        // show gbuffer for debug
+        for(int i=0; i<3; i++)
             _quadModel[i]->draw();
-
 
     }
 

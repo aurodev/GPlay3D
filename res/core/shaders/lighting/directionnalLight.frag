@@ -1,10 +1,10 @@
 varying vec2 v_texcoord0;
 
 
-uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
+uniform sampler2D gNormal;
 uniform sampler2D gDepth;
-uniform sampler2D gBump;
+
 
 uniform mat4 u_inverseTransposeWorldViewMatrix;
 uniform mat4 u_projectionMatrix;
@@ -218,22 +218,11 @@ float PCF(Sampler _sampler, vec4 _shadowCoord, float _bias, vec2 _texelSize)
 
 void main()
 {
-    // retrieve data from gbuffer
-    vec3 Normal = texture2D(gNormal, v_texcoord0).rgb;
+    // retrieve data from gbuffer    
     vec3 Diffuse = texture2D(gAlbedoSpec, v_texcoord0).rgb;
     float Specular = texture2D(gAlbedoSpec, v_texcoord0).a;
     float Depth = texture2D(gDepth, v_texcoord0).r;
-
-
-
-     // bump
-    Normal = texture2D(gBump, v_texcoord0).xyz  ;
-
-
-
-
-
-
+    vec3 Normal = texture2D(gNormal, v_texcoord0).rgb;
 
     
     // get world pos from depth buffer
@@ -308,16 +297,8 @@ void main()
     // -- end shadow
 
 
-
-   
-
-
-
-
-
     // result
     lighting += diffuse + specular;
 
     gl_FragColor = vec4(lighting, 1.0);
 }
-
