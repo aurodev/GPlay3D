@@ -39,6 +39,12 @@ const char* Technique::getId() const
     return _id.c_str();
 }
 
+void Technique::setId(const char* id)
+{
+    GP_ASSERT(id != nullptr);
+    _id = id;
+}
+
 unsigned int Technique::getPassCount() const
 {
     return (unsigned int)_passes.size();

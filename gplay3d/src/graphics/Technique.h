@@ -42,6 +42,9 @@ public:
      */ 
     const char* getId() const;
 
+
+    void setId(const char* id);
+
     /**
      * Gets the number of passes in this technique.
      *

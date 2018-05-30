@@ -8,25 +8,29 @@ using namespace gameplay;
 
 #define SHADOW_RES 2048
 
+#define BLUR_RES 256
+
+
 class DeferredRenderer
 {
 private:
 
     static const int PASS_GEOMETRY_ID   = 0;
     static const int PASS_SHADOW_ID     = 1;
-    static const int PASS_LIGHT_ID      = 2;    
-    static const int PASS_COMBINE_ID    = 3;
-    static const int PASS_DEBUG_ID      = 4;
+    static const int PASS_LIGHT_ID      = 2;
+    static const int PASS_POST_ID       = 3;
+    static const int PASS_COMBINE_ID    = 4;
+    static const int PASS_DEBUG_ID      = 5;
 
 
     FrameBuffer* _gBuffer;
     FrameBuffer* _lightBuffer;
+    FrameBuffer* _postProcessBuffer;
 
     Model* _finalQuad;
     Model* _lightQuad;
 
     Scene* _scene;
-
 
     std::vector<Light*> _dirLights;
     std::vector<Light*> _pointLights;
@@ -34,17 +38,16 @@ private:
 
     Material* _matGBuffer;
 
-
     Model* _quadModel[4];
     SpriteBatch* _spriteBatch;
-
-
 
     FrameBuffer* _shadowBuffer;
     Matrix _lightSpaceMatrix;
 
 
 public:
+
+
     void create(Scene* scene)
     {
         _scene = scene;
@@ -88,6 +91,14 @@ public:
         viewShadow.stencil = 0;
         viewShadow.rectangle = Rectangle(SHADOW_RES, SHADOW_RES);
         game->insertView(PASS_SHADOW_ID, viewShadow);
+
+        View viewPostProcess;
+        viewPostProcess.clearColor = 0x00000000;
+        viewPostProcess.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
+        viewPostProcess.depth = 1.0f;
+        viewPostProcess.stencil = 0;
+        viewPostProcess.rectangle = Rectangle(BLUR_RES,BLUR_RES); //viewRect.width, viewRect.height);
+        game->insertView(PASS_POST_ID, viewPostProcess);
 
 
 
@@ -274,6 +285,7 @@ public:
         _matCombine->getParameter("s_bloom")->setValue(sampler3);
         }
 
+        _matCombine->getTechnique()->setId("default");
 
 
 
@@ -338,19 +350,79 @@ public:
         lightingMaterial->getParameter("s_shadowMap")->setSampler(shadowSampler);
 
 
-        // preview shadow
-        {
-        Mesh* meshQuad = Mesh::createQuad(-1 + 3*0.5, -1, 0.5 ,0.5);
-        _quadModel[3] = Model::create(meshQuad);
-        _quadModel[3]->setMaterial("res/core/shaders/debug/texture.vert", "res/core/shaders/debug/texture.frag");
-        Texture::Sampler* sampler = Texture::Sampler::create(_lightBuffer->getRenderTarget(1));
-        _quadModel[3]->getMaterial()->getParameter("s_texture")->setValue(sampler);
-        }
+
 
         //--------------------
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+        // bloom post-process
+        {
+            std::vector<Texture*> textures;
+
+            {
+            Texture::TextureInfo texInfo;
+            texInfo.id = "tex1";
+            texInfo.width = BLUR_RES;//viewRect.width;
+            texInfo.height = BLUR_RES;//viewRect.height;
+            texInfo.type = Texture::TEXTURE_RT;
+            texInfo.format = Texture::Format::RGBA16F;
+            texInfo.flags = BGFX_TEXTURE_RT ;
+            Texture* tex = Texture::create(texInfo);
+            textures.push_back(tex);
+            }
+
+           /* {
+            Texture::TextureInfo texInfo;
+            texInfo.id = "tex2";
+            texInfo.width = 1024;
+            texInfo.height = 1024;
+            texInfo.type = Texture::TEXTURE_RT;
+            texInfo.format = Texture::Format::RGBA;
+            texInfo.flags = BGFX_TEXTURE_RT;
+            Texture* tex = Texture::create(texInfo);
+            textures.push_back(tex);
+            }*/
+
+            _postProcessBuffer = FrameBuffer::create("PostProcessBuffer", textures);
+
+
+
+            Effect* effect = Effect::createFromFile("res/core/shaders/postprocess/blur.vert", "res/core/shaders/postprocess/blur.frag");
+            Technique* technique = Technique::create("blur");
+            technique->addPass(Pass::create(effect, "pass0"));
+            _matCombine->addTechnique(technique);
+
+            //Texture::Sampler* sampler = Texture::Sampler::create(_lightBuffer->getRenderTarget(1));
+            //technique->getParameter("image")->setSampler(sampler);
+
+            Texture::Sampler* samplerBlur = Texture::Sampler::create(_postProcessBuffer->getRenderTarget(0));
+            _matCombine->getTechnique("default")->getParameter("s_bloom")->setSampler(samplerBlur);
+
+        }
+
+
+
+        // preview shadow
+        {
+        Mesh* meshQuad = Mesh::createQuad(-1 + 3*0.5, -1, 0.5 ,0.5);
+        _quadModel[3] = Model::create(meshQuad);
+        _quadModel[3]->setMaterial("res/core/shaders/debug/texture.vert", "res/core/shaders/debug/texture.frag");
+        Texture::Sampler* sampler = Texture::Sampler::create(_postProcessBuffer->getRenderTarget(0));
+        _quadModel[3]->getMaterial()->getParameter("s_texture")->setValue(sampler);
+        }
 
 
 
@@ -402,7 +474,7 @@ public:
             {
                 Model* model = dynamic_cast<Model*>(drawable);
                 Material* material = Material::create("res/coredata/shaders/color.vert", "res/coredata/shaders/color.frag");
-                material->getParameter("u_color")->setValue(Vector3(1,1,1));
+                material->getParameter("u_color")->setValue(Vector3(10,10,0));
                 material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
                 material->getStateBlock()->setCullFace(true);
                 material->getStateBlock()->setDepthTest(true);
@@ -502,7 +574,7 @@ public:
 
         // set light matrix for shadows
         Vector4 _shadowProjection = Vector4(-10.0f, 10.0f, -10.0f, 10.0f);
-        Vector3 lightDir = Vector3(pointLightPosition); //_dirLights[0]->getNode()->getForwardVector();
+        Vector3 lightDir = _dirLights[0]->getNode()->getForwardVector();
         Matrix lightProjection, lightView;
         Matrix::createOrthographic(_shadowProjection.x, _shadowProjection.y, _shadowProjection.z, _shadowProjection.w, &lightProjection);
         Matrix::createLookAt(Vector3(0.0, 0.0, 0.0), lightDir, Vector3(0.0, 1.0, 0.0), &lightView);
@@ -592,8 +664,38 @@ public:
 
 
 
+
+        // post process
+        Game::getInstance()->bindView(PASS_POST_ID);
+        _postProcessBuffer->bind();
+        _finalQuad->getMaterial()->setTechnique("blur");
+
+        int x = 0;
+        int y = 1;
+
+        _finalQuad->getMaterial()->getParameter("u_direction")->setValue(Vector2(x, y));
+        Texture::Sampler* sampler = Texture::Sampler::create(_lightBuffer->getRenderTarget(1));
+        _finalQuad->getMaterial()->getParameter("image")->setSampler(sampler);
+
+        for(int i=0; i<40; ++i) {
+
+            _finalQuad->draw();
+
+            Texture::Sampler* sampler = Texture::Sampler::create(_postProcessBuffer->getRenderTarget(0));
+            _finalQuad->getMaterial()->getParameter("image")->setValue(sampler);
+            _finalQuad->getMaterial()->getParameter("u_direction")->setValue(Vector2(x, y));
+
+            x = 1 - x;
+            y = 1 - y;
+        }
+
+
+
+
+
         // Final pass, render to viewport, combine light buffer + diffuse and apply gamma and tonemapping
         Game::getInstance()->bindView(PASS_COMBINE_ID);
+        _finalQuad->getMaterial()->setTechnique("default");
         _finalQuad->draw();
 
 
@@ -851,7 +953,7 @@ public:
         }*/
 
 
-        Light* pointLight = Light::createPoint(Vector3(10,10,10), 5.0f);
+        Light* pointLight = Light::createPoint(Vector3(1,1,1), 5.0f);
         Node* pointLightNode = Node::create("pointLight");
         pointLightNode->setLight(pointLight);
         pointLightNode->setTranslation(Vector3(2, 3, 3));
@@ -877,7 +979,7 @@ public:
 
 
 
-        {
+       {
         Light* dirLight = Light::createDirectional(Vector3(1.0, 1.0, 1.0));
         Node* dirLightNode = Node::create("dirLight");
         dirLightNode->setLight(dirLight);
