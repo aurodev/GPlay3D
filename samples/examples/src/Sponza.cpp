@@ -99,9 +99,10 @@ public:
         //material->getStateBlock()->setDepthFunction(RenderState::DEPTH_LESS);
 
         // bind frame buffer depth target to sampler
-        Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
-        material->getParameter("s_shadowMap")->setSampler(sampler);
+        Texture::Sampler* sampler = _frameBuffer->getRenderTarget(0);
         sampler->setWrapMode(Texture::BORDER, Texture::BORDER);
+        material->getParameter("s_shadowMap")->setSampler(sampler);
+
     }
 
     void setAmbientColor(Vector3 ambient)
@@ -280,8 +281,7 @@ public:
         _quadModel = Model::create(meshQuad);
         SAFE_RELEASE(meshQuad);
         _quadModel->setMaterial("res/coredata/shaders/debug.vert", "res/coredata/shaders/debug.frag", "SHOW_DEPTH");
-        Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
-        _quadModel->getMaterial()->getParameter("u_texture")->setValue(sampler);
+        _quadModel->getMaterial()->getParameter("u_texture")->setValue(_frameBuffer->getRenderTarget(0));
 
 
         // Initialise materials for all models in scene

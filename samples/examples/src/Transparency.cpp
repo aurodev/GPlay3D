@@ -85,8 +85,7 @@ public:
         _quadModel = Model::create(mesh);
         SAFE_RELEASE(mesh);
         _quadModel->setMaterial("res/coredata/shaders/debug.vert", "res/coredata/shaders/debug.frag", "SHOW_TEXTURE");
-        Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
-        _quadModel->getMaterial()->getParameter("u_texture")->setValue(sampler);
+        _quadModel->getMaterial()->getParameter("u_texture")->setValue(_frameBuffer->getRenderTarget(0));
 
 
 
@@ -107,7 +106,7 @@ public:
         // Create a base colored material with alpha blending
         Material* material = Material::create("res/coredata/shaders/colored.vert", "res/coredata/shaders/colored.frag");
         material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");
-        material->getParameter("u_texture")->setValue(sampler);
+        material->getParameter("u_texture")->setValue(_frameBuffer->getRenderTarget(0));
         material->getStateBlock()->setCullFace(false);
         material->getStateBlock()->setDepthTest(true);
         material->getStateBlock()->setDepthWrite(true);

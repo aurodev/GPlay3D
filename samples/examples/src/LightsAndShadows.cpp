@@ -255,9 +255,10 @@ public:
         Texture::Sampler* specSampler = material->getParameter("u_specularTexture")->setValue("res/data/textures/spec.png", true);
         specSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
-        Texture::Sampler* shadowSampler = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
-        material->getParameter("s_shadowMap")->setSampler(shadowSampler);
+        Texture::Sampler* shadowSampler = _frameBuffer->getRenderTarget(0);
         shadowSampler->setWrapMode(Texture::BORDER, Texture::BORDER);
+        material->getParameter("s_shadowMap")->setSampler(shadowSampler);
+
 
 
 
@@ -348,8 +349,7 @@ public:
         _quadModel = Model::create(meshQuad);
         SAFE_RELEASE(meshQuad);
         _quadModel->setMaterial("res/coredata/shaders/debug.vert", "res/coredata/shaders/debug.frag", "SHOW_DEPTH");
-        Texture::Sampler* samplerDepth = Texture::Sampler::create(_frameBuffer->getRenderTarget(0));
-        _quadModel->getMaterial()->getParameter("u_texture")->setValue(samplerDepth);
+        _quadModel->getMaterial()->getParameter("u_texture")->setValue(_frameBuffer->getRenderTarget(0));
 
         Matrix proj;
         Matrix::createOrthographicOffCenter(0, game->getViewport().width, game->getViewport().height, 0, -1, 1, &proj);

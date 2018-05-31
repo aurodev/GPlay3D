@@ -179,7 +179,7 @@ void RenderToTexture::initialize()
     Material* material = Material::create("res/coredata/shaders/textured.vert", "res/coredata/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT=1");
 
     // use the renderTarget of the framebuffer as texture sampler for this material
-    Texture::Sampler* sampler = Texture::Sampler::create(_frameBuffer->getRenderTarget("targetColor"));
+    Texture::Sampler* sampler = _frameBuffer->getRenderTarget("targetColor");
 
     material->getParameter("u_worldViewProjectionMatrix")->setValue(mvp);
     material->getParameter("u_inverseTransposeWorldViewMatrix")->setValue(invTransWorldMatrix);

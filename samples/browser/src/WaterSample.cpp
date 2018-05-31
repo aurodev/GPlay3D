@@ -81,7 +81,7 @@ void WaterSample::initialize()
     textures.push_back(texColor);
     textures.push_back(texDepth);
     _refractBuffer = FrameBuffer::create("refractBuffer", textures);
-    _refractBatch = SpriteBatch::create(_refractBuffer->getRenderTarget("targetColor"));
+    _refractBatch = SpriteBatch::create(_refractBuffer->getRenderTarget("targetColor")->getTexture());
     }
 
     {
@@ -91,7 +91,7 @@ void WaterSample::initialize()
     textures.push_back(texColor);
     textures.push_back(texDepth);
     _reflectBuffer = FrameBuffer::create("reflectBuffer", textures);
-    _reflectBatch = SpriteBatch::create(_reflectBuffer->getRenderTarget("targetColor"));
+    _reflectBatch = SpriteBatch::create(_reflectBuffer->getRenderTarget("targetColor")->getTexture());
     }
 
 
@@ -108,12 +108,8 @@ void WaterSample::initialize()
     groundMaterial->getParameter("u_clipPlane")->bindValue(this, &WaterSample::getClipPlane);
     groundMaterial->getParameter("u_directionalLightDirection[0]")->bindValue(lightNode, &Node::getForwardVectorView);
     auto waterMaterial = dynamic_cast<Model*>(_scene->findNode("Water")->getDrawable())->getMaterial();
-    auto refractSampler = Texture::Sampler::create(_refractBuffer->getRenderTarget("targetColor"));
-    waterMaterial->getParameter("u_refractionTexture")->setSampler(refractSampler);
-    SAFE_RELEASE(refractSampler);
-    auto reflectSampler = Texture::Sampler::create(_reflectBuffer->getRenderTarget("targetColor"));
-    waterMaterial->getParameter("u_reflectionTexture")->setSampler(reflectSampler);
-    SAFE_RELEASE(reflectSampler);
+    waterMaterial->getParameter("u_refractionTexture")->setSampler(_refractBuffer->getRenderTarget("targetColor"));
+    waterMaterial->getParameter("u_reflectionTexture")->setSampler(_reflectBuffer->getRenderTarget("targetColor"));
     waterMaterial->getParameter("u_worldViewProjectionReflectionMatrix")->bindValue(this, &WaterSample::getReflectionMatrix);
     waterMaterial->getParameter("u_time")->bindValue(this, &WaterSample::getTime);
     SAFE_RELEASE(lightNode);

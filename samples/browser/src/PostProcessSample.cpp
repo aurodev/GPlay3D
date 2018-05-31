@@ -17,8 +17,7 @@ PostProcessSample::Compositor* PostProcessSample::Compositor::create(FrameBuffer
     GP_ASSERT(srcBuffer);
 
     Material* material = Material::create(materialPath);
-    //@@Texture::Sampler* sampler = Texture::Sampler::create(srcBuffer->getRenderTarget()->getTexture());
-    Texture::Sampler* sampler = Texture::Sampler::create(srcBuffer->getRenderTarget("targetColor"));
+    Texture::Sampler* sampler = srcBuffer->getRenderTarget("targetColor");
 
 
     material->getParameter("u_texture")->setValue(sampler);

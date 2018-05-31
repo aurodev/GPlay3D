@@ -251,8 +251,7 @@ public:
             Mesh* meshQuad = Mesh::createQuad(-1 + i*0.5, -1, 0.5 ,0.5);
             _quadModel[i] = Model::create(meshQuad);
             _quadModel[i]->setMaterial("res/core/shaders/debug/texture.vert", "res/core/shaders/debug/texture.frag");
-            Texture::Sampler* sampler = Texture::Sampler::create(_gBuffer->getRenderTarget(i));
-            _quadModel[i]->getMaterial()->getParameter("s_texture")->setValue(sampler);
+            _quadModel[i]->getMaterial()->getParameter("s_texture")->setValue(_gBuffer->getRenderTarget(i));
             SAFE_RELEASE(meshQuad);
         }
 
@@ -271,12 +270,9 @@ public:
         lightingMaterial->getParameter("u_inverseProjectionMatrix")->bindValue(_fpCamera.getRootNode(), &Node::getInverseProjectionMatrix);
         lightingMaterial->getParameter("u_inverseViewMatrix")->bindValue(_fpCamera.getRootNode(), &Node::getInverseViewMatrix);
 
-        Texture::Sampler* sampler2 = Texture::Sampler::create(_gBuffer->getRenderTarget("NormalBuffer"));
-        lightingMaterial->getParameter("gNormal")->setValue(sampler2);
-        Texture::Sampler* sampler3 = Texture::Sampler::create(_gBuffer->getRenderTarget("AlbedoSpecBuffer"));
-        lightingMaterial->getParameter("gAlbedoSpec")->setValue(sampler3);
-        Texture::Sampler* sampler4 = Texture::Sampler::create(_gBuffer->getRenderTarget("DepthBuffer"));
-        lightingMaterial->getParameter("gDepth")->setValue(sampler4);
+        lightingMaterial->getParameter("gNormal")->setValue(_gBuffer->getRenderTarget("NormalBuffer"));
+        lightingMaterial->getParameter("gAlbedoSpec")->setValue(_gBuffer->getRenderTarget("AlbedoSpecBuffer"));
+        lightingMaterial->getParameter("gDepth")->setValue(_gBuffer->getRenderTarget("DepthBuffer"));
 
 
 
@@ -347,13 +343,9 @@ public:
             _matCombine->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
             _matCombine->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
 
-            {
-            Texture::Sampler* sampler1 = Texture::Sampler::create(_gBuffer->getRenderTarget("AlbedoSpecBuffer"));
-            _matCombine->getParameter("s_albedo")->setValue(sampler1);
 
-            Texture::Sampler* sampler2 = Texture::Sampler::create(_lightBuffer->getRenderTarget(0));
-            _matCombine->getParameter("s_light")->setValue(sampler2);
-            }
+            _matCombine->getParameter("s_albedo")->setValue(_gBuffer->getRenderTarget("AlbedoSpecBuffer"));
+            _matCombine->getParameter("s_light")->setValue(_lightBuffer->getRenderTarget(0));
 
             //_matCombine->getParameter("u_projectionMatrix")->setValue(uporj);
 
