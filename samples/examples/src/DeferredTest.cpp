@@ -379,7 +379,7 @@ public:
             texInfo.height = BLUR_RES;//viewRect.height;
             texInfo.type = Texture::TEXTURE_RT;
             texInfo.format = Texture::Format::RGBA16F;
-            texInfo.flags = BGFX_TEXTURE_RT ;
+            texInfo.flags = BGFX_TEXTURE_RT;
             Texture* tex = Texture::create(texInfo);
             textures.push_back(tex);
             }
@@ -408,8 +408,8 @@ public:
             //Texture::Sampler* sampler = Texture::Sampler::create(_lightBuffer->getRenderTarget(1));
             //technique->getParameter("image")->setSampler(sampler);
 
-            Texture::Sampler* samplerBlur = Texture::Sampler::create(_postProcessBuffer->getRenderTarget(0));
-            _matCombine->getTechnique("default")->getParameter("s_bloom")->setSampler(samplerBlur);
+            //Texture::Sampler* samplerBlur = Texture::Sampler::create(_postProcessBuffer->getRenderTarget(0));
+            _matCombine->getTechnique("default")->getParameter("s_bloom")->setSampler(_postProcessBuffer->getSampler(0));
 
         }
 

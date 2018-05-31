@@ -28,6 +28,14 @@ FrameBuffer::~FrameBuffer()
         }
     }
 
+    for (unsigned int i=0; i<_samplers.size(); ++i)
+    {
+        if (_samplers[i])
+        {
+            SAFE_RELEASE(_samplers[i]);
+        }
+    }
+
     // Remove self from vector.
     std::vector<FrameBuffer*>::iterator it = std::find(_frameBuffers.begin(), _frameBuffers.end(), this);
     if (it != _frameBuffers.end())
@@ -50,6 +58,10 @@ FrameBuffer* FrameBuffer::create(const char* id, uint16_t width, uint16_t height
     texture->_gpuTtexture->_handle = bgfx::getTexture(frameBuffer->_frameBufferHandle);
     frameBuffer->_textures.push_back(texture);
 
+    Texture::Sampler* sampler = Texture::Sampler::create(texture);
+    frameBuffer->_samplers.push_back(sampler);
+
+
     // store this frame buffer into the list of availables frame buffers
     _frameBuffers.push_back(frameBuffer);
 
@@ -60,7 +72,7 @@ FrameBuffer* FrameBuffer::create(const char* id, std::vector<Texture*> textures)
 {
     uint8_t num = (uint8_t)textures.size();
 
-    // collect texture handles
+    // create and collect texture handles
     bgfx::TextureHandle* tmpTextureHandles = new bgfx::TextureHandle[num];
     for(size_t i=0; i<textures.size(); i++)
     {
@@ -69,10 +81,18 @@ FrameBuffer* FrameBuffer::create(const char* id, std::vector<Texture*> textures)
 
     // create MRT frame buffer
     FrameBuffer* frameBuffer = new FrameBuffer(id);
-    frameBuffer->_frameBufferHandle = bgfx::createFrameBuffer(num, tmpTextureHandles);
+    frameBuffer->_frameBufferHandle = bgfx::createFrameBuffer(num, tmpTextureHandles, true);
     frameBuffer->_textures = textures;
 
+    // free textures
     delete tmpTextureHandles;
+
+    // create a sampler for each texture
+    for(size_t i=0; i<textures.size(); i++)
+    {
+        Texture::Sampler* sampler = Texture::Sampler::create(textures[i]);
+        frameBuffer->_samplers.push_back(sampler);
+    }
 
     // store this frame buffer into the list of availables frame buffers
     _frameBuffers.push_back(frameBuffer);
@@ -97,6 +117,27 @@ Texture* FrameBuffer::getRenderTarget(std::string id)
     {
         if(texture->getPath() == id)
             return texture;
+    }
+    return nullptr;
+}
+
+Texture::Sampler* FrameBuffer::getSampler(uint16_t id)
+{
+    GP_ASSERT(id >= 0);
+
+    if(id <= _samplers.size())
+    {
+       return _samplers[id];
+    }
+    return nullptr;
+}
+
+Texture::Sampler* FrameBuffer::getSampler(std::string id)
+{
+    for(Texture::Sampler* sampler : _samplers)
+    {
+        if(sampler->getTexture()->getPath() == id)
+            return sampler;
     }
     return nullptr;
 }

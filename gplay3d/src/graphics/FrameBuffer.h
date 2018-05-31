@@ -25,6 +25,9 @@ public:
     Texture* getRenderTarget(uint16_t id);
     Texture* getRenderTarget(std::string id);
 
+    Texture::Sampler* getSampler(uint16_t id);
+    Texture::Sampler* getSampler(std::string id);
+
 
     /**
      * Get a named FrameBuffer from its ID.
@@ -46,7 +49,8 @@ private:
     FrameBuffer(const char* id);
 
     bgfx::FrameBufferHandle _frameBufferHandle;
-    std::vector<Texture*> _textures;
+    std::vector<Texture*> _textures;    // useless ? since _samplers
+    std::vector<Texture::Sampler*> _samplers;
     std::string _id;
 
     static std::vector<FrameBuffer*> _frameBuffers;
