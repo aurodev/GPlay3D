@@ -1,5 +1,3 @@
-
-
 vec4 blur5(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) 
 {
   vec4 color = vec4(0.0);

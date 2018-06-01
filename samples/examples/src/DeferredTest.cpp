@@ -155,7 +155,7 @@ public:
 
 
 
-        _matGBuffer = Material::create("res/core/shaders/gbuffer/gbuffer.vert", "res/core/shaders/gbuffer/gbuffer.frag", "NORMAL_MAP");
+        _matGBuffer = Material::create("res/core/shaders/deferred/gbuffer.vert", "res/core/shaders/deferred/gbuffer.frag", "NORMAL_MAP");
         _matGBuffer->getStateBlock()->setCullFace(true);
         _matGBuffer->getStateBlock()->setDepthTest(true);
         _matGBuffer->getStateBlock()->setDepthWrite(true);
@@ -182,11 +182,11 @@ public:
         // or create material from code
         Material* lightingMaterial = Material::create();
         {
-        Effect* effectPointLight = Effect::createFromFile("res/core/shaders/lighting/pointLight.vert", "res/core/shaders/lighting/pointLight.frag");
+        Effect* effectPointLight = Effect::createFromFile("res/core/shaders/deferred/pointLight.vert", "res/core/shaders/deferred/pointLight.frag");
         Technique* techPointLight = Technique::create("PointLight");
         techPointLight->addPass(Pass::create(effectPointLight, "pass0"));
 
-        Effect* effectDirLight = Effect::createFromFile("res/core/shaders/lighting/pointLight.vert", "res/core/shaders/lighting/directionnalLight.frag");
+        Effect* effectDirLight = Effect::createFromFile("res/core/shaders/deferred/pointLight.vert", "res/core/shaders/deferred/directionnalLight.frag");
         Technique* techDirectionnalLight = Technique::create("DirectionnalLight");
         techDirectionnalLight->addPass(Pass::create(effectDirLight, "pass0"));
 
@@ -264,7 +264,7 @@ public:
 
 
         Material* _matCombine;
-        _matCombine = Material::create("res/core/shaders/gbuffer/viewport.vert", "res/core/shaders/gbuffer/viewport.frag");
+        _matCombine = Material::create("res/core/shaders/deferred/viewport.vert", "res/core/shaders/deferred/viewport.frag");
         _matCombine->getStateBlock()->setCullFace(true);
         _matCombine->getStateBlock()->setDepthTest(false);
         _matCombine->getStateBlock()->setDepthWrite(false);
