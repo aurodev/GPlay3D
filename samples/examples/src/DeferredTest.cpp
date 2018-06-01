@@ -36,7 +36,8 @@ private:
     std::vector<Light*> _pointLights;
     std::vector<Light*> _spotLights;
 
-    Material* _matGBuffer;
+    //Material* _matGBuffer;
+    Technique* _techniqueShadow;
 
     Model* _quadModel[4];
     SpriteBatch* _spriteBatch;
@@ -155,7 +156,7 @@ public:
 
 
 
-        _matGBuffer = Material::create("res/core/shaders/deferred/gbuffer.vert", "res/core/shaders/deferred/gbuffer.frag", "NORMAL_MAP");
+       /* _matGBuffer = Material::create("res/core/shaders/deferred/gbuffer.vert", "res/core/shaders/deferred/gbuffer.frag", "NORMAL_MAP");
         _matGBuffer->getStateBlock()->setCullFace(true);
         _matGBuffer->getStateBlock()->setDepthTest(true);
         _matGBuffer->getStateBlock()->setDepthWrite(true);
@@ -170,7 +171,7 @@ public:
         specularSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
         Texture::Sampler* normalSampler = _matGBuffer->getParameter("s_normalTexture")->setValue("res/data/textures/brickn.png", true);
-        normalSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+        normalSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);*/
 
 
 
@@ -319,13 +320,13 @@ public:
         _shadowBuffer = FrameBuffer::create("ShadowBuffer", SHADOW_RES, SHADOW_RES, Texture::Format::D16);
 
 
-        Technique* tech = Technique::create("shadow");
-        tech->addPass(Pass::create(Effect::createFromFile("res/coredata/shaders/shadow.vert", "res/coredata/shaders/shadow.frag")));
-        tech->getStateBlock()->setCullFace(true);
-        tech->getStateBlock()->setCullFaceSide(RenderState::CULL_FACE_SIDE_FRONT);
-        tech->getStateBlock()->setDepthTest(true);
-        tech->getStateBlock()->setDepthWrite(true);
-        _matGBuffer->addTechnique(tech);
+        _techniqueShadow = Technique::create("shadow");
+        _techniqueShadow->addPass(Pass::create(Effect::createFromFile("res/coredata/shaders/shadow.vert", "res/coredata/shaders/shadow.frag")));
+        _techniqueShadow->getStateBlock()->setCullFace(true);
+        _techniqueShadow->getStateBlock()->setCullFaceSide(RenderState::CULL_FACE_SIDE_FRONT);
+        _techniqueShadow->getStateBlock()->setDepthTest(true);
+        _techniqueShadow->getStateBlock()->setDepthWrite(true);
+        //_matGBuffer->addTechnique(tech);
 
 
         Renderer::getInstance().setPaletteColor(0, Vector4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -455,7 +456,8 @@ public:
                     model->setMaterial(_matGBuffer->clone());
                 }*/
 
-                model->setMaterial(_matGBuffer->clone());
+                //model->setMaterial(_matGBuffer->clone());
+                ///model->getMaterial()->addTechnique(_techniqueShadow);
             }
 
             if(std::string("LightCubeNode") == node->getId())
@@ -862,18 +864,55 @@ public:
 
 
 
+
+        Material* matDeferred = Material::create("res/core/shaders/deferred/gbuffer.vert", "res/core/shaders/deferred/gbuffer.frag", "NORMAL_MAP");
+        matDeferred->getStateBlock()->setCullFace(true);
+        matDeferred->getStateBlock()->setDepthTest(true);
+        matDeferred->getStateBlock()->setDepthWrite(true);
+        matDeferred->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
+        matDeferred->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
+        matDeferred->setParameterAutoBinding("u_inverseTransposeWorldMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_MATRIX);
+
+        Texture::Sampler* diffuseSampler = matDeferred->getParameter("s_diffuseTexture")->setValue("res/data/textures/brick.png", true);
+        diffuseSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+
+        Texture::Sampler* specularSampler = matDeferred->getParameter("s_specularTexture")->setValue("res/data/textures/spec.png", true);
+        specularSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+
+        Texture::Sampler* normalSampler = matDeferred->getParameter("s_normalTexture")->setValue("res/data/textures/brickn.png", true);
+        normalSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+
+
+
+
+
+
+
+
+
+
+
+
+
         // load shapes bundle
         Bundle* bundle = Bundle::create("res/data/scenes/shapes.gpb");
 
         // create a plane
         Model* modelPlane = Model::create(bundle->loadMesh("Plane_Mesh"));
+        modelPlane->setMaterial(matDeferred->clone());
         Node* nodePlane = Node::create("plane");
         nodePlane->setDrawable(modelPlane);
-        nodePlane->setScale(40.0f);
+        nodePlane->setScale(40.0f);        
         _scene->addNode(nodePlane);
 
         // create a teapot
         Model* modelTeapot = Model::create(bundle->loadMesh("Cube_Mesh"));
+        {
+        Material* material = matDeferred->clone();
+        Texture::Sampler* diffuseSampler = material->getParameter("s_diffuseTexture")->setValue("res/data/textures/crate.png", true);
+        diffuseSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+        modelTeapot->setMaterial(material);
+        }
         Node* nodeTeapot = Node::create("teapot");
         nodeTeapot->setDrawable(modelTeapot);
         nodeTeapot->setScale(0.5f);
@@ -881,7 +920,7 @@ public:
         _scene->addNode(nodeTeapot);
 
         // create a torus
-        Model* modelTorus = Model::create(bundle->loadMesh("Torus_Mesh"));
+        /*Model* modelTorus = Model::create(bundle->loadMesh("Torus_Mesh"));
         Node* nodeTorus = Node::create("torus");
         nodeTorus->setDrawable(modelTorus);
         nodeTorus->setScale(0.5f);
@@ -910,7 +949,7 @@ public:
         nodeMonkey->setDrawable(modelMonkey);
         nodeMonkey->setScale(0.5f);
         nodeMonkey->setTranslation(-2, 0.5, 2);
-        _scene->addNode(nodeMonkey);
+        _scene->addNode(nodeMonkey);*/
 
 
 
