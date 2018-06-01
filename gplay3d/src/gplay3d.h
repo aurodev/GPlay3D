@@ -50,7 +50,6 @@
 #include "graphics/TileSet.h"
 #include "graphics/ParticleEmitter.h"
 #include "graphics/FrameBuffer.h"
-#include "graphics/RenderTarget.h"
 #include "graphics/ScreenDisplayer.h"
 #include "graphics/HeightField.h"
 #include "graphics/Terrain.h"

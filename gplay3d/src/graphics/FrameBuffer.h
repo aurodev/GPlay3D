@@ -2,12 +2,10 @@
 #define FRAMEBUFFER_H_
 
 #include "../core/Base.h"
-#include "../graphics/RenderTarget.h"
 #include "../graphics/Image.h"
+#include "../graphics/Texture.h"
 
-namespace gameplay
-{
-
+namespace gameplay {
 
 class FrameBuffer : public Ref
 {

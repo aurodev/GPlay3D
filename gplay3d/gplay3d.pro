@@ -78,7 +78,6 @@ HEADERS += \
     src/graphics/ParticleEmitter.h \
     src/graphics/Pass.h \
     src/graphics/RenderState.h \
-    src/graphics/RenderTarget.h \
     src/graphics/Scene.h \
     src/graphics/SceneLoader.h \
     src/graphics/ScreenDisplayer.h \
@@ -208,7 +207,6 @@ SOURCES += \
     src/graphics/ParticleEmitter.cpp \
     src/graphics/Pass.cpp \
     src/graphics/RenderState.cpp \
-    src/graphics/RenderTarget.cpp \
     src/graphics/Scene.cpp \
     src/graphics/SceneLoader.cpp \
     src/graphics/ScreenDisplayer.cpp \
