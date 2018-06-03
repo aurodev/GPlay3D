@@ -36,7 +36,6 @@ private:
     std::vector<Light*> _pointLights;
     std::vector<Light*> _spotLights;
 
-    //Material* _matGBuffer;
     Technique* _techniqueShadow;
 
     Model* _quadModel[4];
@@ -62,7 +61,7 @@ public:
         // create views
 
         View viewGeometry;
-        viewGeometry.clearColor = 0x112233FF;
+        viewGeometry.clearColor = 0x000000ff;
         viewGeometry.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
         viewGeometry.depth = 1.0f;
         viewGeometry.stencil = 0;
@@ -148,30 +147,6 @@ public:
 
         // create gbuffer mrt
         _gBuffer = FrameBuffer::create("GBuffer", textures);
-
-
-
-
-
-
-
-
-       /* _matGBuffer = Material::create("res/core/shaders/deferred/gbuffer.vert", "res/core/shaders/deferred/gbuffer.frag", "NORMAL_MAP");
-        _matGBuffer->getStateBlock()->setCullFace(true);
-        _matGBuffer->getStateBlock()->setDepthTest(true);
-        _matGBuffer->getStateBlock()->setDepthWrite(true);
-        _matGBuffer->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
-        _matGBuffer->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
-        _matGBuffer->setParameterAutoBinding("u_inverseTransposeWorldMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_MATRIX);
-
-        Texture::Sampler* diffuseSampler = _matGBuffer->getParameter("s_diffuseTexture")->setValue("res/data/textures/brick.png", true);
-        diffuseSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
-
-        Texture::Sampler* specularSampler = _matGBuffer->getParameter("s_specularTexture")->setValue("res/data/textures/spec.png", true);
-        specularSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
-
-        Texture::Sampler* normalSampler = _matGBuffer->getParameter("s_normalTexture")->setValue("res/data/textures/brickn.png", true);
-        normalSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);*/
 
 
 
@@ -317,20 +292,17 @@ public:
 
 
 
-        _shadowBuffer = FrameBuffer::create("ShadowBuffer", SHADOW_RES, SHADOW_RES, Texture::Format::D16);
-
-
         _techniqueShadow = Technique::create("shadow");
         _techniqueShadow->addPass(Pass::create(Effect::createFromFile("res/coredata/shaders/shadow.vert", "res/coredata/shaders/shadow.frag")));
         _techniqueShadow->getStateBlock()->setCullFace(true);
         _techniqueShadow->getStateBlock()->setCullFaceSide(RenderState::CULL_FACE_SIDE_FRONT);
         _techniqueShadow->getStateBlock()->setDepthTest(true);
         _techniqueShadow->getStateBlock()->setDepthWrite(true);
-        //_matGBuffer->addTechnique(tech);
 
+
+        _shadowBuffer = FrameBuffer::create("ShadowBuffer", SHADOW_RES, SHADOW_RES, Texture::Format::D16);
 
         Renderer::getInstance().setPaletteColor(0, Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
 
         Texture::Sampler* shadowSampler = _shadowBuffer->getRenderTarget(0);
         shadowSampler->setWrapMode(Texture::BORDER, Texture::BORDER);
@@ -423,6 +395,7 @@ public:
 
     bool initializeScene(Node* node)
     {
+        // if node is a light, collect light
         Light* light = dynamic_cast<Light*>(node->getLight());
         if (light)
         {
@@ -438,44 +411,25 @@ public:
                 _spotLights.push_back(light);
                 break;
             }
+
+            return true;
         }
 
 
+        // if node is model, add shadow technique
         Drawable* drawable = node->getDrawable();
         if (drawable)
         {
             Model* model = dynamic_cast<Model*>(drawable);
             if(model)
             {
-                /*for(unsigned int i=0; i<model->getMeshPartCount(); i++)
+                Material* material = model->getMaterial();
+                if(material)
                 {
-                   //Material* material = model->getMaterial(i);
-                   //if(material)
-                   //    initLightForMaterial(material);
-
-                    model->setMaterial(_matGBuffer->clone());
-                }*/
-
-                //model->setMaterial(_matGBuffer->clone());
-                ///model->getMaterial()->addTechnique(_techniqueShadow);
-            }
-
-            if(std::string("LightCubeNode") == node->getId())
-            {
-                Model* model = dynamic_cast<Model*>(drawable);
-                Material* material = Material::create("res/coredata/shaders/color.vert", "res/coredata/shaders/color.frag");
-                material->getParameter("u_color")->setValue(Vector3(10,10,0));
-                material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
-                material->getStateBlock()->setCullFace(true);
-                material->getStateBlock()->setDepthTest(true);
-                material->getStateBlock()->setDepthWrite(true);
-                model->setMaterial(material);
-            }
+                     material->addTechnique(_techniqueShadow->clone());
+                }
+            }          
         }
-
-
-
-
 
         return true;
     }
@@ -493,10 +447,6 @@ public:
             Model* model = dynamic_cast<Model*>(drawable);
             model->getMaterial()->setTechnique("");
             drawable->draw();
-
-            //model->getMaterial()->getParameter("u_worldMatrix")->setValue(model->getNode()->getWorldMatrix());
-            //model->getMaterial()->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
-
         }
         return true;
     }
@@ -508,10 +458,10 @@ public:
         {
             Model* model = dynamic_cast<Model*>(drawable);
             model->getMaterial()->setTechnique("shadow");
-            drawable->draw();
-
-            model->getMaterial()->getParameter("u_worldMatrix")->setValue(model->getNode()->getWorldMatrix());
+            model->getMaterial()->getParameter("u_worldMatrix")->setValue(node->getWorldMatrix());
             model->getMaterial()->getParameter("u_lightSpaceMatrix")->setValue(_lightSpaceMatrix);
+
+            drawable->draw();
         }
         return true;
     }
@@ -519,8 +469,6 @@ public:
 
     void draw()
     {
-
-
         static int dim = 5;
         static float offset = 1.0f;
         static float pointlightRadius = 5.0f;
@@ -666,7 +614,7 @@ public:
         _finalQuad->getMaterial()->getParameter("u_direction")->setValue(Vector2(x, y));
         _finalQuad->getMaterial()->getParameter("image")->setSampler(_lightBuffer->getRenderTarget(1));
 
-        for(int i=0; i<40; ++i) {
+        for(int i=0; i<10; ++i) {
 
             _finalQuad->draw();
 
@@ -888,12 +836,6 @@ public:
 
 
 
-
-
-
-
-
-
         // load shapes bundle
         Bundle* bundle = Bundle::create("res/data/scenes/shapes.gpb");
 
@@ -909,8 +851,9 @@ public:
         Model* modelTeapot = Model::create(bundle->loadMesh("Cube_Mesh"));
         {
         Material* material = matDeferred->clone();
-        Texture::Sampler* diffuseSampler = material->getParameter("s_diffuseTexture")->setValue("res/data/textures/crate.png", true);
-        diffuseSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
+        material->getParameter("s_diffuseTexture")->setValue("res/data/textures/crate.png", true);
+        material->getParameter("s_normalTexture")->setValue("res/data/textures/crate_mn.png", true);
+        material->getParameter("s_specularTexture")->setValue("res/data/textures/crate_s.png", true);
         modelTeapot->setMaterial(material);
         }
         Node* nodeTeapot = Node::create("teapot");
@@ -920,7 +863,8 @@ public:
         _scene->addNode(nodeTeapot);
 
         // create a torus
-        /*Model* modelTorus = Model::create(bundle->loadMesh("Torus_Mesh"));
+        Model* modelTorus = Model::create(bundle->loadMesh("Torus_Mesh"));
+        modelTorus->setMaterial(matDeferred->clone());
         Node* nodeTorus = Node::create("torus");
         nodeTorus->setDrawable(modelTorus);
         nodeTorus->setScale(0.5f);
@@ -929,6 +873,7 @@ public:
 
         // create a torus knot
         Model* modelTorusKnot = Model::create(bundle->loadMesh("TorusKnot_Mesh"));
+        modelTorusKnot->setMaterial(matDeferred->clone());
         Node* nodeTorusKnot = Node::create("torusKnot");
         nodeTorusKnot->setDrawable(modelTorusKnot);
         nodeTorusKnot->setScale(0.25f);
@@ -937,6 +882,7 @@ public:
 
         // create a cone
         Model* modelCone = Model::create(bundle->loadMesh("Cone_Mesh"));
+        modelCone->setMaterial(matDeferred->clone());
         Node* nodeCone = Node::create("cone");
         nodeCone->setDrawable(modelCone);
         nodeCone->setScale(0.5f);
@@ -945,11 +891,12 @@ public:
 
         // create suzanne
         Model* modelMonkey = Model::create(bundle->loadMesh("Monkey_Mesh"));
+        modelMonkey->setMaterial(matDeferred->clone());
         Node* nodeMonkey = Node::create("monkey");
         nodeMonkey->setDrawable(modelMonkey);
         nodeMonkey->setScale(0.5f);
         nodeMonkey->setTranslation(-2, 0.5, 2);
-        _scene->addNode(nodeMonkey);*/
+        _scene->addNode(nodeMonkey);
 
 
 
@@ -991,9 +938,16 @@ public:
         // light cube
         {
         Model* modelCubeLight = Model::create(bundle->loadMesh("Cube_Mesh"));
-        /*Material* material = Material::create("res/coredata/shaders/color.vert", "res/coredata/shaders/color.frag");
-        //material->getParameter("u_color")->setValue(pointLight->getColor());
-        modelCubeLight->setMaterial(material);*/
+        {
+            Material* material = Material::create("res/coredata/shaders/color.vert", "res/coredata/shaders/color.frag");
+            material->getParameter("u_color")->setValue(Vector3(10,10,0));
+            material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::WORLD_VIEW_PROJECTION_MATRIX);
+            material->getStateBlock()->setCullFace(true);
+            material->getStateBlock()->setDepthTest(true);
+            material->getStateBlock()->setDepthWrite(true);
+            modelCubeLight->setMaterial(material);
+        }
+
         Node* pointLightNodeCube = Node::create("LightCubeNode");
         pointLightNodeCube->setScale(0.25);
         pointLightNodeCube->setDrawable(modelCubeLight);
