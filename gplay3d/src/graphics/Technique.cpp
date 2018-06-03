@@ -82,6 +82,12 @@ void Technique::setNodeBinding(Node* node)
     }
 }
 
+Technique* Technique::clone() const
+{
+    NodeCloneContext context;
+    return clone(_material, context);
+}
+
 Technique* Technique::clone(Material* material, NodeCloneContext &context) const
 {
     Technique* technique = new Technique(getId(), material);

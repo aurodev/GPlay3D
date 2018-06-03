@@ -81,6 +81,8 @@ public:
      */
     void addPass(Pass* pass);
 
+    Technique* clone() const;
+
 private:
 
     /**
