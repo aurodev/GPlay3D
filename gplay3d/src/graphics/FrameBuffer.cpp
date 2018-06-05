@@ -3,13 +3,9 @@
 #include "../core/Game.h"
 #include "../renderer/Renderer.h"
 
-#define FRAMEBUFFER_ID_DEFAULT "org.gameplay3d.framebuffer.default"
-
 namespace gameplay {
 
-
-std::vector<FrameBuffer*> FrameBuffer::_frameBuffers;
-
+static std::vector<FrameBuffer*> _frameBuffersCache;
 
 FrameBuffer::FrameBuffer(const char *id) :
     _frameBufferHandle(BGFX_INVALID_HANDLE)
@@ -29,10 +25,10 @@ FrameBuffer::~FrameBuffer()
     }
 
     // Remove self from vector.
-    std::vector<FrameBuffer*>::iterator it = std::find(_frameBuffers.begin(), _frameBuffers.end(), this);
-    if (it != _frameBuffers.end())
+    std::vector<FrameBuffer*>::iterator it = std::find(_frameBuffersCache.begin(), _frameBuffersCache.end(), this);
+    if (it != _frameBuffersCache.end())
     {
-        _frameBuffers.erase(it);
+        _frameBuffersCache.erase(it);
     }
 }
 
@@ -52,7 +48,7 @@ FrameBuffer* FrameBuffer::create(const char* id, uint16_t width, uint16_t height
     frameBuffer->_samplers.push_back(sampler);
 
     // store this frame buffer into the list of availables frame buffers
-    _frameBuffers.push_back(frameBuffer);
+    _frameBuffersCache.push_back(frameBuffer);
 
     return frameBuffer;
 }
@@ -83,7 +79,7 @@ FrameBuffer* FrameBuffer::create(const char* id, std::vector<Texture*> textures)
     }
 
     // store this frame buffer into the list of availables frame buffers
-    _frameBuffers.push_back(frameBuffer);
+    _frameBuffersCache.push_back(frameBuffer);
 
     return frameBuffer;
 }
@@ -121,7 +117,7 @@ FrameBuffer* FrameBuffer::getFrameBuffer(const char* id)
 
     // Search the vector for a matching ID.
     std::vector<FrameBuffer*>::const_iterator it;
-    for (it = _frameBuffers.begin(); it < _frameBuffers.end(); ++it)
+    for (it = _frameBuffersCache.begin(); it < _frameBuffersCache.end(); ++it)
     {
         FrameBuffer* fb = *it;
         GP_ASSERT(fb);

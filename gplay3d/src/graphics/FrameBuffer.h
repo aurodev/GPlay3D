@@ -11,19 +11,52 @@ class FrameBuffer : public Ref
 {
 public:
 
+    /**
+     * Destructor.
+     */
      ~FrameBuffer();
 
-    /// simple frame buffer with a single render target
+    /**
+     * Create frame buffer (simple).
+     *
+     * @param id The id of the frame buffer.
+     * @param width Texture width.
+     * @param height Texture height.
+     * @param format Texture format.
+     * @return new created frame buffer.
+     */
     static FrameBuffer* create(const char* id, uint16_t width, uint16_t height, Texture::Format format);
 
-    /// mrt frame buffer with multiple render target
+    /**
+     * Create MRT frame buffer from textures vector.
+     *
+     * @param id The id of the frame buffer.
+     * @param textures Textures attachments.
+     * @return new created frame buffer.
+     */
     static FrameBuffer* create(const char *id, std::vector<Texture*> textures);
 
+    /**
+     * Bind frame buffer.
+     * Use this before rendering scene to render into the frame buffer.
+     */
     void bind();
 
+    /**
+     * Get a render target attached to this frame buffer.
+     *
+     * @param id Index of the render target.
+     * @return Sampler of the render target.
+     */
     Texture::Sampler* getRenderTarget(uint16_t id);
-    Texture::Sampler* getRenderTarget(std::string id);
 
+    /**
+     * Get a render target attached to this frame buffer.
+     *
+     * @param id Name of the render target.
+     * @return Sampler of the render target.
+     */
+    Texture::Sampler* getRenderTarget(std::string id);
 
     /**
      * Get a named FrameBuffer from its ID.
@@ -47,8 +80,6 @@ private:
     bgfx::FrameBufferHandle _frameBufferHandle;
     std::vector<Texture::Sampler*> _samplers;
     std::string _id;
-
-    static std::vector<FrameBuffer*> _frameBuffers;
 };
 
 }
