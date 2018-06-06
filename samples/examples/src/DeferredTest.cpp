@@ -821,13 +821,13 @@ public:
         matDeferred->setParameterAutoBinding("u_worldMatrix", RenderState::WORLD_MATRIX);
         matDeferred->setParameterAutoBinding("u_inverseTransposeWorldMatrix", RenderState::INVERSE_TRANSPOSE_WORLD_MATRIX);
 
-        Texture::Sampler* diffuseSampler = matDeferred->getParameter("s_diffuseTexture")->setValue("res/data/textures/brick.png", true);
+        Texture::Sampler* diffuseSampler = matDeferred->getParameter("u_diffuseTexture")->setValue("res/data/textures/brick.png", true);
         diffuseSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
-        Texture::Sampler* specularSampler = matDeferred->getParameter("s_specularTexture")->setValue("res/data/textures/spec.png", true);
+        Texture::Sampler* specularSampler = matDeferred->getParameter("u_specularTexture")->setValue("res/data/textures/spec.png", true);
         specularSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
-        Texture::Sampler* normalSampler = matDeferred->getParameter("s_normalTexture")->setValue("res/data/textures/brickn.png", true);
+        Texture::Sampler* normalSampler = matDeferred->getParameter("u_normalTexture")->setValue("res/data/textures/brickn.png", true);
         normalSampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
 
