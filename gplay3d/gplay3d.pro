@@ -159,7 +159,8 @@ HEADERS += \
     src/ui/Theme.h \
     src/ui/ThemeStyle.h \
     src/ui/VerticalLayout.h \
-    src/gplay3d.h
+    src/gplay3d.h \
+    src/graphics/View.h
 
 SOURCES += \
     src/ai/AIAgent.cpp \
@@ -281,7 +282,8 @@ SOURCES += \
     src/ui/TextBox.cpp \
     src/ui/Theme.cpp \
     src/ui/ThemeStyle.cpp \
-    src/ui/VerticalLayout.cpp
+    src/ui/VerticalLayout.cpp \
+    src/graphics/View.cpp
 
 
 #DEFINES += COMPIL_WITH_LUA

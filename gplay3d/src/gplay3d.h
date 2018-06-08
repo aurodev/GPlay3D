@@ -54,6 +54,7 @@
 #include "graphics/HeightField.h"
 #include "graphics/Terrain.h"
 #include "graphics/TerrainPatch.h"
+#include "graphics/View.h"
 
 // Audio
 #include "audio/AudioController.h"

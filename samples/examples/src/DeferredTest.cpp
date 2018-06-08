@@ -60,6 +60,15 @@ public:
 
         // create views
 
+
+        /*
+        View2::create(PASS_GEOMETRY_ID, Rectangle(viewRect.width, viewRect.height), View2::ClearFlags::COLOR_DEPTH, 0x000000ff, 1.0f, 0);
+        View2::getView(PASS_GEOMETRY_ID)->bind();
+        Game::GetInstance()->bindView(PASS_GEOMETRY_ID);
+        */
+
+
+
         View viewGeometry;
         viewGeometry.clearColor = 0x000000ff;
         viewGeometry.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
