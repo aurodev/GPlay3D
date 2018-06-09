@@ -5,7 +5,7 @@
 
 namespace gameplay {
 
-class View2
+class View
 {
 public:
 
@@ -22,24 +22,28 @@ public:
     };
 
 
-    static View2* create(unsigned short id, Rectangle rectangle, ClearFlags clearFlags, unsigned int color = 0x00000000,
+    static View* create(unsigned short id, Rectangle rectangle, ClearFlags clearFlags, unsigned int color = 0x00000000,
                 float depth = 1.0f, unsigned char stencil = 0);
 
-    static View2* getView(unsigned short id);
+    static View* getView(unsigned short id);
 
+
+    void bind();
+
+    static unsigned short getCurrentViewId();
 
 private:
 
-    View2();
+    View();
 
     unsigned short _id;
     Rectangle _rectangle;
     ClearFlags _clearFlags;
-    unsigned short _clearColor;
+    unsigned int _clearColor;
     float _depth;
     unsigned char _stencil;
     const char* _name;
-
+    static unsigned short _curentViewId;
 };
 
 }

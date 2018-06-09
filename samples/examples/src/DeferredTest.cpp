@@ -59,57 +59,11 @@ public:
         Rectangle viewRect = game->getViewport();
 
         // create views
-
-
-        /*
-        View2::create(PASS_GEOMETRY_ID, Rectangle(viewRect.width, viewRect.height), View2::ClearFlags::COLOR_DEPTH, 0x000000ff, 1.0f, 0);
-        View2::getView(PASS_GEOMETRY_ID)->bind();
-        Game::GetInstance()->bindView(PASS_GEOMETRY_ID);
-        */
-
-
-
-        View viewGeometry;
-        viewGeometry.clearColor = 0x000000ff;
-        viewGeometry.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-        viewGeometry.depth = 1.0f;
-        viewGeometry.stencil = 0;
-        viewGeometry.rectangle = Rectangle(viewRect.width, viewRect.height);
-        game->insertView(PASS_GEOMETRY_ID, viewGeometry);
-
-        View viewLight;
-        viewLight.clearColor = 0x00000000;
-        viewLight.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-        viewLight.depth = 1.0f;
-        viewLight.stencil = 0;
-        viewLight.rectangle = Rectangle(viewRect.width, viewRect.height);
-        game->insertView(PASS_LIGHT_ID, viewLight);
-
-        View viewCombine;
-        viewCombine.clearColor = 0x00000000;
-        viewCombine.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-        viewCombine.depth = 1.0f;
-        viewCombine.stencil = 0;
-        viewCombine.rectangle = Rectangle(viewRect.width, viewRect.height);
-        game->insertView(PASS_COMBINE_ID, viewCombine);
-
-        View viewShadow;
-        viewShadow.clearColor = 0x00000000;
-        viewShadow.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-        viewShadow.depth = 1.0f;
-        viewShadow.stencil = 0;
-        viewShadow.rectangle = Rectangle(SHADOW_RES, SHADOW_RES);
-        game->insertView(PASS_SHADOW_ID, viewShadow);
-
-        View viewPostProcess;
-        viewPostProcess.clearColor = 0x00000000;
-        viewPostProcess.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-        viewPostProcess.depth = 1.0f;
-        viewPostProcess.stencil = 0;
-        viewPostProcess.rectangle = Rectangle(BLUR_RES,BLUR_RES); //viewRect.width, viewRect.height);
-        game->insertView(PASS_POST_ID, viewPostProcess);
-
-
+        View::create(PASS_GEOMETRY_ID, viewRect, View::ClearFlags::COLOR_DEPTH, 0x000000ff, 1.0f, 0);
+        View::create(PASS_LIGHT_ID, viewRect, View::ClearFlags::COLOR_DEPTH, 0x00000000, 1.0f, 0);
+        View::create(PASS_COMBINE_ID, viewRect, View::ClearFlags::COLOR_DEPTH, 0x00000000, 1.0f, 0);
+        View::create(PASS_SHADOW_ID, Rectangle(SHADOW_RES, SHADOW_RES), View::ClearFlags::COLOR_DEPTH, 0x00000000, 1.0f, 0);
+        View::create(PASS_POST_ID, Rectangle(BLUR_RES,BLUR_RES), View::ClearFlags::COLOR_DEPTH, 0x00000000, 1.0f, 0);
 
 
         // create the gbuffer
@@ -535,21 +489,21 @@ public:
 
 
         // Geometry pass
-        Game::getInstance()->bindView(PASS_GEOMETRY_ID);
+        View::getView(PASS_GEOMETRY_ID)->bind();
         _gBuffer->bind();
         _scene->visit(this, &DeferredRenderer::drawNode);
 
 
 
         // Shadow pass
-        Game::getInstance()->bindView(PASS_SHADOW_ID);
+        View::getView(PASS_SHADOW_ID)->bind();
         _shadowBuffer->bind();
         _scene->visit(this, &DeferredRenderer::drawNodeShadow);
 
 
 
         // Lighting pass
-        Game::getInstance()->bindView(PASS_LIGHT_ID);
+        View::getView(PASS_LIGHT_ID)->bind();
         _lightBuffer->bind();
 
         if(_pointLights.size() > 0)
@@ -613,7 +567,7 @@ public:
 
 
         // post process
-        Game::getInstance()->bindView(PASS_POST_ID);
+        View::getView(PASS_POST_ID)->bind();
         _postProcessBuffer->bind();
         _finalQuad->getMaterial()->setTechnique("blur");
 
@@ -638,8 +592,8 @@ public:
 
 
 
-        // Final pass, render to viewport, combine light buffer + diffuse and apply gamma and tonemapping
-        Game::getInstance()->bindView(PASS_COMBINE_ID);
+        // Final pass, render to viewport, combine light buffer + diffuse and apply gamma and tonemapping        
+        View::getView(PASS_COMBINE_ID)->bind();
         _finalQuad->getMaterial()->setTechnique("default");
         _finalQuad->draw();
 

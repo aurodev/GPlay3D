@@ -202,22 +202,8 @@ public:
         // create views
         Game * game = Game::getInstance();
 
-        View defaultView;
-        defaultView.clearColor = 0x111122ff;
-        defaultView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-        defaultView.depth = 1.0f;
-        defaultView.stencil = 0;
-        defaultView.rectangle = Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
-        game->insertView(0, defaultView);
-
-        View secondView;
-        secondView.clearColor = 0x303030ff;
-        secondView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-        secondView.depth = 1.0f;
-        secondView.stencil = 0;
-
-        secondView.rectangle = Rectangle(game->getWidth(), game->getHeight());
-        game->insertView(1, secondView);
+        View::create(0, Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT), View::ClearFlags::COLOR_DEPTH, 0x111122ff, 1.0f, 0);
+        View::create(1, Game::getInstance()->getViewport(), View::ClearFlags::COLOR_DEPTH, 0x303030ff, 1.0f, 0);
 
 
         // Create a framebuffer with a depth texture
@@ -370,11 +356,11 @@ public:
 
     void render(float elapsedTime)
     {
-        Game::getInstance()->bindView(0);
+        View::getView(0)->bind();
         _frameBuffer->bind();
         _scene->visit(this, &LightsAndShadows::drawScene, (void*)1);
 
-        Game::getInstance()->bindView(1);
+        View::getView(1)->bind();
         _scene->visit(this, &LightsAndShadows::drawScene, (void*)0);
         _quadModel->draw();
 

@@ -200,24 +200,8 @@ void RenderToTexture::initialize()
 
 
     // Set views
-
-    Game * game = Game::getInstance();
-
-    View defaultView;
-    defaultView.clearColor = 0x111122ff;
-    defaultView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-    defaultView.depth = 1.0f;
-    defaultView.stencil = 0;
-    defaultView.rectangle = Rectangle(game->getWidth(), game->getHeight());
-    game->insertView(0, defaultView);
-
-    View secondView;
-    secondView.clearColor = 0xaaaaaaff;
-    secondView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-    secondView.depth = 1.0f;
-    secondView.stencil = 0;
-    secondView.rectangle = Rectangle(BUFFER_SIZE, BUFFER_SIZE);
-    game->insertView(1, secondView);
+    View::create(0, Game::getInstance()->getViewport(), View::ClearFlags::COLOR_DEPTH, 0x111122ff, 1.0f, 0);
+    View::create(1, Rectangle(BUFFER_SIZE, BUFFER_SIZE), View::ClearFlags::COLOR_DEPTH, 0xaaaaaaff, 1.0f, 0);
 }
 
 void RenderToTexture::finalize()
@@ -237,12 +221,12 @@ void RenderToTexture::update(float elapsedTime)
 void RenderToTexture::render(float elapsedTime)
 {
     // 1. render the triangle
-    Game::getInstance()->bindView(1);
+    View::getView(1)->bind();
     _frameBuffer->bind();
     _triangleModel->draw();
 
     // 2. render the cube
-    Game::getInstance()->bindView(0);
+    View::getView(0)->bind();
     _cubeModel->draw();
 
     // draw frame rate

@@ -99,18 +99,8 @@ public:
         _scene->addNode(cubeNode);
 
 
-
-
         // create views
-        Game * game = Game::getInstance();
-        View defaultView;
-        defaultView.clearColor = 0x111122ff;
-        defaultView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-        defaultView.depth = 1.0f;
-        defaultView.stencil = 0;
-        defaultView.rectangle = Rectangle(game->getWidth(), game->getHeight());
-        game->insertView(0, defaultView);
-
+        View::create(0, Game::getInstance()->getViewport(), View::ClearFlags::COLOR_DEPTH, 0x111122ff, 1.0f, 0);
 
         // Add to the fileWatcher a task to monitor the shaders directory.
         FileWatcher::Get()->addDirectory("res/shaders", true);
@@ -132,7 +122,7 @@ public:
     void render(float elapsedTime)
     {
         // render scene in main view
-        Game::getInstance()->bindView(0);
+        View::getView(0)->bind();
         _scene->visit(this, &ShaderReload::drawScene);
         drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());
     }

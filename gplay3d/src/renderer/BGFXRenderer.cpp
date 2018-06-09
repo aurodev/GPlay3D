@@ -2,6 +2,7 @@
 #include "../math/Transform.h"
 #include "../core/Game.h"
 #include "../renderer/BGFXGpuProgram.h"
+#include "../graphics/View.h"
 
 #include <bgfx/bgfx.h>
 
@@ -107,7 +108,7 @@ void BGFXRenderer::submit(const BGFXGpuProgram *gpuProgram)
 {
     GP_ASSERT(gpuProgram && bgfx::isValid(gpuProgram->getProgram()));
 
-    bgfx::submit(Game::getInstance()->_curentViewId, gpuProgram->getProgram());
+    bgfx::submit(View::getCurrentViewId(), gpuProgram->getProgram());
 }
 
 

@@ -2,6 +2,7 @@
 #include "../graphics/FrameBuffer.h"
 #include "../core/Game.h"
 #include "../renderer/Renderer.h"
+#include "../graphics/View.h"
 
 namespace gameplay {
 
@@ -107,7 +108,7 @@ Texture::Sampler* FrameBuffer::getRenderTarget(std::string id)
 
 void FrameBuffer::bind()
 {
-    bgfx::setViewFrameBuffer(Game::getInstance()->_curentViewId, _frameBufferHandle);
+    bgfx::setViewFrameBuffer(View::getCurrentViewId(), _frameBufferHandle);
 }
 
 

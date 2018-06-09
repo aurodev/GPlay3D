@@ -8,6 +8,7 @@
 #include "../ui/ControlFactory.h"
 #include "../ui/Theme.h"
 #include "../ui/Form.h"
+#include "../graphics/View.h"
 
 
 /** @script{ignore} */
@@ -64,7 +65,7 @@ Game::Game()
       _clearDepth(1.0f), _clearStencil(0), _properties(NULL),
       _animationController(NULL), _audioController(NULL),
       _physicsController(NULL), _aiController(NULL), _audioListener(NULL),
-      _timeEvents(NULL), _scriptController(NULL), _scriptTarget(NULL), _curentViewId(0)
+      _timeEvents(NULL), _scriptController(NULL), _scriptTarget(NULL)
 {
     GP_ASSERT(__gameInstance == NULL);
 
@@ -489,7 +490,7 @@ void Game::updateOnce()
 void Game::setViewport(const Rectangle& viewport)
 {
     _viewport = viewport;
-    bgfx::setViewRect(_curentViewId, viewport.x, viewport.y, viewport.width, viewport.height);
+    bgfx::setViewRect(View::getCurrentViewId(), viewport.x, viewport.y, viewport.width, viewport.height);
 }
 
 void Game::clear(ClearFlags flags, const Vector4& clearColor, float clearDepth, int clearStencil)
@@ -530,7 +531,7 @@ void Game::clear(ClearFlags flags, const Vector4& clearColor, float clearDepth, 
         bits |= BGFX_CLEAR_STENCIL;
     }
 
-    bgfx::setViewClear(_curentViewId, bits, _clearColor.toUInt(), _clearDepth, _clearStencil);
+    bgfx::setViewClear(View::getCurrentViewId(), bits, _clearColor.toUInt(), _clearDepth, _clearStencil);
 }
 
 void Game::clear(ClearFlags flags, float red, float green, float blue, float alpha, float clearDepth, int clearStencil)
@@ -834,25 +835,6 @@ void Game::loadGamepads()
 void Game::ShutdownListener::timeEvent(long timeDiff, void* cookie)
 {
 	Game::getInstance()->shutdown();
-}
-
-
-void Game::insertView(uint16_t index, View view)
-{
-    _views.insert(std::pair<uint16_t, View>(index, view));
-
-    bgfx::setViewClear(index, view.clearFlags, view.clearColor, view.depth, view.stencil);
-    bgfx::setViewRect(index, view.rectangle.x, view.rectangle.y, view.rectangle.width, view.rectangle.height);
-}
-
-void Game::bindView(uint16_t viewIndex)
-{
-    GP_ASSERT(_views.count(viewIndex));
-    _curentViewId = viewIndex;
-    //bgfx::touch(0);
-
-    bgfx::setViewClear(_curentViewId, _views[_curentViewId].clearFlags, _views[_curentViewId].clearColor, _views[_curentViewId].depth, _views[_curentViewId].stencil);
-    bgfx::setViewRect(_curentViewId, _views[_curentViewId].rectangle.x, _views[_curentViewId].rectangle.y, _views[_curentViewId].rectangle.width, _views[_curentViewId].rectangle.height);
 }
 
 }

@@ -147,39 +147,13 @@ void PostProcessSample::initialize()
 
 
     // Set views
-
-    Game * game = Game::getInstance();
-
-    View defaultView;
-    defaultView.clearColor = 0x00000000;
-    defaultView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-    defaultView.depth = 1.0f;
-    defaultView.stencil = 0;
-    defaultView.rectangle = Rectangle(game->getWidth(), game->getHeight());
-    game->insertView(0, defaultView);
-
-    View secondView;
-    secondView.clearColor = 0x00000000;
-    secondView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-    secondView.depth = 1.0f;
-    secondView.stencil = 0;
-    secondView.rectangle = Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
-    game->insertView(1, secondView);
-
-
+    View::create(0, Game::getInstance()->getViewport(), View::ClearFlags::COLOR_DEPTH, 0x00000000, 1.0f, 0);
+    View::create(1, Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT), View::ClearFlags::COLOR_DEPTH, 0x000000ff, 1.0f, 0);
 
     float quarterWidth = getWidth() / 4;
     float quarterHeight = getHeight() / 4;
     Rectangle offsetViewport = Rectangle(getWidth() - quarterWidth, 0, quarterWidth, quarterHeight);
-
-    View miniView;
-    miniView.clearColor = 0x00000000;
-    miniView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-    miniView.depth = 1.0f;
-    miniView.stencil = 0;
-    miniView.rectangle = offsetViewport;
-    game->insertView(2, miniView);
-
+    View::create(2, offsetViewport, View::ClearFlags::COLOR_DEPTH, 0x00000000, 1.0f, 0);
 }
 
 void PostProcessSample::finalize()
@@ -217,12 +191,12 @@ void PostProcessSample::render(float elapsedTime)
     Rectangle defaultViewport = Game::getInstance()->getViewport();
     
     // Draw scene into the framebuffer
-    Game::getInstance()->bindView(1);
+    View::getView(1)->bind();
     _frameBuffer->bind();
     _scene->visit(this, &PostProcessSample::drawScene);
 
     // Draw quad
-    Game::getInstance()->bindView(0);
+    View::getView(0)->bind();
     Game::getInstance()->clear(CLEAR_COLOR, Vector4(0, 0, 0, 1), 1.0f, 0);
     Compositor* compositor = _compositors[_compositorIndex];
     compositor->blit(defaultViewport);
@@ -232,15 +206,12 @@ void PostProcessSample::render(float elapsedTime)
     drawTechniqueId(compositor->getTechniqueId());
 
     // Draw the pass through compositor at index 0 at quarter of the size and bottom right. dont clear the dest just draw last on top
-    Game::getInstance()->bindView(2);
+    View::getView(2)->bind();
     float quarterWidth = getWidth() / 4;
     float quarterHeight = getHeight() / 4;
     Rectangle offsetViewport = Rectangle(getWidth() - quarterWidth, 0, quarterWidth, quarterHeight);
     compositor = _compositors[0];
     compositor->blit(offsetViewport);
-
-
-    Game::getInstance()->bindView(0);
 }
 
 #if 0//@@

@@ -124,35 +124,10 @@ void WaterSample::initialize()
 
 
     // Set views
-
-    Game * game = Game::getInstance();
-
     const Vector4 clearColour(0.84f, 0.89f, 1.f, 1.f);
-
-    View defaultView;
-    defaultView.clearColor = clearColour.toUInt();
-    defaultView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-    defaultView.depth = 1.0f;
-    defaultView.stencil = 0;
-    defaultView.rectangle = Rectangle(game->getWidth(), game->getHeight());
-    game->insertView(0, defaultView);
-
-    View reflectView;
-    reflectView.clearColor = clearColour.toUInt();
-    reflectView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-    reflectView.depth = 1.0f;
-    reflectView.stencil = 0;
-    reflectView.rectangle = Rectangle(BUFFER_SIZE, BUFFER_SIZE);
-    game->insertView(1, reflectView);
-
-    View refractView;
-    refractView.clearColor = clearColour.toUInt();
-    refractView.clearFlags = BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH;
-    refractView.depth = 1.0f;
-    refractView.stencil = 0;
-    refractView.rectangle = Rectangle(BUFFER_SIZE, BUFFER_SIZE);
-    game->insertView(2, refractView);
-
+    View::create(0, Game::getInstance()->getViewport(), View::ClearFlags::COLOR_DEPTH, clearColour.toUInt(), 1.0f, 0);
+    View::create(1, Rectangle(BUFFER_SIZE, BUFFER_SIZE), View::ClearFlags::COLOR_DEPTH, clearColour.toUInt(), 1.0f, 0);
+    View::create(2, Rectangle(BUFFER_SIZE, BUFFER_SIZE), View::ClearFlags::COLOR_DEPTH, clearColour.toUInt(), 1.0f, 0);
 }
 
 void WaterSample::finalize()
@@ -202,16 +177,14 @@ void WaterSample::update(float elapsedTime)
 void WaterSample::render(float elapsedTime)
 {
     // Update the refract buffer
-    Game::getInstance()->bindView(2);
-    //_refractBuffer->bind();
-    // or
-    FrameBuffer::getFrameBuffer("refractBuffer")->bind();
+    View::getView(2)->bind();
+    _refractBuffer->bind();
     _clipPlane.y = -1.f;
     _clipPlane.w = _waterHeight + WATER_OFFSET;
     _scene->visit(this, &WaterSample::drawScene, false);
 
     // Switch plane direction and camera, and update reflection buffer
-    Game::getInstance()->bindView(1);
+    View::getView(1)->bind();
     _reflectBuffer->bind();
     _clipPlane.y = 1.f;
     _clipPlane.w = -_waterHeight + WATER_OFFSET;
@@ -223,7 +196,7 @@ void WaterSample::render(float elapsedTime)
     _scene->visit(this, &WaterSample::drawScene, false);
 
     // Draw the final scene
-    Game::getInstance()->bindView(0);
+    View::getView(0)->bind();
     _clipPlane = Vector4::zero();
     _scene->setActiveCamera(defaultCamera);
     _scene->visit(this, &WaterSample::drawScene, true);
