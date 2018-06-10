@@ -125,6 +125,11 @@ void FormsSample::initialize()
     // SamplesGame always ensures the virtual gamepad is disabled when a sample is exited.
     if (_gamepad && _gamepad->isVirtual())
         _gamepad->getForm()->setEnabled(true);
+
+    // set default view, and change sorting mode for sequential (better for ui)
+    View* defaultView = View::create(0, Game::getInstance()->getViewport(), View::ClearFlags::COLOR_DEPTH, 0x77777777);
+    defaultView->setViewSortingMode(View::SortingMode::SEQUENTIAL);
+    defaultView->bind();
 }
 
 void FormsSample::formChanged()
