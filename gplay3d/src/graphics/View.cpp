@@ -7,6 +7,28 @@ namespace gameplay {
 static std::unordered_map<unsigned short, View*> __views;
 unsigned short View::_curentViewId = 0;
 
+unsigned short View::getCurrentViewId()
+{
+    return _curentViewId;
+}
+
+View* View::getView(unsigned short id)
+{
+    return __views[id];
+}
+
+void View::setViewOrder(std::vector<unsigned short>& views)
+{
+    if(views.size() == 0)
+    {
+        bgfx::setViewOrder();
+    }
+    else
+    {
+        bgfx::setViewOrder(views[0], views.size(), views.data());
+    }
+}
+
 View::View() :
   _id(0)
   , _rectangle(Rectangle())
@@ -20,7 +42,6 @@ View::View() :
     bgfx::setViewClear(_id, clearFlags, _clearColor, _depth, _stencil);
     bgfx::setViewRect(_id, _rectangle.x, _rectangle.y, _rectangle.width, _rectangle.height);
 }
-
 
 View* View::create(unsigned short id, Rectangle rectangle, ClearFlags clearFlags, unsigned int clearColor, float depth, unsigned char stencil)
 {
@@ -37,12 +58,6 @@ View* View::create(unsigned short id, Rectangle rectangle, ClearFlags clearFlags
     return view;
 }
 
-View* View::getView(unsigned short id)
-{
-    return __views[id];
-}
-
-
 void View::bind()
 {
     _curentViewId = _id;
@@ -52,10 +67,24 @@ void View::bind()
     bgfx::setViewRect(_id, _rectangle.x, _rectangle.y, _rectangle.width, _rectangle.height);
 }
 
-unsigned short View::getCurrentViewId()
+void View::setViewRect(Rectangle rect)
 {
-    return _curentViewId;
+    _rectangle = rect;
+    bgfx::setViewRect(_id, rect.x, rect.y, rect.width, rect.height);
 }
 
+void View::setViewClear(unsigned int clearColor, float depth, unsigned char stencil)
+{
+    _clearColor = clearColor;
+    _depth = depth;
+    _stencil = stencil;
+    bgfx::setViewClear(_id, clearColor, depth, stencil);
+}
+
+void View::setViewSortingMode(SortingMode viewMode)
+{
+    bgfx::ViewMode::Enum mode = static_cast<bgfx::ViewMode::Enum>(viewMode);
+    bgfx::setViewMode(_id, mode);
+}
 
 }
