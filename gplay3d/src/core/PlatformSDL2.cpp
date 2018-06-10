@@ -476,7 +476,7 @@ Platform* Platform::create(Game* game, void* externalWindow)
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         print("Failed to init SDL\n");
-        return 0;
+        return nullptr;
     }
 
     if(externalWindow)
@@ -499,7 +499,7 @@ Platform* Platform::create(Game* game, void* externalWindow)
     if (!__window)
     {
         print("Unable to create window\n");
-        return false;
+        return nullptr;
     }
 
 

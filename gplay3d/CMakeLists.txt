@@ -66,7 +66,6 @@ set(GPLAY3D_H
     src/graphics/ParticleEmitter.h
     src/graphics/Pass.h
     src/graphics/RenderState.h
-    src/graphics/RenderTarget.h
     src/graphics/Scene.h
     src/graphics/SceneLoader.h
     src/graphics/ScreenDisplayer.h
@@ -79,6 +78,7 @@ set(GPLAY3D_H
     src/graphics/Texture.h
     src/graphics/TileSet.h
     src/graphics/VertexFormat.h
+    src/graphics/View.h
     src/input/Gamepad.h
     src/input/Gesture.h
     src/input/JoystickControl.h
@@ -198,7 +198,6 @@ set(GPLAY3D_CPP
     src/graphics/ParticleEmitter.cpp
     src/graphics/Pass.cpp
     src/graphics/RenderState.cpp
-    src/graphics/RenderTarget.cpp
     src/graphics/Scene.cpp
     src/graphics/SceneLoader.cpp
     src/graphics/ScreenDisplayer.cpp
@@ -211,6 +210,7 @@ set(GPLAY3D_CPP
     src/graphics/Texture.cpp
     src/graphics/TileSet.cpp
     src/graphics/VertexFormat.cpp
+    src/graphics/View.cpp
     src/input/Gamepad.cpp
     src/input/JoystickControl.cpp    
     src/math/BoundingBox.cpp
