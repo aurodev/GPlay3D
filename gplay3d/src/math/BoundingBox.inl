@@ -16,4 +16,10 @@ inline const BoundingBox operator*(const Matrix& matrix, const BoundingBox& box)
     return b;
 }
 
+inline bool BoundingBox::contains(const Vector3& point) const
+{
+    return min.x <= point.x && min.y <= point.y && min.z <= point.z &&
+            point.x <= max.x && point.y <= max.y && point.z <= max.z;
+}
+
 }

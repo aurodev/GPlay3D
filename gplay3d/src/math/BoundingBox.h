@@ -215,6 +215,13 @@ public:
      * @return This bounding box, after the transformation occurs.
      */
     inline BoundingBox& operator*=(const Matrix& matrix);
+
+    /**
+     * Checks whether a point is inside the bounding box.
+     *
+     * @param point Point.
+     */
+    inline bool contains(const Vector3& point) const;
 };
 
 /**
