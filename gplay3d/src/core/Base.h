@@ -214,60 +214,8 @@ extern int strcmpnocase(const char* s1, const char* s2);
 using std::va_list;
 #include <lua/lua.hpp>
 
-#define WINDOW_VSYNC        1
-
-// Graphics (OpenGL)
-#ifdef __ANDROID__
-    #include <EGL/egl.h>
-    #include <GLES2/gl2.h>
-    #include <GLES2/gl2ext.h>
-    extern PFNGLBINDVERTEXARRAYOESPROC glBindVertexArray;
-    extern PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArrays;
-    extern PFNGLGENVERTEXARRAYSOESPROC glGenVertexArrays;
-    extern PFNGLISVERTEXARRAYOESPROC glIsVertexArray;
-    extern PFNGLMAPBUFFEROESPROC glMapBuffer;
-    extern PFNGLUNMAPBUFFEROESPROC glUnmapBuffer;
-    #define GL_WRITE_ONLY GL_WRITE_ONLY_OES
-    #define GL_DEPTH24_STENCIL8 GL_DEPTH24_STENCIL8_OES
-    #define glClearDepth glClearDepthf
-    #define OPENGL_ES
-    #define GP_USE_VAO
-#elif _WIN32
-		//#define WIN32_LEAN_AND_MEAN
-        //#define GLEW_STATIC
-        //#include <GL/glew.h>
-        //#define GP_USE_VAO
-        #include <bgfx/bgfx.h>
-#elif __linux__
-        #include <bgfx/bgfx.h>
-#elif __APPLE__
-    #include "TargetConditionals.h"
-    #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-        #include <OpenGLES/ES2/gl.h>
-        #include <OpenGLES/ES2/glext.h>
-        #define glBindVertexArray glBindVertexArrayOES
-        #define glDeleteVertexArrays glDeleteVertexArraysOES
-        #define glGenVertexArrays glGenVertexArraysOES
-        #define glIsVertexArray glIsVertexArrayOES
-        #define glMapBuffer glMapBufferOES
-        #define glUnmapBuffer glUnmapBufferOES
-        #define GL_WRITE_ONLY GL_WRITE_ONLY_OES
-        #define GL_DEPTH24_STENCIL8 GL_DEPTH24_STENCIL8_OES
-        #define glClearDepth glClearDepthf
-        #define OPENGL_ES
-        #define GP_USE_VAO
-    #elif TARGET_OS_MAC
-        #include <OpenGL/gl.h>
-        #include <OpenGL/glext.h>
-        #define glBindVertexArray glBindVertexArrayAPPLE
-        #define glDeleteVertexArrays glDeleteVertexArraysAPPLE
-        #define glGenVertexArrays glGenVertexArraysAPPLE
-        #define glIsVertexArray glIsVertexArrayAPPLE
-        #define GP_USE_VAO
-    #else
-        #error "Unsupported Apple Device"
-    #endif
-#endif
+// Graphics (BGFX)
+#include <bgfx/bgfx.h>
 
 // Hardware buffer
 namespace gameplay
