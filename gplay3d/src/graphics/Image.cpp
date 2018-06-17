@@ -2,20 +2,70 @@
 #include "../core/FileSystem.h"
 #include "../graphics/Image.h"
 
+#include <bimg/decode.h>
+#include <bx/allocator.h>
+
 namespace gameplay
 {
-// Callback for reading a png image using Stream
-static void readStream(png_structp png, png_bytep data, png_size_t length)
-{
-    Stream* stream = reinterpret_cast<Stream*>(png_get_io_ptr(png));
-    if (stream == NULL || stream->read(data, 1, length) != length)
-    {
-        png_error(png, "Error reading PNG.");
-    }
-}
 
 Image* Image::create(const char* path)
 {
+    GP_ASSERT(path);
+
+    // open the file
+    std::unique_ptr<Stream> stream(FileSystem::open(path));
+    if (stream.get() == NULL || !stream->canRead())
+    {
+        GP_ERROR("Failed to open image file '%s'.", path);
+        return NULL;
+    }
+
+    // read file data
+    size_t dataSize = stream->length();
+    char* data = new char[dataSize];
+    if (stream->read(data, sizeof(char), dataSize) != dataSize)
+    {
+        GP_ERROR("Failed to load image file; file is missing data.");
+        SAFE_DELETE_ARRAY(data);
+        return nullptr;
+    }
+
+    // parse image
+    bx::DefaultAllocator s_allocator;
+    bimg::ImageContainer* imageContainer = bimg::imageParse(&s_allocator, data, dataSize);
+    if(imageContainer == nullptr)
+    {
+        GP_ERROR("Failed to parse image data from file '%s'.", path);
+        return nullptr;
+    }
+
+    // create image
+    Image* image = new Image();
+    image->_width = imageContainer->m_width;
+    image->_height = imageContainer->m_height;
+    image->_format = imageContainer->m_hasAlpha ? Format::RGBA : Format::RGB;
+
+    image->_data = new unsigned char[imageContainer->m_size];
+    memcpy(image->_data, imageContainer->m_data, imageContainer->m_size);
+
+    // free image
+    bimg::imageFree(imageContainer);
+
+    return image;
+
+
+
+
+
+
+
+
+
+/*
+
+    //---
+
+
     GP_ASSERT(path);
 
     // Open the file.
@@ -104,12 +154,12 @@ Image* Image::create(const char* path)
     // Clean up.
     png_destroy_read_struct(&png, &info, NULL);
 
-    return image;
+    return image;*/
 }
 
 Image* Image::create(unsigned int width, unsigned int height, Image::Format format, unsigned char* data)
 {
-    GP_ASSERT(width > 0 && height > 0);
+    /*GP_ASSERT(width > 0 && height > 0);
     GP_ASSERT(format >= RGB && format <= RGBA);
 
     unsigned int pixelSize = 0;
@@ -134,7 +184,11 @@ Image* Image::create(unsigned int width, unsigned int height, Image::Format form
     if (data)
         memcpy(image->_data, data, dataSize);
 
-    return image;
+    return image;*/
+
+    // todo: implement me with bimg
+    GP_ASSERT(0);
+    return nullptr;
 }
 
 Image::Image() : _data(NULL), _format(RGB), _width(0), _height(0)
