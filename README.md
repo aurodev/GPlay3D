@@ -1,3 +1,6 @@
+THIS PROJECT IS MAGRATING TO https://github.com/fredakilla/GPlayEngine
+
+
 # GPlay3D
 GPlay3D is C++ cross-platform game engine for creating 2D/3D games.
 
